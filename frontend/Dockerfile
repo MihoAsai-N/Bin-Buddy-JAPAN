@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm install
 
 RUN npm install postcss-preset-env --save-dev
 
