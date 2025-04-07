@@ -22,13 +22,13 @@ export default function AdminLayout({
     <div
       className={cn(
         "min-h-screen bg-background font-sans antialiased",
-        "flex flex-col items-center justify-center",
+        "flex min-h-screen flex-col items-center justify-center",
         "bg-gradient-to-t from-[#78B9C6] via-[#a9d3db] to-[#e1f2f5]",
         "px-12 py-8",
         notoSansJP.variable
       )}
     >
-      <main className="w-full max-w-5xl">{children}</main>
+      <main className="w-full max-w-none">{children}</main>
     </div>
   );
 }

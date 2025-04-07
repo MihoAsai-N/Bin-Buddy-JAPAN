@@ -1,6 +1,6 @@
 "use client";
 
-import { signInWithEmailAndPassword, auth } from "../../lib/firebaseConfig";
+import { signInWithEmailAndPassword, auth } from "../../../lib/firebaseConfig";
 import { useRouter } from "next/navigation";
 
 import type { NextPage } from "next";
@@ -47,7 +47,7 @@ const Page: NextPage = () => {
         values.password
       );
       console.log("ログイン成功:", userCredential.user);
-      router.push("/dashboard"); // TODO: ログイン後の遷移先は決済ページ
+      router.push("/admin/dashboard"); // TODO: ログイン後の遷移先は条件分岐して決済ページ
     } catch (error) {
         if (error instanceof FirebaseError){
           alert("ログイン失敗: " + error.message);
