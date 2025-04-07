@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "../app/components/theme-provider"
-import { NavLinks } from "../app/components/nav-links"
+
 import { LanguageProvider } from "../app/contexts/language-context"
 import { TrashProvider } from "../app/contexts/trash-context"
 
@@ -27,7 +27,7 @@ export default function RootLayout({
             <TrashProvider>
               <main className="min-h-screen bg-gray-100 flex justify-center pb-14">
                 <div className="w-full max-w-md bg-white shadow-md">{children}</div>
-                <NavLinks />
+
               </main>
             </TrashProvider>
           </LanguageProvider>

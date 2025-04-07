@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from google.cloud import vision
+
+client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
 

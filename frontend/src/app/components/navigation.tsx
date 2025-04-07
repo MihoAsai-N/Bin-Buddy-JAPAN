@@ -43,9 +43,6 @@ export function Navigation({ title }: { title?: string }) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="ghost" size="icon" className="rounded-full bg-purple-600 text-white">
-          <Circle className="h-5 w-5" />
-        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
