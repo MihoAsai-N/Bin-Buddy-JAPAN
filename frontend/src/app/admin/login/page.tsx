@@ -1,6 +1,6 @@
 "use client";
 
-import { signInWithEmailAndPassword, auth } from "@/lib/firebaseConfig";
+import { signInWithEmailAndPassword, auth } from "../../lib/firebaseConfig";
 import { useRouter } from "next/navigation";
 
 import type { NextPage } from "next";
@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/shadcn/ui/card";
+} from "@/app/admin/components/shadcn/ui/card";
 import {
   Form,
   FormControl,
@@ -22,10 +22,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/shadcn/ui/form";
+} from "@/app/admin/components/shadcn/ui/form";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/shadcn/ui/button";
-import { Input } from "@/components/shadcn/ui/input";
+import { Button } from "@/app/admin/components/shadcn/ui/button";
+import { Input } from "@/app/admin/components/shadcn/ui/input";
 
 type LoginForm = z.infer<typeof loginSchema>
 
