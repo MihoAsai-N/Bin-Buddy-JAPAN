@@ -26,6 +26,7 @@ import {
 import { useForm } from "react-hook-form";
 import { Button } from "@/app/admin/components/shadcn/ui/button";
 import { Input } from "@/app/admin/components/shadcn/ui/input";
+import { FirebaseError } from "firebase/app";
 
 type LoginForm = z.infer<typeof loginSchema>
 
@@ -46,12 +47,16 @@ const Page: NextPage = () => {
         values.password
       );
       console.log("ログイン成功:", userCredential.user);
-      router.push("/admin"); // ログイン後の遷移先
-    } catch (error: any) {
-      alert("ログイン失敗: " + error.message);
+      router.push("/dashboard"); // TODO: ログイン後の遷移先は決済ページ
+    } catch (error) {
+        if (error instanceof FirebaseError){
+          alert("ログイン失敗: " + error.message);
+        }else{
+          alert("不明なエラーが発生しました");
+        }
     }
   }
-  
+
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -63,7 +68,7 @@ const Page: NextPage = () => {
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <Card className="w-[350px]">
+          <Card className="w-full max-w-md sm:max-w-lg md:max-w-xl">
             <CardHeader>
               <CardTitle>ログイン</CardTitle>
               <CardDescription>
