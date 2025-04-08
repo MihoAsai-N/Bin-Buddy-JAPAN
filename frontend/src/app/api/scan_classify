@@ -1,0 +1,36 @@
+import { NextResponse } from 'next/server';
+type ClassifyResponse = {
+  predictions: { [key: string]: number };
+  best_match_label: string | null;
+  trash_category: string | null;
+};
+
+export async function POST(request: Request) {
+  try {
+    const formData = await request.formData();
+    const imageFile = formData.get('image_file') as File | null;
+
+    if (!imageFile) {
+      return NextResponse.json({ error: '画像ファイルがありません' }, { status: 400 });
+    }
+
+    const backendUrl = 'http://localhost:8000/api/classify'; // バックエンドの API エンドポイント
+
+    const response = await fetch(backendUrl, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return NextResponse.json({ error: `画像分類APIエラー: ${errorData.detail || response.statusText}` }, { status: response.status });
+    }
+
+    const data: ClassifyResponse = await response.json();
+    return NextResponse.json(data);
+
+  } catch (error: any) {
+    console.error('画像分類リクエストエラー:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

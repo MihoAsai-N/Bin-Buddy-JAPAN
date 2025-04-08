@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: ゴミ分別関連API
+  version: v1
+  description: 画像認証と自治体のゴミ分別情報を提供するAPI
+
+servers:
+  - url: http://localhost:8000 # 実際のAPIサーバーのURLに置き換えてください
+
+paths:
+  /image_verification:
+    get:
+      summary: 画像認証（Google Cloud Vision AI）
+      description: Google Cloud Vision AI を使用して画像を解析し、写っている物体を識別します。
+      responses:
+        '200':
+          description: 認証成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  labels:
+                    type: array
+                    items:
+                      type: string
+                      description: 識別された物体のラベル
+                  confidence:
+                    type: array
+                    items:
+                      type: number
+                      format: float
+                      description: 各ラベルの信頼度
+        '500':
+          description: 認証失敗時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+
+  /municipalities/garbage_info:
+    get:
+      summary: 自治体のゴミ分別情報
+      description: 全ての自治体のゴミ分別情報を取得します。
+      responses:
+        '200':
+          description: 取得成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    municipality_id:
+                      type: integer
+                      description: 自治体ID
+                    municipality_name:
+                      type: string
+                      description: 自治体名
+                    garbage_rules:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          garbage_type_name:
+                            type: string
+                            description: ゴミの種類名
+                          separation_method:
+                            type: string
+                            description: 分別方法
+                          collection_day:
+                            type: string
+                            description: 収集曜日
+                          notes:
+                            type: string
+                            nullable: true
+                            description: 注意事項
+
+  /municipalities/garbage_info/{area_id}:
+    get:
+      summary: 自治体のゴミ分別情報（対象地域）
+      description: 特定の地域のゴミ分別情報を取得します。
+      parameters:
+        - in: path
+          name: area_id
+          required: true
+          description: 対象地域のID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 取得成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  municipality_id:
+                    type: integer
+                    description: 自治体ID
+                  municipality_name:
+                    type: string
+                    description: 自治体名
+                  garbage_rules:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        garbage_type_name:
+                          type: string
+                          description: ゴミの種類名
+                        separation_method:
+                          type: string
+                          description: 分別方法
+                        collection_day:
+                          type: string
+                          description: 収集曜日
+                        notes:
+                          type: string
+                          nullable: true
+                          description: 注意事項
+        '404':
+          description: 対象地域が見つからない場合のレスポンス
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "指定された地域のゴミ分別情報が見つかりません。"
+
+  /garbage_types:
+    get:
+      summary: ゴミ分類（画像認証の結果と地域のゴミ分別の識別情報）
+      description: 画像認証の結果と地域のゴミ分別情報を照合し、分類を特定します。
+      parameters:
+        - in: query
+          name: image_labels
+          required: true
+          description: 画像認証で識別された物体のラベルの配列
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: municipality_id
+          required: true
+          description: 対象の自治体ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 分類成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    label:
+                      type: string
+                      description: 画像認証で識別されたラベル
+                    garbage_type:
+                      type: string
+                      description: 分類されたゴミの種類
+                    separation_method:
+                      type: string
+                      description: 分別方法
+                    collection_day:
+                      type: string
+                      description: 収集曜日
+                    confidence:
+                      type: number
+                      format: float
+                      description: 分類の信頼度 (任意)
+        '400':
+          description: 不正なリクエスト
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "不正なリクエストパラメータです。"
+        '404':
+          description: 該当するゴミ分類が見つからない場合
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "指定されたラベルと地域に該当するゴミ分類が見つかりません。"
+
+  /area:
+    get:
+      summary: エリア(郵便番号を引数)
+      description: 住所に関連する情報を提供します。
+      responses:
+        '200':
+          description: 取得成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    address_id:
+                      type: integer
+                      description: 住所ID
+                    prefecture:
+                      type: string
+                      description: 都道府県
+                    city:
+                      type: string
+                      description: 市区町村
+                    town:
+                      type: string
+                      description: 町名
+                    area_id:
+                      type: integer
+                      description: 地域ID (ゴミ分別情報と関連付けるためのID)
