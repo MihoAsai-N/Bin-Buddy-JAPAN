@@ -1,14 +1,23 @@
 from fastapi import FastAPI
-from google.cloud import vision
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
-client = vision.ImageAnnotatorClient()
+from backend.routers import classify 
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+# CORSミドルウェアの設定 (フロントエンドからのリクエストを許可)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Next.jsの開発サーバーのURL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
+# ルーターをアプリケーションに含める
+app.include_router(classify.router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

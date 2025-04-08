@@ -213,7 +213,7 @@ export default function CalendarPage() {
         <div className="bg-gray-200 rounded-lg p-6 flex flex-col items-center justify-center">
           <div className="text-gray-500 mb-4">{t("calendar.take.photo")}</div>
 
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white px-6 text-xs" onClick={handleCameraLaunch}>
+          <Button className="bg-orange-500 hover:bg-orange-700 text-white px-6 text-xs" onClick={handleCameraLaunch}>
             {t("calendar.launch.camera")}
           </Button>
         </div>

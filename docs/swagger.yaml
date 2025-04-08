@@ -5,7 +5,7 @@ info:
   description: 画像認証と自治体のゴミ分別情報を提供するAPI
 
 servers:
-  - url: http://localhost:8080 # 実際のAPIサーバーのURLに置き換えてください
+  - url: http://localhost:8000 # 実際のAPIサーバーのURLに置き換えてください
 
 paths:
   /image_verification:
@@ -201,9 +201,9 @@ paths:
                     type: string
                     description: "指定されたラベルと地域に該当するゴミ分類が見つかりません。"
 
-  /addresses:
+  /area:
     get:
-      summary: 住所情報
+      summary: エリア(郵便番号を引数)
       description: 住所に関連する情報を提供します。
       responses:
         '200':
