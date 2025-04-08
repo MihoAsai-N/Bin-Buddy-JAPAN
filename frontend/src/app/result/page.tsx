@@ -4,21 +4,26 @@ import { Navigation } from "../components/navigation"
 import { useLanguage } from "../contexts/language-context"
 import { Button } from "../components/ui/button"
 import { useRouter } from "next/navigation"
-import { useTrash, type WeekDay } from "../contexts/trash-context"
+import { useTrash, type WeekDay, setTrashResult } from "../contexts/trash-context" // setTrashResult は不要になった可能性
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Trash2, Recycle, AlertTriangle, Calendar } from "lucide-react"
+import { useEffect } from "react"; // useEffect をインポート
 
 export default function ResultPage() {
   const { t, language } = useLanguage()
   const router = useRouter()
-  const { trashResult, getCollectionDays } = useTrash()
+  const { trashResult, getCollectionDays, setTrashResult: setContextTrashResult } = useTrash() // setTrashResult の名前を変更
 
   // 結果がない場合はカレンダー画面にリダイレクト
-  if (!trashResult) {
-    if (typeof window !== "undefined") {
-      router.push("/calendar")
+  useEffect(() => {
+    if (!trashResult) {
+      router.push("/calendar");
     }
-    return null
+  }, [trashResult, router]);
+
+  // trashResult が null の場合は何も表示しない
+  if (!trashResult) {
+    return null;
   }
 
   // 収集日を取得
@@ -35,6 +40,8 @@ export default function ResultPage() {
         return <Recycle className="h-12 w-12 text-green-500" />
       case "hazardous":
         return <AlertTriangle className="h-12 w-12 text-red-500" />
+      case "unknown":
+        return <AlertTriangle className="h-12 w-12 text-gray-500" /> // unknown の場合のアイコン
       default:
         return <Trash2 className="h-12 w-12 text-gray-500" />
     }
@@ -86,4 +93,3 @@ export default function ResultPage() {
     </div>
   )
 }
-

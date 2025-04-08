@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-from backend.routers import classify 
+from routers import classify 
 
 app = FastAPI()
 

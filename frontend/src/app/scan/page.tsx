@@ -145,7 +145,7 @@ export default function ScanPage() {
           const formData = new FormData();
           formData.append("image_file", blob, "resized_image.jpg");
 
-          const response = await fetch("/api/classify", {
+          const response = await fetch("/api/scan_classify", {
             method: "POST",
             body: formData,
           });

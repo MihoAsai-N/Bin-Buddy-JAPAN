@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-
 type ClassifyResponse = {
   predictions: { [key: string]: number };
-  best_match: string | null;
+  best_match_label: string | null;
+  trash_category: string | null;
 };
 
 export async function POST(request: Request) {
