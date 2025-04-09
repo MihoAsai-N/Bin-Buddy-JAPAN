@@ -47,7 +47,7 @@ export default function Home() {
               <Link href="/register">新規登録</Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/admin">管理者ログイン</Link>
+              <Link href="/admin/login">管理者ログイン</Link>
             </Button>
             <Button variant="ghost" size="icon" className="md:hidden">
               <svg
@@ -355,7 +355,7 @@ export default function Home() {
             <Link href="/register" className="text-sm font-medium hover:underline">
               新規登録
             </Link>
-            <Link href="/admin" className="text-sm font-medium hover:underline">
+            <Link href="/login" className="text-sm font-medium hover:underline">
               管理者ログイン
             </Link>
           </div>
