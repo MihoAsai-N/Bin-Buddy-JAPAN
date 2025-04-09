@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button } from "../../app/admin/components/shadcn/ui/button"
 import {
   Calendar,
   Camera,
@@ -21,7 +21,7 @@ export default function Home() {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BinBuddy_Logo-a9mfT2DnLPZ6NBRyaPMIF3BMvPZxv6.png"
+              src="/BinBuddy_Logo.png"
               alt="BinBuddy Logo"
               width={120}
               height={50}
@@ -337,7 +337,7 @@ export default function Home() {
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <div className="flex items-center gap-2">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BinBuddy_Logo-a9mfT2DnLPZ6NBRyaPMIF3BMvPZxv6.png"
+              src="/BinBuddy_Logo.png"
               alt="BinBuddy Logo"
               width={100}
               height={40}
