@@ -44,7 +44,7 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" asChild className="hidden sm:flex">
-              <Link href="/register">新規登録</Link>
+              <Link href="/admin/register">新規登録</Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
               <Link href="/admin/login">管理者ログイン</Link>
@@ -352,10 +352,10 @@ export default function Home() {
             <Link href="#" className="text-sm font-medium hover:underline">
               利用規約
             </Link>
-            <Link href="/register" className="text-sm font-medium hover:underline">
+            <Link href="/admin/register" className="text-sm font-medium hover:underline">
               新規登録
             </Link>
-            <Link href="/login" className="text-sm font-medium hover:underline">
+            <Link href="/admin/login" className="text-sm font-medium hover:underline">
               管理者ログイン
             </Link>
           </div>
