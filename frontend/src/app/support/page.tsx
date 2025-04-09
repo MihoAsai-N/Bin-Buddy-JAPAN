@@ -39,7 +39,7 @@ export default function SupportPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen px-4 sm:px-6 md:px-25 lg:px-60">
       <Navigation />
 
       <div className="flex-1 p-4">
