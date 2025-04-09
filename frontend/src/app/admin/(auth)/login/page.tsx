@@ -12,7 +12,9 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/app/admin/components/shadcn/ui/button"
 import { Input } from "@/app/admin/components/shadcn/ui/input"
 import { FirebaseError } from "firebase/app"
-import { ArrowLeft, Lock } from "lucide-react"
+import { Lock } from "lucide-react"
+import BackToMainLink from "../../components/common/BackToMainLink"
+
 
 type LoginForm = z.infer<typeof loginSchema>
 
@@ -47,12 +49,7 @@ const Page: NextPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col text-[#4a5568]">
-      <div className="container flex h-16 items-center">
-        <Link href="/admin" className="flex items-center gap-2 text-sm font-medium">
-          <ArrowLeft className="h-4 w-4" />
-          メインページに戻る
-        </Link>
-      </div>
+      <BackToMainLink />
       <main className="flex-1 flex items-center justify-center py-12 bg-[#f0f5f8]">
         <div className="mx-auto grid w-full max-w-md gap-6 px-4">
           <div className="flex flex-col items-center space-y-2 text-center">
@@ -110,7 +107,7 @@ const Page: NextPage = () => {
             <p>パスワードをお忘れの場合は、システム管理者にお問い合わせください。</p>
             <p className="mt-2">
               アカウントをお持ちでない場合は、
-              <Link href="/register" className="text-[#78B9C6] hover:text-[#6aaab7] hover:underline">
+              <Link href="/admin/register" className="text-[#78B9C6] hover:text-[#6aaab7] hover:underline">
                 新規登録
               </Link>
               してください。
