@@ -1,32 +1,20 @@
-"use client";
+"use client"
 
-import { signInWithEmailAndPassword, auth } from "../../../lib/firebaseConfig";
-import { useRouter } from "next/navigation";
-
-import type { NextPage } from "next";
+import { signInWithEmailAndPassword, auth } from "../../../lib/firebaseConfig"
+import { useRouter } from "next/navigation"
+import Image from "next/image"
+import Link from "next/link"
+import type { NextPage } from "next"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/admin/components/shadcn/ui/form"
+import { useForm } from "react-hook-form"
+import { Button } from "@/app/admin/components/shadcn/ui/button"
+import { Input } from "@/app/admin/components/shadcn/ui/input"
+import { FirebaseError } from "firebase/app"
+import { Lock } from "lucide-react"
+import BackToMainLink from "../../components/common/BackToMainLink"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/app/admin/components/shadcn/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/app/admin/components/shadcn/ui/form";
-import { useForm } from "react-hook-form";
-import { Button } from "@/app/admin/components/shadcn/ui/button";
-import { Input } from "@/app/admin/components/shadcn/ui/input";
-import { FirebaseError } from "firebase/app";
 
 type LoginForm = z.infer<typeof loginSchema>
 
@@ -36,24 +24,19 @@ const loginSchema = z.object({
 })
 
 const Page: NextPage = () => {
-
-  const router = useRouter();
+  const router = useRouter()
 
   async function onSubmit(values: LoginForm) {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        values.username,
-        values.password
-      );
-      console.log("ログイン成功:", userCredential.user);
-      router.push("/admin/dashboard"); // TODO: ログイン後の遷移先は条件分岐して決済ページ
+      const userCredential = await signInWithEmailAndPassword(auth, values.username, values.password)
+      console.log("ログイン成功:", userCredential.user)
+      router.push("/admin/dashboard") 
     } catch (error) {
-        if (error instanceof FirebaseError){
-          alert("ログイン失敗: " + error.message);
-        }else{
-          alert("不明なエラーが発生しました");
-        }
+      if (error instanceof FirebaseError) {
+        alert("ログイン失敗: " + error.message)
+      } else {
+        alert("不明なエラーが発生しました")
+      }
     }
   }
 
@@ -65,52 +48,80 @@ const Page: NextPage = () => {
   })
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <Card className="w-full max-w-md sm:max-w-lg md:max-w-xl">
-            <CardHeader>
-              <CardTitle>ログイン</CardTitle>
-              <CardDescription>
-                ユーザー名/パスワードによるログイン
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ユーザー名</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+    <div className="flex min-h-screen flex-col text-[#4a5568]">
+      <BackToMainLink />
+      <main className="flex-1 flex items-center justify-center py-12 bg-[#f0f5f8]">
+        <div className="mx-auto grid w-full max-w-md gap-6 px-4">
+          <div className="flex flex-col items-center space-y-2 text-center">
+            <div className="flex items-center justify-center">
+              <Image
+                src="/BinBuddy_Logo.png"
+                alt="BinBuddy Logo"
+                width={150}
+                height={60}
+                className="h-12 w-auto"
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>パスワード</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full">ログイン</Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </Form>
-    </div>
-  );
-};
+            </div>
+            <h1 className="text-2xl font-bold text-[#2d3748]">管理者ログイン</h1>
+            <p className="text-[#4a5568]">BinBuddy管理システムにアクセスするには、認証情報を入力してください。</p>
+          </div>
 
-export default Page;
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#2d3748]">ユーザー名</FormLabel>
+                      <FormControl>
+                        <Input placeholder="admin@binbuddy.jp" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#2d3748]">パスワード</FormLabel>
+                      <FormControl>
+                        <Input type="password" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full bg-[#78B9C6] hover:bg-[#6aaab7] text-white">
+                  <Lock className="mr-2 h-4 w-4" />
+                  ログイン
+                </Button>
+              </div>
+            </form>
+          </Form>
+
+          <div className="mt-4 text-center text-sm text-[#4a5568]">
+            <p>パスワードをお忘れの場合は、システム管理者にお問い合わせください。</p>
+            <p className="mt-2">
+              アカウントをお持ちでない場合は、
+              <Link href="/admin/register" className="text-[#78B9C6] hover:text-[#6aaab7] hover:underline">
+                新規登録
+              </Link>
+              してください。
+            </p>
+          </div>
+        </div>
+      </main>
+      <footer className="border-t py-4">
+        <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
+          <p className="text-center text-sm text-[#4a5568]">© 2025 BinBuddy株式会社. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+export default Page
