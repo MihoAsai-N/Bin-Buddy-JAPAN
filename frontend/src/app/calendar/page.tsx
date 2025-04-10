@@ -84,7 +84,7 @@ export default function CalendarPage() {
   const days = generateCalendarDays()
   const weekdays = ["S", "M", "T", "W", "T", "F", "S"]
 
-  // カメラ起動ボタンのクリックハンドラ
+  //カメラ起動ボタンのクリックハンドラ
   const handleCameraLaunch = () => {
     router.push("/scan")
   }
@@ -442,13 +442,13 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        <div className="bg-gray-200 p-6 flex flex-col items-center justify-center">
+        {/* <div className="bg-gray-200 p-6 flex flex-col items-center justify-center">
           <div className="text-gray-500 mb-4">{t("calendar.take.photo")}</div>
 
           <Button className="bg-purple-600 hover:bg-purple-700 text-white px-6 text-xs" onClick={handleCameraLaunch}>
             {t("calendar.launch.camera")}
           </Button>
-        </div>
+        </div> */}
 
         <div className="bg-gray-200 p-4">
           <div className="text-center mb-2 font-bold">{t("calendar.result")}</div>

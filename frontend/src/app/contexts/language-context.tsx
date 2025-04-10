@@ -90,7 +90,7 @@ const translations = {
     "common.copyright": "©Bin Buddy",
     "common.main": "メイン",
     "common.calendar": "カレンダー",
-    "common.scan": "スキャン",
+    "common.scan": "ゴミを調べる",
   },
   en: {
     // Navigation
@@ -170,7 +170,7 @@ const translations = {
     "common.copyright": "©Bin Buddy",
     "common.main": "Main",
     "common.calendar": "Calendar",
-    "common.scan": "Scan",
+    "common.scan": "Scan Trash",
   },
 }
 
