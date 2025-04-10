@@ -1,6 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, Optional  # Optional をインポート
 from google.cloud import vision
 import logging
 # データベース操作用のライブラリ (例: SQLAlchemy)
@@ -23,8 +23,8 @@ client = vision.ImageAnnotatorClient()
 class ClassifyResponse(BaseModel):
     """画像分類APIのレスポンスモデル"""
     predictions: Dict[str, float]
-    best_match_label: str | None  # Vision API の best match
-    trash_category: str | None    # データベースから検索したゴミの分類
+    best_match_label: Optional[str]  # Vision API の best match
+    trash_category: Optional[str]    # データベースから検索したゴミの分類
 
 # # データベースの接続情報 (実際の情報に置きかえる)
 # DATABASE_URL = "your_database_url"

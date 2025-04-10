@@ -10,8 +10,8 @@ export function NavLinks() {
   const { t } = useLanguage()
 
   const links = [
-    { href: "/", label: t("common.main"), icon: <Home className="h-5 w-5" /> },
-    { href: "/calendar", label: t("common.calendar"), icon: <Calendar className="h-5 w-5" /> },
+    // { href: "/", label: t("common.main"), icon: <Home className="h-5 w-5" /> },
+    // { href: "/calendar", label: t("common.calendar"), icon: <Calendar className="h-5 w-5" /> },
     { href: "/scan", label: t("common.scan"), icon: <Camera className="h-5 w-5" /> },
   ]
 
