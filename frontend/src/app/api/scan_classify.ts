@@ -5,7 +5,7 @@ type ClassifyResponse = {
   trash_category: string | null;
 };
 
-export async function POST(request: Request) {
+export async function addScanPost(request: Request) {
   try {
     const formData = await request.formData();
     const imageFile = formData.get('image_file') as File | null;
