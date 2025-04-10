@@ -161,7 +161,7 @@ export default function Register() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="例：yamada@city.shibuya.tokyo.jp"
+                      placeholder="例：mizui@city.shibuya.tokyo.jp"
                       value={formData.email}
                       onChange={handleChange}
                       required
