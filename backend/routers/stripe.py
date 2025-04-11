@@ -14,7 +14,7 @@ router = APIRouter()
 async def create_payment_intent():
     try:
         intent = stripe.PaymentIntent.create(
-            amount=2000,  # セント単位 (¥20)
+            amount=120000,  # セント単位 (¥20)
             currency="jpy",
             payment_method_types=["card"]
         )
