@@ -1,8 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from dotenv import load_dotenv
 
-from routers import classify 
+# 既存ルーターの読み込み
+from routers import classify, stripe
+
+# .envファイルの読み込み
+load_dotenv()
 
 app = FastAPI()
 
@@ -17,6 +22,8 @@ app.add_middleware(
 
 # ルーターをアプリケーションに含める
 app.include_router(classify.router)
+app.include_router(stripe.router)
+
 
 if __name__ == "__main__":
     import uvicorn

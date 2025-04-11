@@ -78,7 +78,7 @@ export default function Register() {
       <BackToMainLink />
       <main className="flex-1 flex items-center justify-center py-12 bg-[#f0f5f8]">
         <div className="mx-auto w-full max-w-2xl px-4">
-          <Card className="shadow-sm border-[#dbeaee]">
+          <Card className="bg-white shadow-sm border-[#dbeaee]">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
                 <Image
@@ -105,7 +105,7 @@ export default function Register() {
                       id="municipalityName"
                       name="municipalityName"
                       placeholder="例：東京都渋谷区"
-                      value={formData.municipalityName}
+                      value={formData.municipalityName ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -119,21 +119,7 @@ export default function Register() {
                       id="address"
                       name="address"
                       placeholder="例：環境政策部"
-                      value={formData.address}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">
-                      担当者名 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      placeholder="例：水井 花子"
-                      value={formData.phoneNumber}
+                      value={formData.address ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -141,13 +127,27 @@ export default function Register() {
 
                   <div className="space-y-2">
                     <Label htmlFor="contactPersonName">
-                      電話番号 <span className="text-red-500">*</span>
+                      担当者名 <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="contactPersonName"
                       name="contactPersonName"
+                      placeholder="例：水井 花子"
+                      value={formData.phoneNumber ?? ""}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phoneNumber">
+                      電話番号 <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="phoneNumber"
+                      name="phoneNumber"
                       placeholder="例：03-1234-5678"
-                      value={formData.contactPersonName}
+                      value={formData.contactPersonName ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -162,7 +162,7 @@ export default function Register() {
                       name="email"
                       type="email"
                       placeholder="例：mizui@city.shibuya.tokyo.jp"
-                      value={formData.email}
+                      value={formData.email ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -177,7 +177,7 @@ export default function Register() {
                         id="password"
                         name="password"
                         type="password"
-                        value={formData.password}
+                        value={formData.password ?? ""}
                         onChange={handleChange}
                         required
                       />
@@ -191,7 +191,7 @@ export default function Register() {
                         id="confirmPassword"
                         name="confirmPassword"
                         type="password"
-                        value={formData.confirmPassword}
+                        value={formData.confirmPassword ?? ""}
                         onChange={handleChange}
                         required
                       />
