@@ -99,11 +99,8 @@ const CheckoutForm = () => {
       } else if (result.paymentIntent?.status === "succeeded") {
         setIsSuccess(true);
         setMessage("支払いが完了しました！");
-
-        //自動リダイレクト処理
-        setTimeout(() => {
+        console.log("✅ 支払い成功：即時/admin/dashboard に遷移します") 
           router.push("/admin/dashboard");
-        }, 1200); // 1.2秒後にダッシュボードへ
       }
     } catch (error) {
       if (error instanceof Error) {
