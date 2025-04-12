@@ -1,8 +1,9 @@
+//calendar
 "use client"
 
 import { Navigation } from "../components/navigation"
 import { Button } from "../components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react" // useEffectを追加
 import { Edit } from "lucide-react"
 import { useLanguage } from "../contexts/language-context"
 import { useRouter } from "next/navigation"
@@ -11,9 +12,8 @@ import { Trash2, Recycle, AlertTriangle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Info } from "lucide-react"
-
-
-
+import { NavLinks } from "../components/nav-links"
+import ResultPage from "../result/page"
 
 // 曜日の数値を取得する関数（0: 日曜日, 1: 月曜日, ..., 6: 土曜日）
 const getDayOfWeek = (day: WeekDay): number => {
@@ -36,7 +36,7 @@ const getWeekdayFromNumber = (num: number): WeekDay => {
 }
 
 export default function CalendarPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date(2023, 7, 17)) // 8月17日
+  const [selectedDate, setSelectedDate] = useState(new Date()) // 現在の日付で初期化
   const { t, language } = useLanguage()
   const router = useRouter()
   const { region, getCollectionDays, getTrashTypesForWeekday } = useTrash()
@@ -57,8 +57,9 @@ export default function CalendarPage() {
     const dayOfWeek = firstDay.getDay()
 
     // 前月の日を追加
-    for (let i = 0; i < dayOfWeek; i++) {
-      days.push({ day: null, current: false, trashTypes: [] })
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    for (let i = dayOfWeek - 1; i >= 0; i--) {
+      days.push({ day: prevMonthLastDay - i, current: false, trashTypes: [] });
     }
 
     // 当月の日を追加
@@ -73,9 +74,15 @@ export default function CalendarPage() {
       days.push({
         day: i,
         current: true,
-        selected: i === selectedDate.getDate(),
+        selected: i === selectedDate.getDate() && selectedDate.getMonth() === month && selectedDate.getFullYear() === year,
         trashTypes: trashTypes,
       })
+    }
+
+    // 次月の日を追加
+    const remainingDays = 42 - days.length;
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push({ day: i, current: false, trashTypes: [] });
     }
 
     return days
@@ -442,14 +449,6 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* <div className="bg-gray-200 p-6 flex flex-col items-center justify-center">
-          <div className="text-gray-500 mb-4">{t("calendar.take.photo")}</div>
-
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white px-6 text-xs" onClick={handleCameraLaunch}>
-            {t("calendar.launch.camera")}
-          </Button>
-        </div> */}
-
         <div className="bg-gray-200 p-4">
           <div className="text-center mb-2 font-bold">{t("calendar.result")}</div>
           <div className="text-center mb-2">{formatDate(new Date(2023, 7, 8))}</div>
@@ -458,6 +457,8 @@ export default function CalendarPage() {
 
         <div className="text-xs text-gray-500 text-center mt-auto py-4">{t("common.copyright")}</div>
       </div>
+      <ResultPage/>
+      <NavLinks />
     </div>
   )
 }

@@ -13,9 +13,9 @@ export default function ScanPage() {
   const router = useRouter()
   const { setTrashResult } = useTrash()
 
-  const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false) // カメラプレビューの状態
+  const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false) // 初期値を false に設定
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false) // API分析の状態
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -28,49 +28,38 @@ export default function ScanPage() {
 
   let stream: MediaStream | null = null;
   const startCamera = async () => {
-
     try {
-      console.log("42");//TODO:最後消す
       stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       })
-      console.log("44");//TODO:最後消す
       if (videoRef.current) {
-        console.log("カメラストリームを取得しました", stream);
         videoRef.current.srcObject = stream;
-        
       }
     } catch (err) {
-      console.log("カメラの起動に失敗しました:", err);
       setError(t("scan.error.camera_failed"));
     }
   };
-  useEffect(() => {  
 
-    console.log("useEffect実行 - カメラ状態:", isCameraPreviewActive);
-    
+  const handleCancel = useCallback(() => {
+    router.push("/calendar")
+  }, [router]);
+
+  useEffect(() => {
+    setIsCameraPreviewActive(true); // コンポーネントのマウント時にカメラプレビューをアクティブにする
+
     if (isCameraPreviewActive) {
-      console.log("カメラを起動します");
       startCamera();
     } else if (stream) {
-      // カメラを停止
-      console.log("カメラを停止します");
       stream.getTracks().forEach((track) => track.stop());
       stream = null;
     }
 
-    // クリーンアップ関数
     return () => {
       if (stream) {
-        console.log("コンポーネントアンマウント - カメラを停止します");
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isCameraPreviewActive, language, t]);
-
-  const handleCancel = () => {
-    router.push("/calendar")
-  }
+  }, [isCameraPreviewActive, language, t, handleCancel]);
 
   const captureImage = () => {
     if (videoRef.current && canvasRef.current && !isAnalyzing) {
@@ -86,8 +75,7 @@ export default function ScanPage() {
         const imageDataUrl = canvas.toDataURL("image/png")
         setCapturedImage(imageDataUrl)
         setIsCameraPreviewActive(false)
-        
-        // カメラを明示的に停止
+
         if (video.srcObject) {
           const stream = video.srcObject as MediaStream;
           stream.getTracks().forEach(track => track.stop());
@@ -163,7 +151,7 @@ export default function ScanPage() {
         img.onerror = (error) => {
           console.error("画像のロードに失敗しました:", error);
           setError(t("scan.error.image_load_failed"));
-          setIsAnalyzing(false); // ここを修正: setIsProcessing -> setIsAnalyzing
+          setIsAnalyzing(false);
         };
         img.src = capturedImage;
       } catch (error) {
@@ -188,40 +176,16 @@ export default function ScanPage() {
           <div className="text-red-500 mb-4 text-center">{error}</div>
         )}
 
-        {!isCameraPreviewActive && !capturedImage && (
-          <>
-            <div className="text-center mb-8">{t("scan.take.photo")}</div>
-
-            <div className="relative">
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                <div
-                  className="w-24 h-24 border-4 border-red-500 rounded-full flex items-center justify-center cursor-pointer"
-                  onClick={() => {
-                    console.log("カメラを起動します");
-                    setIsCameraPreviewActive(true);
-                  }}
-                >
-                  <div className="w-20 h-20 bg-red-500 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            <Button variant="outline" className="mt-8" onClick={handleCancel}>
-              {t("scan.cancel")}
-            </Button>
-          </>
-        )}
-
         {isCameraPreviewActive && (
           <>
             <div className="relative w-full max-w-sm">
-              <video 
-                key={`video-${Date.now()}`} 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
+              <video
+                key={`video-${Date.now()}`}
+                ref={videoRef}
+                autoPlay
+                playsInline
                 muted
-                className="w-full rounded-lg border-2 border-gray-300" 
+                className="w-full rounded-lg border-2 border-gray-300"
               />
             </div>
 
