@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useEffect } from "react" 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/app/admin/components/shadcn/ui/button"
@@ -27,7 +28,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/admin/components/shadcn/ui/dropdown-menu"
-import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox"
 import { Bell, Calendar, ChevronDown, Edit, LogOut, MoreHorizontal, Plus, Settings, Trash2, User } from "lucide-react"
 
 // サンプルデータ
@@ -93,6 +93,12 @@ export default function DashboardPage() {
     day: "",
     garbageTypeId: "",
   })
+
+  useEffect(() => {
+    if (selectedTab === "settings") {
+      router.push("/admin/dashboard/settings")
+    }
+  }, [router, selectedTab])
 
   // 選択された地区に基づいてエリアをフィルタリング
   const filteredAreas = selectedDistrict ? AREAS.filter((area) => area.districtId === selectedDistrict) : []
@@ -618,110 +624,10 @@ export default function DashboardPage() {
               </Card>
             </div>
           )}
-
-          {selectedTab === "settings" && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-[#2d3748]">管理者設定</h2>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>自治体情報</CardTitle>
-                  <CardDescription>自治体の基本情報を確認・編集できます。</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="municipalityCode">地方公共団体コード</Label>
-                      <Input id="municipalityCode" defaultValue={ADMIN_INFO.municipalityCode} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="municipalityName">自治体名</Label>
-                      <Input id="municipalityName" defaultValue={ADMIN_INFO.municipalityName} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="furigana">フリガナ</Label>
-                      <Input id="furigana" defaultValue={ADMIN_INFO.furigana} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="postalCode">郵便番号</Label>
-                      <Input id="postalCode" defaultValue={ADMIN_INFO.postalCode} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="address">住所</Label>
-                      <Input id="address" defaultValue={ADMIN_INFO.address} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="department">担当部署</Label>
-                      <Input id="department" defaultValue={ADMIN_INFO.department} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPerson">担当者名</Label>
-                      <Input id="contactPerson" defaultValue={ADMIN_INFO.contactPerson} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phoneNumber">電話番号</Label>
-                      <Input id="phoneNumber" defaultValue={ADMIN_INFO.phoneNumber} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">メールアドレス</Label>
-                      <Input id="email" type="email" defaultValue={ADMIN_INFO.email} />
-                    </div>
-                    <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">変更を保存</Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>パスワード変更</CardTitle>
-                  <CardDescription>アカウントのパスワードを変更します。</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="current-password">現在のパスワード</Label>
-                      <Input id="current-password" type="password" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="new-password">新しいパスワード</Label>
-                      <Input id="new-password" type="password" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">新しいパスワード（確認）</Label>
-                      <Input id="confirm-password" type="password" />
-                    </div>
-                    <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">パスワードを変更</Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>通知設定</CardTitle>
-                  <CardDescription>システムからの通知設定を管理します。</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="email-notifications" defaultChecked />
-                      <Label htmlFor="email-notifications">メール通知を受け取る</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="schedule-updates" defaultChecked />
-                      <Label htmlFor="schedule-updates">スケジュール更新の通知</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="system-updates" defaultChecked />
-                      <Label htmlFor="system-updates">システム更新の通知</Label>
-                    </div>
-                    <Button className="mt-4 bg-[#78B9C6] hover:bg-[#6aaab7]">設定を保存</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
         </main>
       </div>
     </div>
   )
 }
+
+
