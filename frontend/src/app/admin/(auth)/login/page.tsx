@@ -63,7 +63,7 @@ const Page: NextPage = () => {
               />
             </div>
             <h1 className="text-2xl font-bold text-[#2d3748]">管理者ログイン</h1>
-            <p className="text-[#4a5568]">BinBuddy管理システムにアクセスするには、認証情報を入力してください。</p>
+            <p className="text-left text-[#4a5568]">BinBuddy管理システムにアクセスするには、認証情報を入力してください。</p>
           </div>
 
           <Form {...form}>
@@ -104,7 +104,7 @@ const Page: NextPage = () => {
           </Form>
 
           <div className="mt-4 text-center text-sm text-[#4a5568]">
-            <p>パスワードをお忘れの場合は、システム管理者にお問い合わせください。</p>
+            <p className="text-left">パスワードをお忘れの場合は、システム管理者にお問い合わせください。</p>
             <p className="mt-2">
               アカウントをお持ちでない場合は、
               <Link href="/admin/register" className="text-[#78B9C6] hover:text-[#6aaab7] hover:underline">
