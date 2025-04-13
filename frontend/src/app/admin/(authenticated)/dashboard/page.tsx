@@ -1,37 +1,46 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import useSWR from "swr"
-import { useRouter } from "next/navigation"
-import { Tabs, TabsList, TabsTrigger } from "@/app/admin/components/shadcn/ui/tabs"
-import { Calendar, Settings } from "lucide-react"
-import Sidebar from "@/app/admin/components/common/Sidebar"
-import AdminHeader from "@/app/admin/components/common/AdminHeader" // ✅ 追加
+import { useState, useEffect } from "react";
+import useSWR from "swr";
+import { useRouter } from "next/navigation";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@/app/admin/components/shadcn/ui/tabs";
+import { Calendar, Settings } from "lucide-react";
+import Sidebar from "@/app/admin/components/common/Sidebar";
+import AdminHeader from "@/app/admin/components/common/AdminHeader"; // ✅ 追加
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const [selectedTab, setSelectedTab] = useState("schedules")
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState("schedules");
 
-  const { data: adminInfo, error, isLoading } = useSWR("/api/admin-info", fetcher)
-  
+  const {
+    data: adminInfo,
+    error,
+    isLoading,
+  } = useSWR("/api/admin-info", fetcher);
+
   useEffect(() => {
     if (selectedTab === "settings") {
-      router.push("/admin/dashboard/settings")
+      router.push("/admin/dashboard/settings");
     } else if (selectedTab === "schedules") {
-      router.push("/admin/dashboard/schedules")
+      router.push("/admin/dashboard/schedules");
     }
-  }, [selectedTab, router])
+  }, [selectedTab, router]);
 
-if (isLoading) return <p className="p-6">読み込み中...</p>
-if (error || !adminInfo) return <p className="p-6 text-red-500">管理者情報の取得に失敗しました</p>
+  if (isLoading) return <p className="p-6">読み込み中...</p>;
+  if (error || !adminInfo)
+    return <p className="p-6 text-red-500">管理者情報の取得に失敗しました</p>;
 
-const handleLogout = () => {
-  if (confirm("ログアウトしてもよろしいですか？")) {
-    router.push("/admin/login")
-  }
-}
+  const handleLogout = () => {
+    if (confirm("ログアウトしてもよろしいですか？")) {
+      router.push("/admin/login");
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#f0f5f8] text-[#4a5568]">
@@ -61,5 +70,5 @@ const handleLogout = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
