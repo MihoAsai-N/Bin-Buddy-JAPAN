@@ -1,29 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import useSWR from "swr"
 import { useRouter } from "next/navigation"
 import { Tabs, TabsList, TabsTrigger } from "@/app/admin/components/shadcn/ui/tabs"
 import { Calendar, Settings } from "lucide-react"
 import Sidebar from "@/app/admin/components/common/Sidebar"
 import AdminHeader from "@/app/admin/components/common/AdminHeader" // ✅ 追加
 
-const ADMIN_INFO = {
-  municipalityCode: "01100",
-  municipalityName: "札幌市",
-  furigana: "サッポロシ",
-  postalCode: "060-8611",
-  address: "北海道札幌市中央区北1条西2丁目",
-  department: "環境局 環境事業部",
-  contactPerson: "水井 花子",
-  phoneNumber: "123-4567-89",
-  email: "admin@binbuddy.jp",
-  lastLogin: "2023-04-10 09:30",
-}
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export default function DashboardPage() {
   const router = useRouter()
   const [selectedTab, setSelectedTab] = useState("schedules")
 
+  const { data: adminInfo, error, isLoading } = useSWR("/api/admin-info", fetcher)
+  
   useEffect(() => {
     if (selectedTab === "settings") {
       router.push("/admin/dashboard/settings")
@@ -32,11 +24,14 @@ export default function DashboardPage() {
     }
   }, [selectedTab, router])
 
-  const handleLogout = () => {
-    if (confirm("ログアウトしてもよろしいですか？")) {
-      router.push("/admin/login")
-    }
+if (isLoading) return <p className="p-6">読み込み中...</p>
+if (error || !adminInfo) return <p className="p-6 text-red-500">管理者情報の取得に失敗しました</p>
+
+const handleLogout = () => {
+  if (confirm("ログアウトしてもよろしいですか？")) {
+    router.push("/admin/login")
   }
+}
 
   return (
     <div className="flex min-h-screen bg-[#f0f5f8] text-[#4a5568]">
@@ -44,7 +39,7 @@ export default function DashboardPage() {
 
       <div className="flex flex-1 flex-col">
         <AdminHeader
-          contactPerson={ADMIN_INFO.contactPerson}
+          contactPerson={adminInfo.contactPerson}
           onSettingsClick={() => setSelectedTab("settings")}
           onLogout={handleLogout}
         />
