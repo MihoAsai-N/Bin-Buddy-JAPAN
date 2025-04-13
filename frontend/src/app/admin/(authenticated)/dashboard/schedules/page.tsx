@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import useSWR from "swr"
 import { useRouter } from "next/navigation";
 import AdminHeader from "@/app/admin/components/common/AdminHeader";
 import Sidebar from "@/app/admin/components/common/Sidebar";
@@ -34,14 +35,6 @@ import {
 } from "@/app/admin/components/shadcn/ui/select";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 
-const DISTRICTS = [
-  { id: "1", name: "中央区" },
-  { id: "2", name: "北区" },
-  { id: "3", name: "東区" },
-  { id: "4", name: "白石区" },
-  { id: "5", name: "豊平区" },
-];
-
 const AREAS = [
   { id: "1", districtId: "1", name: "エリア①" },
   { id: "2", districtId: "1", name: "エリア②" },
@@ -67,7 +60,15 @@ const INITIAL_SCHEDULES = [
   { id: "5", districtId: "1", areaId: "2", day: "木曜日", garbageTypeId: "2" },
 ];
 
+
 export default function SchedulesPageWrapper() {
+  type District = { id: string; name: string }
+  
+  const fetcher = (url: string) => fetch(url).then(res => res.json())
+  const { 
+    data: districts, 
+  } = useSWR<District[]>("/api/districts", fetcher)
+
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("schedules");
   const [selectedDistrict, setSelectedDistrict] = useState<
@@ -87,7 +88,7 @@ export default function SchedulesPageWrapper() {
   const getGarbageTypeColor = (id: string) =>
     GARBAGE_TYPES.find((t) => t.id === id)?.color || "";
   const getDistrictName = (id: string) =>
-    DISTRICTS.find((d) => d.id === id)?.name || "";
+    districts?.find((d) => d.id === id)?.name || "";
   const getAreaName = (id: string) =>
     AREAS.find((a) => a.id === id)?.name || "";
 
@@ -142,7 +143,7 @@ export default function SchedulesPageWrapper() {
                       <SelectValue placeholder="地区を選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      {DISTRICTS.map((district) => (
+                      {districts?.map((district) => (
                         <SelectItem key={district.id} value={district.id}>
                           {district.name}
                         </SelectItem>
