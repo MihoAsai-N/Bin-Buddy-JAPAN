@@ -234,7 +234,7 @@ export default function PaymentPage() {
       {/* メインコンテンツ */}
       <main className="flex-1 flex items-center justify-center py-12">
         <div className="container max-w-md px-4">
-          <Card className="shadow-sm">
+          <Card className="shadow-sm bg-white">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
                 <Image
