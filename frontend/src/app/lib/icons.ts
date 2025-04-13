@@ -22,7 +22,7 @@ export const getTrashIcon = (category: string | null): JSX.Element => {
     case "Bottles":
       return React.createElement(LiaWineBottleSolid,  { style: { color: 'rgb(255,171,0)' } }); 
     case "Plastic":
-      return React.createElement(RiRecycleFill, { style: { color: 'rgb(103, 119, 139)' } }); 
+      return React.createElement(RiRecycleFill, { style: { color: 'rgb(9, 218, 84)' } }); 
       case "Paper":
         return React.createElement(FiPackage, { style: { color: 'rgba(185, 137, 32, 1)' } }); 
         case "Branches":

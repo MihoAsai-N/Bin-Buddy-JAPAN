@@ -216,7 +216,7 @@ export default function CalendarPage() {
                       <div
                         key={i}
                         className={`relative py-2 px-1 h-16 flex flex-col items-center justify-start border rounded-md ${
-                          day.selected ? "bg-blue-500 text-white" : ""
+                          day.selected ? "bg-[#78B9C6] text-white" : ""
                         } ${!day.current ? "text-gray-300 bg-gray-50" : ""}`}
                       >
                         <span className="text-lg mb-2">{day.day}</span>
@@ -354,7 +354,7 @@ export default function CalendarPage() {
                     <div
                       key={i}
                       className={`relative py-1 px-1 h-12 flex flex-col items-center justify-start border rounded-md ${
-                        day.selected ? "bg-blue-500 text-white" : ""
+                        day.selected ? "bg-[#78B9C6] text-white" : ""
                       } ${!day.current ? "text-gray-300 bg-gray-50" : ""}`}
                     >
                       <span className="text-sm mb-1">{day.day}</span>
@@ -520,8 +520,8 @@ export default function CalendarPage() {
               {days.map((day, i) => (
                 <div
                   key={i}
-                  className={`relative py-1 px-0 h-8 flex flex-col items-center justify-start ${
-                    day.selected ? "bg-blue-500 text-white rounded-full" : ""
+                  className={`relative py-2 px-0 mt-2 h-14 flex flex-col items-center text-lg font-semibold justify-start ${
+                    day.selected ? "bg-[#cbe8ed] rounded-full" : ""
                   } ${!day.current ? "text-gray-300" : ""}`}
                 >
                   <span className="mb-1">{day.day}</span>
