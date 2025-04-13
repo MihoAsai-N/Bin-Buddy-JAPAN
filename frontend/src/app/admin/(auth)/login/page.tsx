@@ -44,6 +44,7 @@ const Page: NextPage = () => {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
+      password: "",
     },
   })
 
