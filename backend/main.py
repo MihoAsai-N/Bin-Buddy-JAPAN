@@ -1,6 +1,8 @@
+"""FastAPI アプリケーションのエントリーポイント。CORS設定およびルーターを含む。"""
+
+# import os # 今は未使用
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
 from dotenv import load_dotenv
 
 # 既存ルーターの読み込み
