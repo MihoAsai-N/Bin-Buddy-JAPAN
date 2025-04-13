@@ -12,6 +12,7 @@ import { Label } from "../../components/shadcn/ui/label"
 import { ArrowLeft, CheckCircle } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/shadcn/ui/card"
 import BackToMainLink from "../../components/common/BackToMainLink"
+import { FirebaseError } from "firebase/app"
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -37,22 +38,28 @@ export default function Register() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // ここに登録ロジックを実装
-    createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
-    console.log("登録データ:", formData)
+    
+    if (formData.password !== formData.confirmPassword) {
+      alert("パスワードが一致しません")
+      return
+    }
+
+    try{
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+    const user = userCredential.user
+    console.log("登録成功:", user)
     setIsSubmitted(true)
+    }catch(error){
+      if(error instanceof FirebaseError){
+        console.error("登録エラー:", error.message)
+        alert("登録に失敗しました: " + error.message)
+      }else{
+        console.error("予期しないエラー:", error)
+        alert("予期しないエラーが発生しました")
+      }
+    }
   }
 
   if (isSubmitted) {
@@ -163,7 +170,7 @@ export default function Register() {
                     <Input
                       id="postalCode"
                       name="postalCode"
-                      placeholder="例：東京都渋谷区"
+                      placeholder="例：150-8010"
                       value={formData.postalCode ?? ""}
                       onChange={handleChange}
                       required
