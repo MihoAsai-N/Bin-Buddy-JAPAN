@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import useSWR from "swr"
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import AdminHeader from "@/app/admin/components/common/AdminHeader";
 import Sidebar from "@/app/admin/components/common/Sidebar";
@@ -35,39 +35,47 @@ import {
 } from "@/app/admin/components/shadcn/ui/select";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 
-const AREAS = [
-  { id: "1", districtId: "1", name: "エリア①" },
-  { id: "2", districtId: "1", name: "エリア②" },
-  { id: "3", districtId: "1", name: "エリア③" },
-  { id: "4", districtId: "2", name: "エリア①" },
-  { id: "5", districtId: "2", name: "エリア②" },
-];
-
-const GARBAGE_TYPES = [
-  { id: "1", name: "燃えるごみ", color: "bg-red-100 text-red-800" },
-  { id: "2", name: "燃えないごみ", color: "bg-blue-100 text-blue-800" },
-  { id: "3", name: "プラスチック", color: "bg-yellow-100 text-yellow-800" },
-  { id: "4", name: "ビン・缶", color: "bg-green-100 text-green-800" },
-  { id: "5", name: "ペットボトル", color: "bg-purple-100 text-purple-800" },
-  { id: "6", name: "古紙", color: "bg-gray-100 text-gray-800" },
-];
-
-const INITIAL_SCHEDULES = [
-  { id: "1", districtId: "1", areaId: "1", day: "月曜日", garbageTypeId: "1" },
-  { id: "2", districtId: "1", areaId: "1", day: "水曜日", garbageTypeId: "3" },
-  { id: "3", districtId: "1", areaId: "1", day: "金曜日", garbageTypeId: "4" },
-  { id: "4", districtId: "1", areaId: "2", day: "火曜日", garbageTypeId: "1" },
-  { id: "5", districtId: "1", areaId: "2", day: "木曜日", garbageTypeId: "2" },
-];
-
-
 export default function SchedulesPageWrapper() {
-  type District = { id: string; name: string }
-  
-  const fetcher = (url: string) => fetch(url).then(res => res.json())
-  const { 
-    data: districts, 
-  } = useSWR<District[]>("/api/districts", fetcher)
+  type District = { id: string; name: string };
+  type Area = { id: string; districtId: string; name: string };
+  type GarbageType = { id: string; name: string; color: string };
+  type Schedule = {
+    id: string;
+    districtId: string;
+    areaId: string;
+    day: string;
+    garbageTypeId: string;
+  };
+  type AdminInfo = {
+    municipalityCode: string;
+    municipalityName: string;
+    furigana: string;
+    postalCode: string;
+    address: string;
+    department: string;
+    contactPerson: string;
+    phoneNumber: string;
+    email: string;
+    lastLogin: string;
+  };
+
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+  const { data: districts } = useSWR<District[]>("/api/districts", fetcher);
+
+  const { data: areas } = useSWR<Area[]>("/api/areas", fetcher);
+
+  const { data: garbageTypes } = useSWR<GarbageType[]>(
+    "/api/garbage-types",
+    fetcher
+  );
+
+  const { data: schedules = [] } = useSWR<Schedule[]>(
+    "/api/schedules",
+    fetcher
+  );
+
+  const { data: adminInfo } = useSWR<AdminInfo>("/api/admin-info", fetcher);
 
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("schedules");
@@ -75,8 +83,6 @@ export default function SchedulesPageWrapper() {
     string | undefined
   >();
   const [selectedArea, setSelectedArea] = useState<string | undefined>();
-  const [schedules] = useState(INITIAL_SCHEDULES);
-
   const filteredSchedules = schedules.filter(
     (schedule) =>
       (!selectedDistrict || schedule.districtId === selectedDistrict) &&
@@ -84,13 +90,13 @@ export default function SchedulesPageWrapper() {
   );
 
   const getGarbageTypeName = (id: string) =>
-    GARBAGE_TYPES.find((t) => t.id === id)?.name || "";
+    garbageTypes?.find((t) => t.id === id)?.name || "";
   const getGarbageTypeColor = (id: string) =>
-    GARBAGE_TYPES.find((t) => t.id === id)?.color || "";
+    garbageTypes?.find((t) => t.id === id)?.color || "";
   const getDistrictName = (id: string) =>
     districts?.find((d) => d.id === id)?.name || "";
   const getAreaName = (id: string) =>
-    AREAS.find((a) => a.id === id)?.name || "";
+    areas?.find((a) => a.id === id)?.name || "";
 
   const handleLogout = () => {
     if (confirm("ログアウトしてもよろしいですか？")) {
@@ -103,7 +109,7 @@ export default function SchedulesPageWrapper() {
       <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
       <div className="flex flex-1 flex-col">
         <AdminHeader
-          contactPerson="水井 花子"
+          contactPerson={adminInfo?.contactPerson ?? ""}
           onSettingsClick={() => setSelectedTab("settings")}
           onLogout={handleLogout}
         />
@@ -162,13 +168,13 @@ export default function SchedulesPageWrapper() {
                       <SelectValue placeholder="エリアを選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      {AREAS.filter(
-                        (a) => a.districtId === selectedDistrict
-                      ).map((area) => (
-                        <SelectItem key={area.id} value={area.id}>
-                          {area.name}
-                        </SelectItem>
-                      ))}
+                      {areas
+                        ?.filter((a) => a.districtId === selectedDistrict)
+                        .map((area) => (
+                          <SelectItem key={area.id} value={area.id}>
+                            {area.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
