@@ -38,7 +38,7 @@ export default function RootLayout({
                   <SideNavigation />
                   <main className="flex-1 flex justify-center pb-14 lg:pb-0">
                     <div className="w-full bg-white shadow-md">{children}</div>
-                    <NavLinks />
+                    {/* <NavLinks /> */}
                   </main>
                 </div>
               </VisionProvider>

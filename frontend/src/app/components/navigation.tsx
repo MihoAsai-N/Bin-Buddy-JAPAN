@@ -20,8 +20,8 @@ export function Navigation({ title }: { title?: string }) {
       <Image
     src="/homeicon.png"
     alt="bin"
-    width={200}
-    height={200}
+    width={170}
+    height={160}
     className="mr-2"
   />
   </Link>

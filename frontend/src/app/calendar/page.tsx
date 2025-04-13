@@ -30,7 +30,11 @@ import { NavLinks } from "../components/nav-links";
 import { VisionResult } from "../components/VisionResult";
 import { getTrashIcon as getExternalTrashIcon } from "../lib/icons";
 import Legend from "../components/Legend";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import { FaTrashAlt } from "react-icons/fa";
 
 // 曜日の数値を取得する関数（0: 日曜日, 1: 月曜日, ..., 6: 土曜日）
@@ -493,16 +497,16 @@ export default function CalendarPage() {
                     selectedDate
                   )} ${selectedDate.getFullYear()}`}
             </div>
-                  <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button>
-          <FaTrashAlt className="h-3 w-3" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="bg-white">
-          <Legend />
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <FaTrashAlt className="h-4 w-4 mb-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white">
+                <Legend />
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <TooltipProvider>
@@ -548,8 +552,9 @@ export default function CalendarPage() {
           <VisionResult />
         </div>
       </div>
-
-      <NavLinks />
+      <div>
+        <NavLinks />
+      </div>
     </div>
   );
 }

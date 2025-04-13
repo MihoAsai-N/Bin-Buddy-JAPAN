@@ -7,89 +7,79 @@ import { useRouter } from "next/navigation"
 import React, { useState, useRef, useEffect, useCallback } from "react"
 import { useTrash, type TrashType } from "../contexts/trash-context"
 import { useVision } from "../contexts/vision-context";
+import { StopScan } from "../components/StopScan"
+import { Camera } from "react-icons/fi";
+import { RiCameraLensAiLine } from "react-icons/ri";
+import { RiCameraLensFill } from "react-icons/ri";
 
 export default function ScanPage() {
   const { t: originalT, language } = useLanguage();
   const t = useCallback((key: string) => originalT(key), [originalT]);
-  const router = useRouter()
-  const { setTrashResult } = useTzzrash()
-  const { setVisionData } = useVision(); 
+  const router = useRouter();
+  const { setTrashResult } = useTrash();
+  const { setVisionData } = useVision();
 
-  const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false) // 初期値を false に設定
-  const [capturedImage, setCapturedImage] = useState<string | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null); // useRef でストリームを管理
 
   interface ClassifyResponse {
     predictions: { [key: string]: number };
     best_match: string | null;
   }
 
-  let stream: MediaStream | null = null;
-  const startCamera = async () => {
+  const startCamera = async () => { // useEffect の外で定義
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
+      streamRef.current = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
-      })
+      });
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.srcObject = streamRef.current;
       }
     } catch (err) {
       setError(t("scan.error.camera_failed"));
     }
   };
 
-  const handleCancel = useCallback(() => {
-    router.push("/calendar")
-  }, [router]);
-
   useEffect(() => {
-    setIsCameraPreviewActive(true); // コンポーネントのマウント時にカメラプレビューをアクティブにする
-
-    if (isCameraPreviewActive) {
-      startCamera();
-    } else if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      stream = null;
-    }
+    setIsCameraPreviewActive(true);
+    startCamera();
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [language, t, handleCancel]);
+  }, [language, t]);
 
   const captureImage = () => {
     if (videoRef.current && canvasRef.current && !isAnalyzing) {
-      const video = videoRef.current
-      const canvas = canvasRef.current
-      const context = canvas.getContext("2d")
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
 
       if (context) {
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageDataUrl = canvas.toDataURL("image/png")
-        setCapturedImage(imageDataUrl)
-        setIsCameraPreviewActive(false)
+        const imageDataUrl = canvas.toDataURL("image/png");
+        setCapturedImage(imageDataUrl);
+        setIsCameraPreviewActive(false);
 
-        if (stream) { // streamが存在する場合のみ停止処理を行う
-          stream.getTracks().forEach(track => track.stop());
-          stream = null;
-        }
-        if (video.srcObject) {
-          const stream = video.srcObject as MediaStream;
-          stream.getTracks().forEach(track => track.stop());
-          video.srcObject = null;
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current = null;
+          videoRef.current.srcObject = null; //videoRef.current.srcObjectもnullにする。
         }
       }
     }
-  }
+  };
 
   const retakeImage = () => {
     setCapturedImage(null)
@@ -197,13 +187,15 @@ export default function ScanPage() {
               />
             </div>
 
-            <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={captureImage}>
+            {/* <Button className="bg-red-500 hover:bg-red-600 text-white rounded-full w-20 h-20" onClick={captureImage}>
               {t("scan.take.picture")}
-            </Button>
-
-            <Button variant="outline" onClick={handleCancel}>
-              {t("scan.cancel")}
-            </Button>
+            </Button> */}
+            <Button
+  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-19 h-19 flex items-center justify-center"
+  onClick={captureImage}
+>
+  <RiCameraLensFill   className="w-8 h-12" />
+</Button>
           </>
         )}
 
@@ -219,7 +211,7 @@ export default function ScanPage() {
               </Button>
 
               <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+                className="bg-gray-500 hover:bg-gray-700 text-white"
                 onClick={analyzeImage}
                 disabled={isAnalyzing}
               >
@@ -231,8 +223,10 @@ export default function ScanPage() {
 
         <canvas ref={canvasRef} className="hidden" />
 
-        <div className="text-xs text-gray-500 text-center mt-auto">{t("common.copyright")}</div>
+        <div className="text-xs text-[#2d3748] text-center mt-auto">{t("common.copyright")}</div>
       </div>
+
+<StopScan/>
     </div>
   );
 }
