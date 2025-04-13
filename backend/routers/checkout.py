@@ -1,3 +1,5 @@
+"""Stripe決済用のエンドポイント定義。支払いインテントの作成とWebhookの処理を行う。"""
+
 import os
 from fastapi import APIRouter, HTTPException, Request
 import stripe
