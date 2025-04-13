@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import useSWR from "swr"
 import { useRouter } from "next/navigation"
 import AdminHeader from "@/app/admin/components/common/AdminHeader"
 import Sidebar from "@/app/admin/components/common/Sidebar"
@@ -18,18 +19,7 @@ import { Input } from "@/app/admin/components/shadcn/ui/input"
 import { Label } from "@/app/admin/components/shadcn/ui/label"
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox"
 
-const ADMIN_INFO = {
-  municipalityCode: "01100",
-  municipalityName: "札幌市",
-  furigana: "サッポロシ",
-  postalCode: "060-8611",
-  address: "北海道札幌市中央区北1条西2丁目",
-  department: "環境局 環境事業部",
-  contactPerson: "水井 花子",
-  phoneNumber: "123-4567-89",
-  email: "admin@binbuddy.jp",
-  lastLogin: "2023-04-10 09:30",
-}
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -41,13 +31,18 @@ export default function SettingsPage() {
     }
   }
 
+  const { data: adminInfo, error, isLoading } = useSWR("/api/admin-info", fetcher)
+
+if (isLoading) return <p className="p-6">読み込み中...</p>
+if (error) return <p className="p-6 text-red-500">データの取得に失敗しました。</p>
+
   return (
     <div className="flex min-h-screen bg-[#f0f5f8] text-[#4a5568]">
       <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
       <div className="flex flex-1 flex-col">
         <AdminHeader
-          contactPerson={ADMIN_INFO.contactPerson}
+          contactPerson={adminInfo.contactPerson}
           onSettingsClick={() => setSelectedTab("settings")}
           onLogout={handleLogout}
         />
@@ -81,15 +76,15 @@ export default function SettingsPage() {
             <CardContent>
               <div className="space-y-6">
                 {[
-                  { id: "municipalityCode", label: "地方公共団体コード", value: ADMIN_INFO.municipalityCode },
-                  { id: "municipalityName", label: "自治体名", value: ADMIN_INFO.municipalityName },
-                  { id: "furigana", label: "フリガナ", value: ADMIN_INFO.furigana },
-                  { id: "postalCode", label: "郵便番号", value: ADMIN_INFO.postalCode },
-                  { id: "address", label: "住所", value: ADMIN_INFO.address },
-                  { id: "department", label: "担当部署", value: ADMIN_INFO.department },
-                  { id: "contactPerson", label: "担当者名", value: ADMIN_INFO.contactPerson },
-                  { id: "phoneNumber", label: "電話番号", value: ADMIN_INFO.phoneNumber },
-                  { id: "email", label: "メールアドレス", value: ADMIN_INFO.email, type: "email" },
+                  { id: "municipalityCode", label: "地方公共団体コード", value: adminInfo.municipalityCode },
+                  { id: "municipalityName", label: "自治体名", value: adminInfo.municipalityName },
+                  { id: "furigana", label: "フリガナ", value: adminInfo.furigana },
+                  { id: "postalCode", label: "郵便番号", value: adminInfo.postalCode },
+                  { id: "address", label: "住所", value: adminInfo.address },
+                  { id: "department", label: "担当部署", value: adminInfo.department },
+                  { id: "contactPerson", label: "担当者名", value: adminInfo.contactPerson },
+                  { id: "phoneNumber", label: "電話番号", value: adminInfo.phoneNumber },
+                  { id: "email", label: "メールアドレス", value: adminInfo.email, type: "email" },
                 ].map(({ id, label, value, type = "text" }) => (
                   <div key={id} className="space-y-2">
                     <Label htmlFor={id}>{label}</Label>
