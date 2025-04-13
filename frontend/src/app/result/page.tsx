@@ -1,5 +1,5 @@
 "use client";
-
+import React from 'react';
 import { Navigation } from "../components/navigation";
 import { useLanguage } from "../contexts/language-context";
 import { Button } from "../components/ui/button";

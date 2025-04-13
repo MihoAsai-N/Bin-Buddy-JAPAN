@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react';
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useLanguage } from "../contexts/language-context"

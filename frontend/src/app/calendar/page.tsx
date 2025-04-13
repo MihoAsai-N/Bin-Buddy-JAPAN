@@ -1,19 +1,37 @@
 //calendar
-"use client"
+"use client";
 
-import { Navigation } from "../components/navigation"
-import { Button } from "../components/ui/button"
-import { useState, useEffect } from "react" // useEffectを追加
-import { Edit } from "lucide-react"
-import { useLanguage } from "../contexts/language-context"
-import { useRouter } from "next/navigation"
-import { useTrash, type TrashType, type WeekDay } from "../contexts/trash-context"
-import { Trash2, Recycle, AlertTriangle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Info } from "lucide-react"
-import { NavLinks } from "../components/nav-links"
-import ResultPage from "../result/page"
+import React from "react";
+import { Navigation } from "../components/navigation";
+import { Button } from "../components/ui/button";
+import { useState, useEffect } from "react"; // useEffectを追加
+import { Edit } from "lucide-react";
+import { useLanguage } from "../contexts/language-context";
+import { useRouter } from "next/navigation";
+import {
+  useTrash,
+  type TrashType,
+  type WeekDay,
+} from "../contexts/trash-context";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../components/ui/tooltip";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Info } from "lucide-react";
+import { NavLinks } from "../components/nav-links";
+import { VisionResult } from "../components/VisionResult";
+import { getTrashIcon as getExternalTrashIcon } from "../lib/icons";
+import Legend from "../components/Legend";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
+import { FaTrashAlt } from "react-icons/fa";
 
 // 曜日の数値を取得する関数（0: 日曜日, 1: 月曜日, ..., 6: 土曜日）
 const getDayOfWeek = (day: WeekDay): number => {
@@ -25,36 +43,53 @@ const getDayOfWeek = (day: WeekDay): number => {
     thursday: 4,
     friday: 5,
     saturday: 6,
-  }
-  return days[day]
-}
+  };
+  return days[day];
+};
 
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
-  const weekdays: WeekDay[] = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-  return weekdays[num]
-}
+  const weekdays: WeekDay[] = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  return weekdays[num];
+};
 
 export default function CalendarPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date()) // 現在の日付で初期化
-  const { t, language } = useLanguage()
-  const router = useRouter()
-  const { region, getCollectionDays, getTrashTypesForWeekday } = useTrash()
+  const [selectedDate, setSelectedDate] = useState(new Date()); // 現在の日付で初期化
+  const { t, language } = useLanguage();
+  const router = useRouter();
+  const { region, getCollectionDays, getTrashTypesForWeekday } = useTrash();
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   // 月の最初の日と最後の日を取得
-  const firstDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
-  const lastDayOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0)
+  const firstDayOfMonth = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    1
+  );
+  const lastDayOfMonth = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth() + 1,
+    0
+  );
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
-    const year = selectedDate.getFullYear()
-    const month = selectedDate.getMonth()
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
 
-    const firstDay = new Date(year, month, 1)
-    const lastDay = new Date(year, month + 1, 0)
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
 
-    const days = []
-    const dayOfWeek = firstDay.getDay()
+    const days = [];
+    const dayOfWeek = firstDay.getDay();
 
     // 前月の日を追加
     const prevMonthLastDay = new Date(year, month, 0).getDate();
@@ -64,19 +99,22 @@ export default function CalendarPage() {
 
     // 当月の日を追加
     for (let i = 1; i <= lastDay.getDate(); i++) {
-      const date = new Date(year, month, i)
-      const dayOfWeek = date.getDay()
+      const date = new Date(year, month, i);
+      const dayOfWeek = date.getDay();
 
       // この日に収集されるゴミの種類を取得
-      const weekday = getWeekdayFromNumber(dayOfWeek)
-      const trashTypes = getTrashTypesForWeekday(weekday)
+      const weekday = getWeekdayFromNumber(dayOfWeek);
+      const trashTypes = getTrashTypesForWeekday(weekday);
 
       days.push({
         day: i,
         current: true,
-        selected: i === selectedDate.getDate() && selectedDate.getMonth() === month && selectedDate.getFullYear() === year,
+        selected:
+          i === selectedDate.getDate() &&
+          selectedDate.getMonth() === month &&
+          selectedDate.getFullYear() === year,
         trashTypes: trashTypes,
-      })
+      });
     }
 
     // 次月の日を追加
@@ -85,51 +123,58 @@ export default function CalendarPage() {
       days.push({ day: i, current: false, trashTypes: [] });
     }
 
-    return days
-  }
+    return days;
+  };
 
-  const days = generateCalendarDays()
-  const weekdays = ["S", "M", "T", "W", "T", "F", "S"]
+  const days = generateCalendarDays();
+  const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
 
   //カメラ起動ボタンのクリックハンドラ
   const handleCameraLaunch = () => {
-    router.push("/scan")
-  }
+    router.push("/scan");
+  };
 
   // 日付のフォーマット
   const formatDate = (date: Date) => {
     if (language === "ja") {
-      return `${date.getFullYear()}年${(date.getMonth() + 1).toString().padStart(2, "0")}月${date.getDate().toString().padStart(2, "0")}日`
+      return `${date.getFullYear()}年${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}月${date.getDate().toString().padStart(2, "0")}日`;
     } else {
       return new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
-      }).format(date)
+      }).format(date);
     }
-  }
+  };
 
-  // ゴミの種類に応じたアイコンを取得
   const getTrashIcon = (trashType: TrashType) => {
     switch (trashType) {
-      case "burnable":
-        return <Trash2 className="h-3 w-3 md:h-3.5 md:h-3.5 lg:h-4 lg:w-4 text-orange-500" />
-      case "non-burnable":
-        return <Trash2 className="h-3 w-3 md:h-3.5 md:h-3.5 lg:h-4 lg:w-4 text-blue-500" />
-      case "recyclable":
-        return <Recycle className="h-3 w-3 md:h-3.5 md:h-3.5 lg:h-4 lg:w-4 text-green-500" />
-      case "hazardous":
-        return <AlertTriangle className="h-3 w-3 md:h-3.5 md:h-3.5 lg:h-4 lg:w-4 text-red-500" />
+      case "Combustible":
+        return getExternalTrashIcon("Combustible");
+      case "Non-Combustible":
+        return getExternalTrashIcon("Non-Combustible");
+      case "Bottles":
+        return getExternalTrashIcon("Bottles");
+      case "Plastic":
+        return getExternalTrashIcon("Plastic");
+      case "Paper":
+        return getExternalTrashIcon("Paper");
+      case "Branches":
+        return getExternalTrashIcon("Branches");
       default:
-        return null
+        return getExternalTrashIcon("Not Collected");
     }
-  }
+  };
 
   // ゴミの種類の名前を取得
   const getTrashName = (trashType: TrashType) => {
-    return t(`result.${trashType}`)
-  }
-
+    return t(`result.${trashType}`);
+  };
+  const toggleLegend = () => {
+    setIsLegendOpen(!isLegendOpen);
+  };
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
@@ -143,8 +188,12 @@ export default function CalendarPage() {
               <CardHeader className="flex flex-row items-center justify-between px-6">
                 <CardTitle>
                   {language === "ja"
-                    ? `${selectedDate.getFullYear()}年 ${selectedDate.getMonth() + 1}月`
-                    : `${new Intl.DateTimeFormat("en-US", { month: "long" }).format(selectedDate)} ${selectedDate.getFullYear()}`}
+                    ? `${selectedDate.getFullYear()}年 ${
+                        selectedDate.getMonth() + 1
+                      }月`
+                    : `${new Intl.DateTimeFormat("en-US", {
+                        month: "long",
+                      }).format(selectedDate)} ${selectedDate.getFullYear()}`}
                 </CardTitle>
                 <Button variant="ghost" size="icon">
                   <Edit className="h-4 w-4" />
@@ -168,20 +217,24 @@ export default function CalendarPage() {
                       >
                         <span className="text-lg mb-2">{day.day}</span>
 
-                        {day.current && day.trashTypes && day.trashTypes.length > 0 && (
-                          <div className="flex justify-center space-x-1 mt-auto">
-                            {day.trashTypes.map((trashType, index) => (
-                              <Tooltip key={index}>
-                                <TooltipTrigger asChild>
-                                  <div className="p-1 rounded-full bg-white">{getTrashIcon(trashType)}</div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{getTrashName(trashType)}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            ))}
-                          </div>
-                        )}
+                        {day.current &&
+                          day.trashTypes &&
+                          day.trashTypes.length > 0 && (
+                            <div className="flex justify-center space-x-1 mt-auto">
+                              {day.trashTypes.map((trashType, index) => (
+                                <Tooltip key={index}>
+                                  <TooltipTrigger asChild>
+                                    <div className="p-1 rounded-full bg-white">
+                                      {getTrashIcon(trashType)}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{getTrashName(trashType)}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ))}
+                            </div>
+                          )}
                       </div>
                     ))}
                   </div>
@@ -190,25 +243,37 @@ export default function CalendarPage() {
                 {/* カレンダーの凡例 */}
                 <div className="mt-6 pt-4 border-t">
                   <div className="text-sm font-medium mb-2">
-                    {language === "ja" ? "ゴミ収集日の凡例:" : "Trash Collection Legend:"}
+                    {language === "ja"
+                      ? "ゴミ収集日の凡例:"
+                      : "Trash Collection Legend:"}
                   </div>
-                  <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center">
-                      <Trash2 className="h-4 w-4 text-orange-500 mr-2" />
-                      <span>{t("result.burnable")}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Trash2 className="h-4 w-4 text-blue-500 mr-2" />
-                      <span>{t("result.non.burnable")}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Recycle className="h-4 w-4 text-green-500 mr-2" />
-                      <span>{t("result.recyclable")}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <AlertTriangle className="h-4 w-4 text-red-500 mr-2" />
-                      <span>{t("result.hazardous")}</span>
-                    </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Combustible")}
+                    <span>{t("result.Combustible")}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Non-Combustible")}
+                    <span>{t("result.non.Combustible")}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Plastic")}
+                    <span>{t("result.Plastic")}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Bottles")}
+                    <span>{t("result.Bottles")}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Paper")}
+                    <span>{t("result.Paper")}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Branches")}
+                    <span>{t("result.Branches")}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {getTrashIcon("Not Collected")}
+                    <span>{t("result.Not")}</span>
                   </div>
                 </div>
               </CardContent>
@@ -222,7 +287,10 @@ export default function CalendarPage() {
                 <CardTitle>{t("calendar.take.photo")}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full" onClick={handleCameraLaunch}>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                  onClick={handleCameraLaunch}
+                >
                   {t("calendar.launch.camera")}
                 </Button>
               </CardContent>
@@ -233,8 +301,12 @@ export default function CalendarPage() {
                 <CardTitle>{t("calendar.result")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center mb-4">{formatDate(new Date(2023, 7, 8))}</div>
-                <div className="text-center font-medium">{t("calendar.trash.type")}</div>
+                <div className="text-center mb-4">
+                  {formatDate(new Date(2023, 7, 8))}
+                </div>
+                <div className="text-center font-medium">
+                  {t("calendar.trash.type")}
+                </div>
               </CardContent>
             </Card>
 
@@ -254,8 +326,12 @@ export default function CalendarPage() {
             <CardHeader className="flex flex-row items-center justify-between px-6">
               <CardTitle>
                 {language === "ja"
-                  ? `${selectedDate.getFullYear()}年 ${selectedDate.getMonth() + 1}月`
-                  : `${new Intl.DateTimeFormat("en-US", { month: "long" }).format(selectedDate)} ${selectedDate.getFullYear()}`}
+                  ? `${selectedDate.getFullYear()}年 ${
+                      selectedDate.getMonth() + 1
+                    }月`
+                  : `${new Intl.DateTimeFormat("en-US", {
+                      month: "long",
+                    }).format(selectedDate)} ${selectedDate.getFullYear()}`}
               </CardTitle>
               <Button variant="ghost" size="icon">
                 <Edit className="h-4 w-4" />
@@ -279,20 +355,24 @@ export default function CalendarPage() {
                     >
                       <span className="text-sm mb-1">{day.day}</span>
 
-                      {day.current && day.trashTypes && day.trashTypes.length > 0 && (
-                        <div className="flex justify-center space-x-0.5 mt-auto">
-                          {day.trashTypes.map((trashType, index) => (
-                            <Tooltip key={index}>
-                              <TooltipTrigger asChild>
-                                <div className="p-0.5 rounded-full bg-white">{getTrashIcon(trashType)}</div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{getTrashName(trashType)}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          ))}
-                        </div>
-                      )}
+                      {day.current &&
+                        day.trashTypes &&
+                        day.trashTypes.length > 0 && (
+                          <div className="flex justify-center space-x-0.5 mt-auto">
+                            {day.trashTypes.map((trashType, index) => (
+                              <Tooltip key={index}>
+                                <TooltipTrigger asChild>
+                                  <div className="p-0.5 rounded-full bg-white">
+                                    {getTrashIcon(trashType)}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{getTrashName(trashType)}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   ))}
                 </div>
@@ -301,25 +381,37 @@ export default function CalendarPage() {
               {/* カレンダーの凡例 */}
               <div className="mt-4 pt-3 border-t">
                 <div className="text-sm font-medium mb-2">
-                  {language === "ja" ? "ゴミ収集日の凡例:" : "Trash Collection Legend:"}
+                  {language === "ja"
+                    ? "ゴミ収集日の凡例:"
+                    : "Trash Collection Legend:"}
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  <div className="flex items-center">
-                    <Trash2 className="h-3.5 w-3.5 text-orange-500 mr-1.5" />
-                    <span className="text-sm">{t("result.burnable")}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Trash2 className="h-3.5 w-3.5 text-blue-500 mr-1.5" />
-                    <span className="text-sm">{t("result.non.burnable")}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Recycle className="h-3.5 w-3.5 text-green-500 mr-1.5" />
-                    <span className="text-sm">{t("result.recyclable")}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <AlertTriangle className="h-3.5 w-3.5 text-red-500 mr-1.5" />
-                    <span className="text-sm">{t("result.hazardous")}</span>
-                  </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Combustible")}
+                  <span>{t("result.Combustible")}</span>
+                </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Non-Combustible")}
+                  <span>{t("result.non.Combustible")}</span>
+                </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Plastic")}
+                  <span>{t("result.Plastic")}</span>
+                </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Bottles")}
+                  <span>{t("result.Bottles")}</span>
+                </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Paper")}
+                  <span>{t("result.Paper")}</span>
+                </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Branches")}
+                  <span>{t("result.Branches")}</span>
+                </div>
+                <div className="flex items-center">
+                  {getTrashIcon("Not Collected")}
+                  <span>{t("result.Not")}</span>
                 </div>
               </div>
             </CardContent>
@@ -333,7 +425,10 @@ export default function CalendarPage() {
                   <CardTitle>{t("calendar.take.photo")}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full" onClick={handleCameraLaunch}>
+                  <Button
+                    className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                    onClick={handleCameraLaunch}
+                  >
                     {t("calendar.launch.camera")}
                   </Button>
                 </CardContent>
@@ -346,8 +441,12 @@ export default function CalendarPage() {
                   <CardTitle>{t("calendar.result")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center mb-2">{formatDate(new Date(2023, 7, 8))}</div>
-                  <div className="text-center font-medium">{t("calendar.trash.type")}</div>
+                  <div className="text-center mb-2">
+                    {formatDate(new Date(2023, 7, 8))}
+                  </div>
+                  <div className="text-center font-medium">
+                    {t("calendar.trash.type")}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -363,8 +462,10 @@ export default function CalendarPage() {
       {/* モバイル版のレイアウト */}
       <div className="md:hidden flex-1 flex flex-col space-y-4">
         <div className="bg-white p-4">
-          <div className="flex justify-between items-center mb-2">
-            <div className="text-xs text-gray-500">{t("calendar.select.date")}</div>
+          {/* <div className="flex justify-between items-center mb-2">
+            <div className="text-xs text-gray-500">
+              {t("calendar.select.date")}
+            </div>
             <div className="text-xs text-orange-500 border border-orange-500 rounded-full px-2 py-0.5">
               {t("calendar.calendar")}
             </div>
@@ -374,17 +475,34 @@ export default function CalendarPage() {
             <div className="font-bold">
               {language === "ja"
                 ? `${selectedDate.getMonth() + 1}月 ${selectedDate.getDate()}日`
-                : `${new Intl.DateTimeFormat("en-US", { month: "short" }).format(selectedDate)} ${selectedDate.getDate()}`}
+                : `${new Intl.DateTimeFormat("en-US", {
+                    month: "short",
+                  }).format(selectedDate)} ${selectedDate.getDate()}`}
             </div>
             <Button variant="ghost" size="icon" className="h-6 w-6">
               <Edit className="h-4 w-4" />
             </Button>
-          </div>
-
-          <div className="text-xs text-gray-500 mb-2">
-            {language === "ja"
-              ? `${selectedDate.getFullYear()}年 ${selectedDate.getMonth() + 1}月`
-              : `${new Intl.DateTimeFormat("en-US", { month: "long" }).format(selectedDate)} ${selectedDate.getFullYear()}`}
+          </div> */}
+          <div className="flex justify-between items-center">
+            <div className="text-lg mb-2">
+              {language === "ja"
+                ? `${selectedDate.getFullYear()}年 ${
+                    selectedDate.getMonth() + 1
+                  }月`
+                : `${new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+                    selectedDate
+                  )} ${selectedDate.getFullYear()}`}
+            </div>
+                  <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>
+          <FaTrashAlt className="h-3 w-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="bg-white">
+          <Legend />
+        </DropdownMenuContent>
+      </DropdownMenu>
           </div>
 
           <TooltipProvider>
@@ -404,61 +522,34 @@ export default function CalendarPage() {
                 >
                   <span className="mb-1">{day.day}</span>
 
-                  {day.current && day.trashTypes && day.trashTypes.length > 0 && (
-                    <div className="flex justify-center space-x-0.5 mt-auto">
-                      {day.trashTypes.map((trashType, index) => (
-                        <Tooltip key={index}>
-                          <TooltipTrigger asChild>
-                            <div>{getTrashIcon(trashType)}</div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{getTrashName(trashType)}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
-                    </div>
-                  )}
+                  {day.current &&
+                    day.trashTypes &&
+                    day.trashTypes.length > 0 && (
+                      <div className="flex justify-center space-x-0.5 mt-auto">
+                        {day.trashTypes.map((trashType, index) => (
+                          <Tooltip key={index}>
+                            <TooltipTrigger asChild>
+                              <div>{getTrashIcon(trashType)}</div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{getTrashName(trashType)}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
           </TooltipProvider>
-
-          {/* カレンダーの凡例 */}
-          <div className="mt-4 pt-2 border-t border-white">
-            <div className="text-xs text-gray-600 mb-1">
-              {language === "ja" ? "ゴミ収集日の凡例:" : "Trash Collection Legend:"}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center">
-                <Trash2 className="h-3 w-3 text-orange-500 mr-1" />
-                <span className="text-xs">{t("result.burnable")}</span>
-              </div>
-              <div className="flex items-center">
-                <Trash2 className="h-3 w-3 text-blue-500 mr-1" />
-                <span className="text-xs">{t("result.non.burnable")}</span>
-              </div>
-              <div className="flex items-center">
-                <Recycle className="h-3 w-3 text-green-500 mr-1" />
-                <span className="text-xs">{t("result.recyclable")}</span>
-              </div>
-              <div className="flex items-center">
-                <AlertTriangle className="h-3 w-3 text-red-500 mr-1" />
-                <span className="text-xs">{t("result.hazardous")}</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="bg-gray-200 p-4">
-          <div className="text-center mb-2 font-bold">{t("calendar.result")}</div>
-          <div className="text-center mb-2">{formatDate(new Date(2023, 7, 8))}</div>
-          <div className="text-center">{t("calendar.trash.type")}</div>
+          <VisionResult />
         </div>
-
-        <div className="text-xs text-gray-500 text-center mt-auto py-4">{t("common.copyright")}</div>
       </div>
-      <ResultPage/>
+
       <NavLinks />
     </div>
-  )
+  );
 }

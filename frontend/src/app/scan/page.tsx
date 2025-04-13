@@ -4,14 +4,16 @@ import { Navigation } from "../components/navigation"
 import { useLanguage } from "../contexts/language-context"
 import { Button } from "../components/ui/button"
 import { useRouter } from "next/navigation"
-import { useState, useRef, useEffect, useCallback } from "react"
+import React, { useState, useRef, useEffect, useCallback } from "react"
 import { useTrash, type TrashType } from "../contexts/trash-context"
+import { useVision } from "../contexts/vision-context";
 
 export default function ScanPage() {
   const { t: originalT, language } = useLanguage();
   const t = useCallback((key: string) => originalT(key), [originalT]);
   const router = useRouter()
-  const { setTrashResult } = useTrash()
+  const { setTrashResult } = useTzzrash()
+  const { setVisionData } = useVision(); 
 
   const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false) // 初期値を false に設定
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
@@ -59,7 +61,7 @@ export default function ScanPage() {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isCameraPreviewActive, language, t, handleCancel]);
+  }, [language, t, handleCancel]);
 
   const captureImage = () => {
     if (videoRef.current && canvasRef.current && !isAnalyzing) {
@@ -76,6 +78,10 @@ export default function ScanPage() {
         setCapturedImage(imageDataUrl)
         setIsCameraPreviewActive(false)
 
+        if (stream) { // streamが存在する場合のみ停止処理を行う
+          stream.getTracks().forEach(track => track.stop());
+          stream = null;
+        }
         if (video.srcObject) {
           const stream = video.srcObject as MediaStream;
           stream.getTracks().forEach(track => track.stop());
@@ -143,9 +149,13 @@ export default function ScanPage() {
             console.error("画像分析APIエラー:", errorData);
             setError(t("scan.error.analyze"));
           } else {
+            // const data: ClassifyResponse = await response.json();
+            // setTrashResult(data.best_match as TrashType || "unknown");
+            // router.push("/result");
             const data: ClassifyResponse = await response.json();
             setTrashResult(data.best_match as TrashType || "unknown");
-            router.push("/result");
+            setVisionData(data); // Ensure the type matches the updated definition
+            router.push("/calendar");
           }
         };
         img.onerror = (error) => {
@@ -172,9 +182,7 @@ export default function ScanPage() {
       <Navigation />
 
       <div className="flex-1 p-4 flex flex-col items-center justify-center space-y-6">
-        {error && (
-          <div className="text-red-500 mb-4 text-center">{error}</div>
-        )}
+        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
 
         {isCameraPreviewActive && (
           <>
@@ -226,5 +234,5 @@ export default function ScanPage() {
         <div className="text-xs text-gray-500 text-center mt-auto">{t("common.copyright")}</div>
       </div>
     </div>
-  )
+  );
 }

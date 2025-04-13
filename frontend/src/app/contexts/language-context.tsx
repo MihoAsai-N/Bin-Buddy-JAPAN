@@ -47,10 +47,19 @@ const translations = {
     "result.trash.type": "ゴミの種類:",
     "result.collection.day": "収集日:",
     "result.back.to.calendar": "カレンダーに戻る",
-    "result.burnable": "燃えるゴミ",
-    "result.non.burnable": "燃えないゴミ",
-    "result.recyclable": "資源ゴミ",
-    "result.hazardous": "有害ゴミ",
+
+
+    "result.Combustible": "燃えるゴミ",
+    "result.non.Combustible": "燃えないゴミ",
+    "result.Bottles": "びん・缶・ペットボトル",
+    "result.Plastic": "容器プラ",
+    "result.Paper": "雑がみ",
+    "result.Branches": "枝・葉・草",
+    "result.Not": "収集なし",
+
+
+
+
     "result.monday": "月曜日",
     "result.tuesday": "火曜日",
     "result.wednesday": "水曜日",
@@ -127,10 +136,20 @@ const translations = {
     "result.trash.type": "Trash Type:",
     "result.collection.day": "Collection Day:",
     "result.back.to.calendar": "Back to Calendar",
-    "result.burnable": "Burnable Waste",
-    "result.non.burnable": "Non-burnable Waste",
-    "result.recyclable": "Recyclable",
-    "result.hazardous": "Hazardous Waste",
+
+
+
+
+    "result.Combustible": "Combustible Waste",
+    "result.non.Combustible": "Non-Combustible Waste",
+    "result.Bottles": "Bottles, Cans & PET",
+    "result.Plastic": "Plastic Containers & Packaging",
+    "result.Paper": "Miscellaneous Paper",
+    "result.Branches": "Branches, Leaves & Grass",
+    "result.Not": "Not Collected",
+
+
+
     "result.monday": "Monday",
     "result.tuesday": "Tuesday",
     "result.wednesday": "Wednesday",
