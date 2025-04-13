@@ -2,6 +2,7 @@
 
 import type React from "react"
 
+import { createUserWithEmailAndPassword, auth } from "../../../lib/firebaseConfig"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,10 +15,14 @@ import BackToMainLink from "../../components/common/BackToMainLink"
 
 export default function Register() {
   const [formData, setFormData] = useState({
+    municipalityCode: "",
     municipalityName: "",
+    municipalityNameRuby: "",
+    postalCode: "",
     address: "",
-    phoneNumber: "",
+    department: "",
     contactPersonName: "",
+    phoneNumber: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -35,6 +40,17 @@ export default function Register() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // ここに登録ロジックを実装
+    createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed up 
+    const user = userCredential.user;
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ..
+  });
     console.log("登録データ:", formData)
     setIsSubmitted(true)
   }
@@ -97,6 +113,21 @@ export default function Register() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid gap-4">
+
+                <div className="space-y-2">
+                    <Label htmlFor="municipalityCode">
+                      地方公共団体コード <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="municipalityCode"
+                      name="municipalityCode"
+                      placeholder="例：131130"
+                      value={formData.municipalityCode ?? ""}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="municipalityName">
                       自治体名 <span className="text-red-500">*</span>
@@ -112,14 +143,56 @@ export default function Register() {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="municipalityNameRuby">
+                      フリガナ <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="municipalityNameRuby"
+                      name="municipalityNameRuby"
+                      placeholder="例：トウキョウトシブヤク"
+                      value={formData.municipalityNameRuby ?? ""}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="postalCode">
+                      郵便番号 <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="postalCode"
+                      name="postalCode"
+                      placeholder="例：東京都渋谷区"
+                      value={formData.postalCode ?? ""}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="address">
-                      担当部署 <span className="text-red-500">*</span>
+                      住所 <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="address"
                       name="address"
-                      placeholder="例：環境政策部"
+                      placeholder="例：東京都渋谷区宇田川町1-1"
                       value={formData.address ?? ""}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="department">
+                      担当部署 <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="department"
+                      name="department"
+                      placeholder="例：環境政策部"
+                      value={formData.department ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -132,8 +205,8 @@ export default function Register() {
                     <Input
                       id="contactPersonName"
                       name="contactPersonName"
-                      placeholder="例：水井 花子"
-                      value={formData.phoneNumber ?? ""}
+                      placeholder="例：山田 太郎"
+                      value={formData.contactPersonName ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -147,7 +220,7 @@ export default function Register() {
                       id="phoneNumber"
                       name="phoneNumber"
                       placeholder="例：03-1234-5678"
-                      value={formData.contactPersonName ?? ""}
+                      value={formData.phoneNumber ?? ""}
                       onChange={handleChange}
                       required
                     />
@@ -161,7 +234,7 @@ export default function Register() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="例：mizui@city.shibuya.tokyo.jp"
+                      placeholder="例：yamada@city.shibuya.tokyo.jp"
                       value={formData.email ?? ""}
                       onChange={handleChange}
                       required
