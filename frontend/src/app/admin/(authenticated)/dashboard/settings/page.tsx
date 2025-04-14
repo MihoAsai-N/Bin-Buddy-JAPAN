@@ -47,7 +47,7 @@ export default function SettingsPage() {
     data: adminInfo,
     error,
     isLoading,
-  } = useSWR<AdminInfo>("/api/admin-info", fetcher);
+  } = useSWR<AdminInfo>("/admin-info", fetcher);
   const [formData, setFormData] = useState<AdminInfo | null>(null);
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     try {
-      const res = await fetch("/api/admin-info", {
+      const res = await fetch("http://localhost:8000/admin-info", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +83,7 @@ export default function SettingsPage() {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
-        await mutate("/api/admin-info"); //SWRのキャッシュ更新
+        await mutate("http://localhost:8000/admin-info"); //SWRのキャッシュ更新
         alert("保存しました");
       } else {
         alert("保存に失敗しました");
