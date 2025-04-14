@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 from routers import classify 
+from routers import area_search
 
 app = FastAPI()
 
@@ -17,6 +18,7 @@ app.add_middleware(
 
 # ルーターをアプリケーションに含める
 app.include_router(classify.router)
+app.include_router(area_search.router)
 
 if __name__ == "__main__":
     import uvicorn

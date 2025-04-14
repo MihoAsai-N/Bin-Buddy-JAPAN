@@ -1,28 +1,37 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useLanguage } from "../contexts/language-context";
-import { useTrash } from "../contexts/trash-context";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTrash } from '../contexts/trash-context';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+} from './ui/select';
+import { Label } from './ui/label';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useLanguage } from '../contexts/language-context';
+
+interface AreaData {
+  area: string;
+  area_en: string;
+  address1: string;
+  address2: string;
+  connect_address: string;
+  zipcode: string;
+}
 
 const RegionForm: React.FC = () => {
-  const [postalCode, setPostalCode] = useState("");
-  const [areaCandidates, setAreaCandidates] = useState<string[]>([]);
-  const [selectedArea, setSelectedArea] = useState("");
+  const [postalCode, setPostalCode] = useState('');
+  const [areaCandidates, setAreaCandidates] = useState<AreaData[]>([]);
+  const [selectedArea, setSelectedArea] = useState<AreaData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { t } = useLanguage();
   const { setRegion } = useTrash();
+  const { t } = useLanguage();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,15 +39,16 @@ const RegionForm: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/area_search/areas?postal_code=${postalCode}`);
+      // バックエンドへ郵便番号をもとに問い合わせ
+      const response = await fetch(`http://localhost:8000/areas?postal_code=${postalCode}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch area candidates");
+        throw new Error('Failed to fetch area candidates');
       }
       const data = await response.json();
       setAreaCandidates(data.areas);
     } catch (error: any) {
-      console.error("Error fetching area candidates:", error);
-      setError(error.message || t("scan.error.unknown")); // エラーメッセージを表示
+      console.error('Error fetching area candidates:', error);
+      setError(error.message || 'Unknown error');
     } finally {
       setIsLoading(false);
     }
@@ -46,10 +56,14 @@ const RegionForm: React.FC = () => {
 
   const handleAreaSelect = () => {
     if (selectedArea) {
-      setRegion(selectedArea);
-      router.push("/calendar");
+      // 選択された area_en と area の値を sapporo_calendar.ts へ渡す
+      setRegion({
+        area: selectedArea.area,
+        area_en: selectedArea.area_en,
+      });
+      router.push('/calendar');
     } else {
-      setError(t("scan.error.area_select")); //エリアを選択してくださいのエラーメッセージ
+      setError('エリアを選択してください。');
     }
   };
 
@@ -76,26 +90,26 @@ const RegionForm: React.FC = () => {
               <Button
                 type="submit"
                 className="bg-[#8ebac1] hover:bg-[#789ea3] text-white px-8"
-                disabled={isLoading} //ローディング中はボタンを無効にする
+                disabled={isLoading}
               >
-                {isLoading ? t("scan.loading") : t("main.search")}
+                {isLoading ? '読み込み中...' : '検索'}
               </Button>
             </div>
           </form>
 
-          {error && <p className="text-red-500">{error}</p>} {/* エラーメッセージを表示 */}
+          {error && <p className="text-red-500">{error}</p>}
 
           {areaCandidates.length > 0 && (
-            <div>
-              <Label htmlFor="area">{t("main.area")}</Label>
-              <Select onValueChange={setSelectedArea} value={selectedArea}>
+            <div className='mt-7'>
+              <Label htmlFor="area">エリアを選択してください</Label>
+              <Select onValueChange={(value) => setSelectedArea(areaCandidates.find(area => area.area_en === value) || null)} value={selectedArea?.area_en || ""}>
                 <SelectTrigger id="area">
-                  <SelectValue placeholder={t("main.area")} />
+                  <SelectValue placeholder="エリアを選択" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='bg-white'>
                   {areaCandidates.map((area) => (
-                    <SelectItem key={area} value={area}>
-                      {area}
+                    <SelectItem key={area.area_en} value={area.area_en}>
+                      {area.area_en}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -105,7 +119,7 @@ const RegionForm: React.FC = () => {
                   onClick={handleAreaSelect}
                   className="bg-[#8ebac1] hover:bg-[#789ea3] text-white px-8"
                 >
-                  {t("main.select")}
+                  選択
                 </Button>
               </div>
             </div>

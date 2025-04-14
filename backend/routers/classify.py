@@ -1,3 +1,4 @@
+# classify.py
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Optional  # Optional をインポート
@@ -73,17 +74,18 @@ async def classify_image(image_file: UploadFile = File(...)):
 
             # **【モックデータでの対応 (実際のデータベース連携に置き換えてください)】**
             classification_map = {
-                "Plastic": "recyclable",
-                "Bottle": "recyclable",
-                "Can": "recyclable",
-                "Paper": "recyclable",
+                "Plastic": "Plastic",
+                "Bottle": "Bottles",
+                "Can": "Cans",
+                "Paper": "Combustible",
                 "Cardboard": "recyclable",
-                "Food waste": "burnable",
-                "Garbage": "burnable",
-                "Glass": "non-burnable",
-                "Metal": "non-burnable",
+                "Food waste": "Combustible",
+                "Garbage": "Combustible",
+                "Glass": "Non-Combustible",
+                "Metal": "Non-Combustible",
                 "Battery": "hazardous",
                 "Light bulb": "hazardous",
+                "Tissue paper": "Combustible",
                 # ... 他の分類
             }
             trash_category = classification_map.get(best_match_label, "unknown")

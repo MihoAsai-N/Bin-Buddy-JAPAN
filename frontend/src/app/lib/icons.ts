@@ -1,17 +1,22 @@
 //icon.ts
 import React from 'react';
 import { JSX } from "react";
-// import { FaRecycle, FaTrashAlt, FaExclamationTriangle } from "react-icons/fa";
-// import { AiOutlineQuestionCircle } from "react-icons/ai";
 import { FaFire } from "react-icons/fa6";
-// import { BsTrashFill } from "react-icons/bs";
 import { RiRecycleFill } from "react-icons/ri";
 import { LiaWineBottleSolid } from "react-icons/lia";
 import { FiPackage } from "react-icons/fi";
-// import { GiSpray } from "react-icons/gi";
 import { TfiSpray } from "react-icons/tfi";
 import { GiTreeBranch } from "react-icons/gi";
 import { IoTrashBinSharp } from "react-icons/io5";
+
+// const categoryIds = {
+//   1: "Combustible",
+//   2: "Non-Combustible",
+//   8: "Bottles",
+//   9: "Plastic",
+//   10: "Paper",
+//   11: "Branches",
+// };
 
 export const getTrashIcon = (category: string | null): JSX.Element => {
   switch (category) {
