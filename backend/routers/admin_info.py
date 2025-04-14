@@ -1,5 +1,10 @@
+"""
+admin_info.py
+
+管理者情報の取得・更新に関する FastAPI ルーター。
+"""
+
 from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -19,11 +24,22 @@ admin_info = {
 
 @router.get("/admin-info")
 async def get_admin_info():
+    """
+    管理者情報を取得するエンドポイント。
+    """
     return admin_info
 
 @router.put("/admin-info")
 async def update_admin_info(request: Request):
-    global admin_info
+    """
+    管理者情報を更新するエンドポイント。
+
+    Args:
+        request (Request): 更新データを含むリクエスト
+
+    Returns:
+        dict: 更新後の管理者情報
+    """
     data = await request.json()
     admin_info.update(data)
     return admin_info
