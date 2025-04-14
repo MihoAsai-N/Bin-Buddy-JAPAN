@@ -1,40 +1,102 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import useSWR from "swr"
-import { useRouter } from "next/navigation"
-import AdminHeader from "@/app/admin/components/common/AdminHeader"
-import Sidebar from "@/app/admin/components/common/Sidebar"
-import { Calendar, Settings } from "lucide-react"
-import { Tabs, TabsList, TabsTrigger } from "@/app/admin/components/shadcn/ui/tabs"
-import { Button } from "@/app/admin/components/shadcn/ui/button"
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+import { useRouter } from "next/navigation";
+import AdminHeader from "@/app/admin/components/common/AdminHeader";
+import Sidebar from "@/app/admin/components/common/Sidebar";
+import { Calendar, Settings } from "lucide-react";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@/app/admin/components/shadcn/ui/tabs";
+import { Button } from "@/app/admin/components/shadcn/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/admin/components/shadcn/ui/card"
-import { Input } from "@/app/admin/components/shadcn/ui/input"
-import { Label } from "@/app/admin/components/shadcn/ui/label"
-import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox"
+} from "@/app/admin/components/shadcn/ui/card";
+import { Input } from "@/app/admin/components/shadcn/ui/input";
+import { Label } from "@/app/admin/components/shadcn/ui/label";
+import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
+import { mutate } from "swr";
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+type AdminInfo = {
+  municipalityCode: string;
+  municipalityName: string;
+  furigana: string;
+  postalCode: string;
+  address: string;
+  department: string;
+  contactPerson: string;
+  phoneNumber: string;
+  email: string;
+  lastLogin: string;
+};
 
 export default function SettingsPage() {
-  const router = useRouter()
-  const [selectedTab, setSelectedTab] = useState("settings")
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState("settings");
+
+  const {
+    data: adminInfo,
+    error,
+    isLoading,
+  } = useSWR<AdminInfo>("/api/admin-info", fetcher);
+  const [formData, setFormData] = useState<AdminInfo | null>(null);
+
+  useEffect(() => {
+    if (adminInfo) {
+      setFormData(adminInfo);
+    }
+  }, [adminInfo]);
 
   const handleLogout = () => {
     if (confirm("ログアウトしてもよろしいですか？")) {
-      router.push("/admin/login")
+      router.push("/admin/login");
     }
-  }
+  };
 
-  const { data: adminInfo, error, isLoading } = useSWR("/api/admin-info", fetcher)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [id]: value,
+      };
+    });
+  };
 
-if (isLoading) return <p className="p-6">読み込み中...</p>
-if (error) return <p className="p-6 text-red-500">データの取得に失敗しました。</p>
+  const handleSave = async () => {
+    try {
+      const res = await fetch("/api/admin-info", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        await mutate("/api/admin-info"); //SWRのキャッシュ更新
+        alert("保存しました");
+      } else {
+        alert("保存に失敗しました");
+      }
+    } catch (err) {
+      alert("エラーが発生しました");
+      console.error(err);
+    }
+  };
+
+  if (isLoading) return <p className="p-6">読み込み中...</p>;
+  if (error)
+    return <p className="p-6 text-red-500">データの取得に失敗しました。</p>;
 
   return (
     <div className="flex min-h-screen bg-[#f0f5f8] text-[#4a5568]">
@@ -42,7 +104,7 @@ if (error) return <p className="p-6 text-red-500">データの取得に失敗し
 
       <div className="flex flex-1 flex-col">
         <AdminHeader
-          contactPerson={adminInfo.contactPerson}
+          contactPerson={adminInfo!.contactPerson}
           onSettingsClick={() => setSelectedTab("settings")}
           onLogout={handleLogout}
         />
@@ -71,27 +133,74 @@ if (error) return <p className="p-6 text-red-500">データの取得に失敗し
           <Card className="bg-white">
             <CardHeader>
               <CardTitle>自治体情報</CardTitle>
-              <CardDescription>自治体の基本情報を確認・編集できます。</CardDescription>
+              <CardDescription>
+                自治体の基本情報を確認・編集できます。
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 {[
-                  { id: "municipalityCode", label: "地方公共団体コード", value: adminInfo.municipalityCode },
-                  { id: "municipalityName", label: "自治体名", value: adminInfo.municipalityName },
-                  { id: "furigana", label: "フリガナ", value: adminInfo.furigana },
-                  { id: "postalCode", label: "郵便番号", value: adminInfo.postalCode },
-                  { id: "address", label: "住所", value: adminInfo.address },
-                  { id: "department", label: "担当部署", value: adminInfo.department },
-                  { id: "contactPerson", label: "担当者名", value: adminInfo.contactPerson },
-                  { id: "phoneNumber", label: "電話番号", value: adminInfo.phoneNumber },
-                  { id: "email", label: "メールアドレス", value: adminInfo.email, type: "email" },
-                ].map(({ id, label, value, type = "text" }) => (
+                  {
+                    id: "municipalityCode",
+                    label: "地方公共団体コード",
+                    value: adminInfo!.municipalityCode,
+                  },
+                  {
+                    id: "municipalityName",
+                    label: "自治体名",
+                    value: adminInfo!.municipalityName,
+                  },
+                  {
+                    id: "furigana",
+                    label: "フリガナ",
+                    value: adminInfo!.furigana,
+                  },
+                  {
+                    id: "postalCode",
+                    label: "郵便番号",
+                    value: adminInfo!.postalCode,
+                  },
+                  { id: "address", label: "住所", value: adminInfo!.address },
+                  {
+                    id: "department",
+                    label: "担当部署",
+                    value: adminInfo!.department,
+                  },
+                  {
+                    id: "contactPerson",
+                    label: "担当者名",
+                    value: adminInfo!.contactPerson,
+                  },
+                  {
+                    id: "phoneNumber",
+                    label: "電話番号",
+                    value: adminInfo!.phoneNumber,
+                  },
+                  {
+                    id: "email",
+                    label: "メールアドレス",
+                    value: adminInfo!.email,
+                    type: "email",
+                  },
+                ].map(({ id, label, type = "text" }) => (
                   <div key={id} className="space-y-2">
                     <Label htmlFor={id}>{label}</Label>
-                    <Input id={id} type={type} defaultValue={value} />
+                    <Input
+                      id={id}
+                      type={type}
+                      value={
+                        (formData?.[id as keyof AdminInfo] as string) || ""
+                      }
+                      onChange={handleChange}
+                    />
                   </div>
                 ))}
-                <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">変更を保存</Button>
+                <Button
+                  className="bg-[#78B9C6] hover:bg-[#6aaab7]"
+                  onClick={handleSave}
+                >
+                  変更を保存
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -100,7 +209,9 @@ if (error) return <p className="p-6 text-red-500">データの取得に失敗し
           <Card className="bg-white">
             <CardHeader>
               <CardTitle>パスワード変更</CardTitle>
-              <CardDescription>アカウントのパスワードを変更します。</CardDescription>
+              <CardDescription>
+                アカウントのパスワードを変更します。
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -113,10 +224,14 @@ if (error) return <p className="p-6 text-red-500">データの取得に失敗し
                   <Input id="new-password" type="password" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">新しいパスワード（確認）</Label>
+                  <Label htmlFor="confirm-password">
+                    新しいパスワード（確認）
+                  </Label>
                   <Input id="confirm-password" type="password" />
                 </div>
-                <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">パスワードを変更</Button>
+                <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">
+                  パスワードを変更
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -125,7 +240,9 @@ if (error) return <p className="p-6 text-red-500">データの取得に失敗し
           <Card className="bg-white">
             <CardHeader>
               <CardTitle>通知設定</CardTitle>
-              <CardDescription>システムからの通知設定を管理します。</CardDescription>
+              <CardDescription>
+                システムからの通知設定を管理します。
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -139,12 +256,14 @@ if (error) return <p className="p-6 text-red-500">データの取得に失敗し
                     <Label htmlFor={id}>{label}</Label>
                   </div>
                 ))}
-                <Button className="mt-4 bg-[#78B9C6] hover:bg-[#6aaab7]">設定を保存</Button>
+                <Button className="mt-4 bg-[#78B9C6] hover:bg-[#6aaab7]">
+                  設定を保存
+                </Button>
               </div>
             </CardContent>
           </Card>
         </main>
       </div>
     </div>
-  )
+  );
 }
