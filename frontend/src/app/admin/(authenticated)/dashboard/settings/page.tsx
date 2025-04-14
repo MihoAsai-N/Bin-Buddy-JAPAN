@@ -24,7 +24,7 @@ import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
 import { mutate } from "swr";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(`http://localhost:8000${url}`).then((res) => res.json());
 
 type AdminInfo = {
   municipalityCode: string;

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 # 既存ルーターの読み込み
-from routers import classify, checkout
+from routers import classify, checkout, admin_info
 
 # .envファイルの読み込み
 load_dotenv()
@@ -25,7 +25,7 @@ app.add_middleware(
 # ルーターをアプリケーションに含める
 app.include_router(classify.router)
 app.include_router(checkout.router)
-
+app.include_router(admin_info.router)
 
 if __name__ == "__main__":
     import uvicorn
