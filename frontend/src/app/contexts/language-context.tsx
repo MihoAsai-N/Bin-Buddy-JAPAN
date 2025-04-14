@@ -24,7 +24,9 @@ const translations = {
     "main.prefecture": "都道府県",
     "main.city": "市区町村",
     "main.district": "区市町村",
-    "main.search": "検索する",
+    "main.search": "設定する",
+    "main.postalCode":"郵便番号",
+    "main.postalCodeExample":"0124567",
 
     // カレンダー画面
     "calendar.select.date": "日付を選択",
@@ -113,7 +115,9 @@ const translations = {
     "main.prefecture": "Prefecture",
     "main.city": "City",
     "main.district": "District",
-    "main.search": "Search",
+    "main.search": "OK",
+    "main.postalCode":"Zip cpde",
+    "main.postalCodeExample":"0124567",
 
     // Calendar Screen
     "calendar.select.date": "Select date",

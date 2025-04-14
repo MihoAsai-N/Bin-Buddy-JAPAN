@@ -15,7 +15,7 @@ export function NavLinks() {
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#78B9C6] border-t flex justify-around md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#cbe8ed] border-t flex justify-around md:hidden">
       {links.map((link) => {
         const isActive = pathname === link.href
 
@@ -24,7 +24,7 @@ export function NavLinks() {
             key={link.href}
             href={link.href}
             className={`flex flex-col items-center px-4 py-2 ${
-              isActive ? "text-purple-600 font-bold" : "text-black font-bold"
+              isActive ? "text-purple-600 font-bold" : " text-cyan-900 font-bold"
             }`}
           >
             {link.icon}
