@@ -4,6 +4,7 @@ admin_info.py
 管理者情報の取得・更新に関する FastAPI ルーター。
 """
 
+from datetime import datetime
 from fastapi import APIRouter, Request
 
 router = APIRouter()
@@ -43,3 +44,29 @@ async def update_admin_info(request: Request):
     data = await request.json()
     admin_info.update(data)
     return admin_info
+
+@router.post("/admin-info")
+async def create_admin_info(request: Request):
+    """
+    管理者情報を新規登録するエンドポイント。
+    既存データを上書きする形で登録（仮実装）
+
+    Args:
+        request (Request): 登録データを含むリクエスト
+
+    Returns:
+        dict: 登録された管理者情報
+    """
+    data = await request.json()
+
+    # lastLogin がなければ現在時刻を入れる（ISO文字列→"YYYY-MM-DD HH:MM"へ変換）
+    if "lastLogin" not in data:
+        data["lastLogin"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    admin_info.clear()
+    admin_info.update(data)
+
+    return {
+        "message": "管理者情報を登録しました（モック）",
+        "data": admin_info
+    }

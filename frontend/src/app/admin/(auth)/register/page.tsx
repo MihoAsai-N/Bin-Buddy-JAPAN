@@ -28,7 +28,7 @@ export default function Register() {
   const [formData, setFormData] = useState({
     municipalityCode: "",
     municipalityName: "",
-    municipalityNameRuby: "",
+    furigana: "",
     postalCode: "",
     address: "",
     department: "",
@@ -57,6 +57,7 @@ export default function Register() {
     }
 
     try {
+      // 1. Firebase Authentication に新規登録
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         formData.email,
@@ -64,7 +65,36 @@ export default function Register() {
       );
       const user = userCredential.user;
       console.log("登録成功:", user);
+
+      // 2. FastAPI に管理者情報を送信
+      const res = await fetch("http://localhost:8000/admin-info", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          municipalityCode: "01100",
+          municipalityName: formData.municipalityName,
+          furigana: formData.furigana,
+          postalCode: formData.postalCode,
+          address: formData.address,
+          department: formData.department,
+          contactPerson: formData.contactPersonName,
+          phoneNumber: formData.phoneNumber,
+          email: formData.email,
+          lastLogin: new Date().toISOString(), // 現在時刻
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("FastAPIへの登録に失敗しました");
+      }
+    
+      const result = await res.json();
+      console.log("FastAPI 登録成功:", result);
+      
       setIsSubmitted(true);
+
     } catch (error) {
       if (error instanceof FirebaseError) {
         console.error("登録エラー:", error.message);
@@ -75,6 +105,8 @@ export default function Register() {
       }
     }
   };
+
+
 
   if (isSubmitted) {
     return (
@@ -183,14 +215,14 @@ export default function Register() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="municipalityNameRuby">
+                    <Label htmlFor="furigana">
                       フリガナ <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="municipalityNameRuby"
-                      name="municipalityNameRuby"
+                      id="furigana"
+                      name="furigana"
                       placeholder="例：トウキョウトシブヤク"
-                      value={formData.municipalityNameRuby ?? ""}
+                      value={formData.furigana ?? ""}
                       onChange={handleChange}
                       required
                     />
