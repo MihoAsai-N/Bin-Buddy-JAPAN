@@ -1,3 +1,5 @@
+"""Stripe決済用のエンドポイント定義。支払いインテントの作成とWebhookの処理を行う。"""
+
 import os
 from fastapi import APIRouter, HTTPException, Request
 import stripe
@@ -12,6 +14,13 @@ router = APIRouter()
 # Stripe決済用のエンドポイント
 @router.post("/create-payment-intent")
 async def create_payment_intent():
+    """
+    クライアント側でのカード決済のための PaymentIntent を作成し、
+    client_secret を返す。
+    
+    Returns:
+        dict[str, str | None]: PaymentIntent の client_secret を含む辞書
+    """
     try:
         intent = stripe.PaymentIntent.create(
             amount=120000,  # セント単位 (¥20)
@@ -25,6 +34,18 @@ async def create_payment_intent():
 # Stripe Webhook受信用のエンドポイント
 @router.post("/webhook")
 async def stripe_webhook(request: Request):
+    """
+    Stripeから送信されたWebhookリクエストを検証・処理するエンドポイント。
+
+    Args:
+        request (Request): FastAPIのリクエストオブジェクト（Webhookのペイロードとヘッダーを含む）
+
+    Returns:
+        dict[str, str]: 処理が成功した場合は {"status": "success"} を返す
+
+    Raises:
+        HTTPException: Webhookの署名検証やイベント処理に失敗した場合に 400 を返す
+    """
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
     webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")

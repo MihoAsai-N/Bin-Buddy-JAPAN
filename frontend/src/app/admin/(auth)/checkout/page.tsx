@@ -99,8 +99,8 @@ const CheckoutForm = () => {
       } else if (result.paymentIntent?.status === "succeeded") {
         setIsSuccess(true);
         setMessage("支払いが完了しました！");
-        console.log("✅ 支払い成功：即時/admin/dashboard に遷移します") 
-          router.push("/admin/dashboard");
+        console.log("✅ 支払い成功：即時/admin/dashboard に遷移します");
+        router.push("/admin/dashboard");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -206,6 +206,11 @@ const CheckoutForm = () => {
         </Button>
       ) : (
         <div className="space-y-4">
+          <p className="text-[#4a5568]">
+            決済が完了しました。
+            <br />
+            確認メールを送信しましたので、メールボックスをご確認ください。
+          </p>
           <Button asChild className="w-full bg-[#78B9C6] hover:bg-[#6aaab7]">
             <Link href="/admin/dashboard">ダッシュボードに進む</Link>
           </Button>
@@ -234,7 +239,7 @@ export default function PaymentPage() {
       {/* メインコンテンツ */}
       <main className="flex-1 flex items-center justify-center py-12">
         <div className="container max-w-md px-4">
-          <Card className="shadow-sm">
+          <Card className="shadow-sm bg-white">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
                 <Image
