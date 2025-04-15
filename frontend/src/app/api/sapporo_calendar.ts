@@ -1,7 +1,7 @@
 // sapporo_calendar.ts
 
 import axios from 'axios';
-import { useTrash } from './trash-context'; // trash-context.tsx から useTrash をインポート
+import { useTrash } from '../contexts/trash-context'; // trash-context.tsx から useTrash をインポート
 import React from 'react';
 
 const Calendar: React.FC = () => {
