@@ -1,40 +1,31 @@
 // sapporo_calendar.ts
 
 import axios from 'axios';
-import * as Papa from 'papaparse';
+import { useTrash } from './trash-context'; // trash-context.tsx から useTrash をインポート
+import React from 'react';
 
-const apiUrl = 'https://ckan.pf-sapporo.jp/dataset/281fc9c2-7ca5-4aed-a728-0b588e509686/resource/a261bccd-4383-487f-aa2d-3a502469e7ad/download/garvagecollectioncalendar202410.csv';
+const Calendar: React.FC = () => {
+  const { region } = useTrash(); // useTrash フックを使用して region を取得
+  const area = region?.area; // region から area を取得
 
-async function fetchCsvData(): Promise<string> {
-  try {
-    const response = await axios.get(apiUrl);
-    return response.data;
-  } catch (error) {
-    console.error('CSVデータの取得に失敗しました:', error);
-    throw error; // エラーを再スローして呼び出し元に伝える
+  // area が存在する場合のみ API リクエストを送信
+  if (area) {
+    const url = `https://ckan.pf-sapporo.jp/api/3/action/datastore_search_sql?sql=SELECT "日付", "${area}" FROM "a261bccd-4383-487f-aa2d-3a502469e7ad" WHERE "日付" >= '2025-01-01' AND "日付" < '2026-01-01'`;
+
+    axios.get(url)
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        throw new Error(error.message);
+      });
   }
-}
 
-async function csvToJson(csvData: string): Promise<any[]> {
-  return new Promise((resolve, reject) => {
-    Papa.parse<Record<string, string>>(csvData, {
-      header: true,
-      complete: (results: Papa.ParseResult<Record<string, string>>) => {
-        resolve(results.data);
-      },
-      error: (error: Error) => {
-        reject(error);
-      },
-    });
-  });
-}
+  return (
+    <div>
+      カレンダー
+    </div>
+  );
+};
 
-export async function convertCsvToJson(): Promise<any[]> {
-  try {
-    const csvData = await fetchCsvData();
-    return await csvToJson(csvData);
-  } catch (error) {
-    console.error('CSVからJSONへの変換に失敗しました:', error);
-    throw error;
-  }
-}
+export default Calendar;

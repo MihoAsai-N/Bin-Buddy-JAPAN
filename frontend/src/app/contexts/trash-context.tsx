@@ -37,23 +37,10 @@ const regionData: { [key: string]: RegionSchedule } = {
   },
 };
 
-// ゴミの種類を判定するためのモックデータ
-// const trashItems: { [key: string]: TrashType } = { // 型を TrashType に修正
-//   plastic_bottle: "recyclable",
-//   paper: "recyclable",
-//   food_waste: "burnable",
-//   glass: "non-burnable",
-//   battery: "hazardous",
-//   can: "recyclable",
-//   styrofoam: "burnable",
-//   light_bulb: "hazardous",
-//   ceramic: "non-burnable",
-//   metal: "non-burnable",
-// };
 
 type TrashContextType = {
-  region: string;
-  setRegion: (region: string) => void;
+  region: { area: string; area_en: string };
+  setRegion: (region: { area: string; area_en: string }) => void;
   analyzeTrash: (item: string) => TrashType;
   getCollectionDays: (trashType: TrashType) => WeekDay[];
   getTrashTypesForWeekday: (weekday: WeekDay) => TrashType[];
@@ -67,15 +54,10 @@ const TrashContext = createContext<TrashContextType | undefined>(undefined);
 
 export function TrashProvider({ children }: { children: React.ReactNode }) {
   const [region, setRegion] = useState<string>("default");
-  const [trashResult, setTrashResult] = useState<TrashType | null>(null); // 型を TrashType に修正
-  const [visionResult, setVisionResult] = useState<any>(null); // 型を any に修正 (または適切なインターフェース)
+  const [trashResult, setTrashResult] = useState<TrashType | null>(null); 
+  const [visionResult, setVisionResult] = useState<any>(null); 
 
-  // ゴミの種類を判定する関数
-  // const analyzeTrash = (item: string): TrashType => {
-  //   // 実際のアプリでは画像認識APIなどを使用
-  //   // ここではモックデータを使用
-  //   return trashItems[item] || "burnable";
-  // };
+
 
   // 収集日を取得する関数
   const getCollectionDays = (trashType: TrashType): WeekDay[] => {

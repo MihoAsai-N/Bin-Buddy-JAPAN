@@ -30,19 +30,6 @@ import {
 } from "../components/ui/dropdown-menu";
 import { FaTrashAlt } from "react-icons/fa";
 
-// 曜日の数値を取得する関数（0: 日曜日, 1: 月曜日, ..., 6: 土曜日）
-const getDayOfWeek = (day: WeekDay): number => {
-  const days: { [key in WeekDay]: number } = {
-    sunday: 0,
-    monday: 1,
-    tuesday: 2,
-    wednesday: 3,
-    thursday: 4,
-    friday: 5,
-    saturday: 6,
-  };
-  return days[day];
-};
 
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
@@ -65,17 +52,6 @@ export default function CalendarPage() {
   const { region, getCollectionDays, getTrashTypesForWeekday } = useTrash();
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
-  // 月の最初の日と最後の日を取得
-  const firstDayOfMonth = new Date(
-    selectedDate.getFullYear(),
-    selectedDate.getMonth(),
-    1
-  );
-  const lastDayOfMonth = new Date(
-    selectedDate.getFullYear(),
-    selectedDate.getMonth() + 1,
-    0
-  );
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
@@ -126,25 +102,6 @@ export default function CalendarPage() {
   const days = generateCalendarDays();
   const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
 
-  //カメラ起動ボタンのクリックハンドラ
-  const handleCameraLaunch = () => {
-    router.push("/scan");
-  };
-
-  // 日付のフォーマット
-  const formatDate = (date: Date) => {
-    if (language === "ja") {
-      return `${date.getFullYear()}年${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}月${date.getDate().toString().padStart(2, "0")}日`;
-    } else {
-      return new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).format(date);
-    }
-  };
 
   const getTrashIcon = (trashType: TrashType) => {
     switch (trashType) {
@@ -176,7 +133,7 @@ export default function CalendarPage() {
     <div className="flex flex-col min-h-screen">
       <Navigation />
       {/* モバイル版のレイアウト */}
-      <div className="md:hidden flex-1 flex flex-col space-y-4">
+      <div className="flex-1 flex flex-col space-y-4">
         <div className="bg-white p-4">
           <div className="flex justify-between items-center">
             <div className="text-lg mb-2">
@@ -249,3 +206,6 @@ export default function CalendarPage() {
     </div>
   );
 }
+
+
+
