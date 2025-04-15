@@ -61,21 +61,21 @@ export default function SchedulesPageWrapper() {
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  const { data: districts } = useSWR<District[]>("/api/districts", fetcher);
+  const { data: districts } = useSWR<District[]>("http://localhost:8000/districts", fetcher);
 
-  const { data: areas } = useSWR<Area[]>("/api/areas", fetcher);
+  const { data: areas } = useSWR<Area[]>("http://localhost:8000/areas", fetcher);
 
   const { data: garbageTypes } = useSWR<GarbageType[]>(
-    "/api/garbage-types",
+    "http://localhost:8000/garbage-types",
     fetcher
   );
 
   const { data: schedules = [] } = useSWR<Schedule[]>(
-    "/api/schedules",
+    "http://localhost:8000/schedules",
     fetcher
   );
 
-  const { data: adminInfo } = useSWR<AdminInfo>("/api/admin-info", fetcher);
+  const { data: adminInfo } = useSWR<AdminInfo>("http://localhost:8000/admin-info", fetcher);
 
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("schedules");
