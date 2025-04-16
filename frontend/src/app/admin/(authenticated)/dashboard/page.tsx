@@ -53,11 +53,42 @@ export default function DashboardPage() {
           onLogout={handleLogout}
         />
 
+        {/* 決済ステータス表示欄 */}
+        <div className="bg-white px-6 py-4 border-b">
+          <p className="text-sm">
+            決済ステータス：{" "}
+            <span
+              className={`font-semibold ${
+                adminInfo.paymentStatus === "paid"
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {adminInfo.paymentStatus === "paid" ? "支払い済み" : "未払い"}
+            </span>
+          </p>
+        </div>
+
         {/* モバイル用タブ */}
         <div className="border-b bg-white p-2 md:hidden">
-          <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+          <Tabs
+            value={selectedTab}
+            onValueChange={(val) => {
+              if (val === "schedules" && adminInfo.paymentStatus === "unpaid")
+                return;
+              setSelectedTab(val);
+            }}
+          >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="schedules">
+              <TabsTrigger
+                value="schedules"
+                disabled={adminInfo.paymentStatus === "unpaid"}
+                className={
+                  adminInfo.paymentStatus === "unpaid"
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+              >
                 <Calendar className="mr-2 h-4 w-4" />
                 収集スケジュール
               </TabsTrigger>
@@ -67,6 +98,12 @@ export default function DashboardPage() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
+          {/* 決済案内メッセージ */}
+          {adminInfo.paymentStatus === "unpaid" && (
+            <p className="text-sm text-red-600 mt-2">
+              ※ご利用には決済が必要です。設定ページからお支払いを完了してください。
+            </p>
+          )}
         </div>
       </div>
     </div>

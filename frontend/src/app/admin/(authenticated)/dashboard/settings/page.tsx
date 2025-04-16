@@ -24,7 +24,8 @@ import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
 import { mutate } from "swr";
 
-const fetcher = (url: string) => fetch(`http://localhost:8000${url}`).then((res) => res.json());
+const fetcher = (url: string) =>
+  fetch(`http://localhost:8000${url}`).then((res) => res.json());
 
 type AdminInfo = {
   municipalityCode: string;
@@ -36,6 +37,7 @@ type AdminInfo = {
   contactPerson: string;
   phoneNumber: string;
   email: string;
+  paymentStatus: "paid" | "unpaid";
   lastLogin: string;
 };
 
@@ -109,6 +111,32 @@ export default function SettingsPage() {
           onLogout={handleLogout}
         />
 
+        {/* 決済ステータス表示欄 */}
+        {adminInfo && (
+          <div className="bg-white px-6 py-4 border-b">
+            <p className="text-sm">
+              決済ステータス：{" "}
+              <span
+                className={`font-semibold ${
+                  adminInfo.paymentStatus === "paid"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {adminInfo.paymentStatus === "paid" ? "支払い済み" : "未払い"}
+              </span>
+            </p>
+
+            {adminInfo.paymentStatus === "unpaid" && (
+              <Button
+                onClick={() => router.push("/admin/checkout")}
+                className="bg-[#78B9C6] hover:bg-[#6aaab7] px-4 py-2"
+              >
+                決済へ進む
+              </Button>
+            )}
+          </div>
+        )}
         {/* モバイル用タブ */}
         <div className="border-b bg-white p-2 md:hidden">
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
