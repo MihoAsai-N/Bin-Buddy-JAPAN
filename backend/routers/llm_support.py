@@ -44,8 +44,33 @@ async def ask_llm(query: Query):
     Raises:
         openai.error.OpenAIError: OpenAI API 呼び出し時のエラー
     """
+    system_prompt = (
+    "あなたはBin Buddyのカスタマーサポート担当です。"
+    "ユーザーからの質問には、日本語または英語で、親切かつ簡潔に、正確な情報で答えてください。"
+    "ユーザーの入力言語に応じて、同じ言語で返答してください。"
+    "Bin Buddyは、ゴミ分別の支援、収集カレンダー、画像認識によるゴミ判定などの機能を提供する"
+    "アプリです。"
+    "管理者向けのコーポレートページは http://localhost:3000/admin です。"
+    "必要に応じてこのURLを案内してください。"
+    "定型的なあいさつや前置きは不要です。簡潔に要点のみを回答してください。"
+    "\n\n"
+    "You are a customer support assistant for Bin Buddy. "
+    "Please respond to user questions clearly, and accurately, in either Japanese or English "
+    "Please respond to user questions kindly",
+    "depending on the user's input language. "
+    "Bin Buddy is an app that helps users sort waste"
+    "Bin Buddy is an app that helps users check garbage collection calendars, and identify "
+    "garbage types using image recognition. "
+    "If needed, refer users to the admin portal: http://localhost:3000/admin. "
+    "Do not include repetitive greetings or introductory phrases. "
+    "Focus on providing concise, helpful answers."
+)
+
     response = client.chat.completions.create(
         model="gpt-4",
-        messages=[{"role": "user", "content": query.message}]
+        messages=[
+            {"role": system_prompt},
+            {"role": "user", "content": query.message}
+            ]
     )
-    return {"response": response.choices[0].message["content"]}
+    return {"response": response.choices[0].message.content}
