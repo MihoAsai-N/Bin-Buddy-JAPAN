@@ -15,7 +15,7 @@ export function NavLinks() {
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#cbe8ed] border-t flex justify-around md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#cbe8ed] border-t flex justify-around">
       {links.map((link) => {
         const isActive = pathname === link.href
 

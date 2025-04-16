@@ -28,6 +28,8 @@ import {
 import { FaTrashAlt } from "react-icons/fa";
 import axios from "axios";
 import IrregularComment from "../components/IrregularComment";
+import { getGarbageDay } from "../lib/utils";
+import { getTrashIcon } from "./AddIcon";
 
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
@@ -46,45 +48,35 @@ const getWeekdayFromNumber = (num: number): WeekDay => {
 export default function CalendarPage() {
   const [selectedDate] = useState(new Date());
   const { t, language } = useLanguage();
-  // const router = useRouter();
   const { region, getTrashTypesForWeekday } = useTrash();
-  const [isLegendOpen, setIsLegendOpen] = useState(false);
-  // const [setCalendarData] = useState(null); // カレンダーデータを状態として管理
-  // const [apiError, setApiError] = useState<string | null>(null); // API エラーを状態として管理
+  const [isLegendOpen] = useState(false);
   const searchParams = useSearchParams();
   const area = searchParams.get("area");
-  // const [calendarData, setCalendarData] = useState(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
+  const [calendarData, setCalendarData] = useState<
+    { [key: string]: string | null }[] | null
+  >(null);
 
   console.log("areaの値：", area);
 
-  // fetch(`/api?area=${encodeURIComponent(area || "")}`, { cache: "no-store" })
-  // .then((response) => response.json())
-  // .then((result) => console.log(result))
-  // .catch((error) => {
-  //   console.log(error);
-  // });
-
-  fetch(`/api?area=${encodeURIComponent(area || "")}`, { cache: "no-store" })
-    .then((response) => response.json())
-    .then((data) => {
-      // 変数名を 'result' から 'data' に変更
-      console.log("API レスポンス:", data);
-      if (data && data.success && data.data) {
-        const records = data.data;
-        console.log("取得したデータレコード:", records);
-        // ここで records を使用してデータを表示したり、状態に保存したりする
-        setCalendarData(records); // 例: state に保存する場合
-      } else {
-        console.error("データの取得に失敗しました:", data);
-        // エラー処理
-      }
-    })
-    .catch((error) => {
-      console.error("Fetch エラー:", error);
-      // エラー処理
-    });
+  useEffect(() => {
+    console.log("areaの値：", area);
+    fetch(`/api?area=${encodeURIComponent(area || "")}`, { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data) => {
+        // 変数名を 'result' から 'data' に変更
+        console.log("API レスポンス:", data);
+        if (data && data.success && data.data) {
+          const records = data.data;
+          console.log("取得したデータレコード:", records);
+          setCalendarData(records);
+        } else {
+          console.error("データの取得に失敗しました:", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Fetch エラー:", error);
+      });
+  });
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
@@ -100,17 +92,32 @@ export default function CalendarPage() {
     // 前月の日を追加
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = dayOfWeek - 1; i >= 0; i--) {
-      days.push({ day: prevMonthLastDay - i, current: false, trashTypes: [] });
+      days.push({
+        day: prevMonthLastDay - i,
+        current: false,
+        trashTypes: [],
+        garbageDayValue: null,
+      });
     }
 
     // 当月の日を追加
     for (let i = 1; i <= lastDay.getDate(); i++) {
       const date = new Date(year, month, i);
       const dayOfWeek = date.getDay();
+      console.log(dayOfWeek);
 
       // この日に収集されるゴミの種類を取得
       const weekday = getWeekdayFromNumber(dayOfWeek);
       const trashTypes = getTrashTypesForWeekday(weekday);
+
+      // recordsからゴミの収集日を取得
+      console.log("calendarData:", calendarData);
+      const garbageDayValue = calendarData
+        ? getGarbageDay(date, calendarData)
+        : null;
+      console.log(
+        `日付: ${date.toISOString().slice(0, 10)}, ゴミ情報: ${garbageDayValue}`
+      );
 
       days.push({
         day: i,
@@ -120,13 +127,20 @@ export default function CalendarPage() {
           selectedDate.getMonth() === month &&
           selectedDate.getFullYear() === year,
         trashTypes: trashTypes,
+        garbageDayValue: garbageDayValue,
       });
+      console.log(days);
     }
 
     // 次月の日を追加
     const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
-      days.push({ day: i, current: false, trashTypes: [] });
+      days.push({
+        day: i,
+        current: false,
+        trashTypes: [],
+        garbageDayValue: null,
+      });
     }
 
     return days;
@@ -135,26 +149,6 @@ export default function CalendarPage() {
   const days = generateCalendarDays();
   const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
 
-  const getTrashIcon = (trashType: TrashType) => {
-    switch (trashType) {
-      case "Combustible":
-        return getExternalTrashIcon("Combustible");
-      case "Non-Combustible":
-        return getExternalTrashIcon("Non-Combustible");
-      case "Bottles":
-        return getExternalTrashIcon("Bottles");
-      case "Plastic":
-        return getExternalTrashIcon("Plastic");
-      case "Paper":
-        return getExternalTrashIcon("Paper");
-      case "Branches":
-        return getExternalTrashIcon("Branches");
-      default:
-        return getExternalTrashIcon("Not Collected");
-    }
-  };
-
-  // ゴミの種類の名前を取得
   const getTrashName = (trashType: TrashType) => {
     return t(`result.${trashType}`);
   };
@@ -197,6 +191,40 @@ export default function CalendarPage() {
                   </div>
                 ))}
 
+                {/* {days.map((day, i) => (
+                  <div
+                    key={i}
+                    className={`relative px-0 mb-1 py-0 pb-2 mt-2 h-14 flex flex-col items-center text-lg font-semibold justify-start ${
+                      day.selected ? "bg-[#cbe8ed] rounded-full" : ""
+                    } ${!day.current ? "text-gray-300" : ""}`}
+                  >
+                    <span className="mb-1">{day.day}</span>
+
+                    {day.current && (
+                      <div className="flex flex-col items-center mt-auto">
+                        {day.trashTypes && day.trashTypes.length > 0 && (
+                          <div className="flex justify-center space-x-0.5">
+                            {day.trashTypes.map((trashType, index) => (
+                              <Tooltip key={index}>
+                                <TooltipTrigger asChild>
+                                  <div>{getExternalTrashIcon(trashType)}</div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{getTrashName(trashType)}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            ))}
+                          </div>
+                        )}
+                        {day.garbageDayValue !== null && (
+                          <div className="mt-1">
+                            {getTrashIcon(day.garbageDayValue)}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))} */}
                 {days.map((day, i) => (
                   <div
                     key={i}
@@ -206,29 +234,20 @@ export default function CalendarPage() {
                   >
                     <span className="mb-1">{day.day}</span>
 
-                    {day.current &&
-                      day.trashTypes &&
-                      day.trashTypes.length > 0 && (
-                        <div className="flex justify-center space-x-0.5 mt-auto">
-                          {day.trashTypes.map((trashType, index) => (
-                            <Tooltip key={index}>
-                              <TooltipTrigger asChild>
-                                <div>{getTrashIcon(trashType)}</div>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>{getTrashName(trashType)}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          ))}
+                    {day.current && day.garbageDayValue !== null && (
+                      <div className="flex flex-col items-center mt-auto">
+                        <div className="mt-1">
+                          {getTrashIcon(day.garbageDayValue)}
                         </div>
-                      )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             </TooltipProvider>
           </div>
         </div>
-<IrregularComment />
+        <IrregularComment />
         <div className="bg-white p-4 mt-5">
           <VisionResult />
         </div>

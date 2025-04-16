@@ -1,4 +1,4 @@
-// icon.ts
+// AddIcon.ts
 import React from 'react';
 import { JSX } from "react";
 import { FaFire } from "react-icons/fa6";
@@ -12,13 +12,13 @@ import { FaExclamationCircle } from "react-icons/fa";
 
 
 const categoryIds: { [key: string]: string } = {
-  0: "Irregular",
-  1: "Combustible",
-  2: "Non-Combustible",
-  8: "Bottles",
-  9: "Plastic",
-  10: "Paper",
-  11: "Branches",
+  "0": "Irregular",
+  "1": "Combustible",
+  "2": "Non-Combustible",
+  "8": "Bottles",
+  "9": "Plastic",
+  "10": "Paper",
+  "11": "Branches",
 };
 
 export const getTrashIcon = (category: string | null): JSX.Element => {
