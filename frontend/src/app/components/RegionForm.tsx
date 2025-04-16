@@ -1,4 +1,4 @@
-
+//RegionForm
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -41,48 +41,48 @@ const RegionForm: React.FC = () => {
         setError(null);
 
         try {
-            // バックエンドへ郵便番号をもとに問い合わせ
-            const response = await fetch(`http://localhost:8000/areas?postal_code=${postalCode}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch area candidates');
-            }
-            const data = await response.json();
-            setAreaCandidates(data.areas);
-        } catch (error: any) {
-            console.error('Error fetching area candidates:', error);
-            setError(error.message || 'Unknown error');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleAreaSelect = async () => {
-      if (selectedArea) {
-        try {
-          const response = await axios.get(`http://localhost:8000/area/${selectedArea.area_en}`);
-          const area = response.data.area;
-          console.log(area);
-    
-          // setRegion の完了を待つ
-          await new Promise<void>((resolve, reject) => { // reject 引数を追加
-            setRegion({
-              area: area,
-              area_en: selectedArea.area_en,
-            });
-            resolve();
-          });
-    
-          // router.push を実行
-          router.push('/calendar');
-    
-        } catch (err) {
-          console.error('APIエラー:', err);
-          setError('エリア情報の取得に失敗しました。');
-        }
-      } else {
-        setError('エリアを選択してください。');
+          const response = await fetch(`http://localhost:8000/areas?postal_code=${postalCode}`);
+          if (!response.ok) {
+              throw new Error('Failed to fetch area candidates');
+          }
+          const data = await response.json();
+          setAreaCandidates(data.areas);
+      } catch (error: any) {
+          console.error('Error fetching area candidates:', error);
+          setError(error.message || 'Unknown error');
+      } finally {
+          setIsLoading(false);
       }
-    };
+  };
+
+
+
+  const handleAreaSelect = async () => {
+    if (selectedArea) {
+      try {
+        const response = await axios.get(`http://localhost:8000/area/${selectedArea.area_en}`);
+        const area = response.data.area;
+        console.log(area);
+
+        // setRegion の処理は必要であれば行う（ただし、遷移には直接影響させない）
+        setRegion({
+          area: area,
+          area_en: selectedArea.area_en,
+        });
+
+        // クエリパラメータを使用して area を渡す
+        router.push(`/calendar?area=${encodeURIComponent(area)}`);
+
+      } catch (err) {
+        console.error('APIエラー:', err);
+        setError('エリア情報の取得に失敗しました。');
+      }
+    } else {
+      setError('エリアを選択してください。');
+    }
+  };
+
+
 
     return (
         <div className="-mt-32">

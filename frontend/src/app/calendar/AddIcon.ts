@@ -8,14 +8,17 @@ import { FiPackage } from "react-icons/fi";
 import { TfiSpray } from "react-icons/tfi";
 import { GiTreeBranch } from "react-icons/gi";
 import { IoTrashBinSharp } from "react-icons/io5";
+import { FaExclamationCircle } from "react-icons/fa";
+
 
 const categoryIds: { [key: string]: string } = {
-  "1": "Combustible",
-  "2": "Non-Combustible",
-  "8": "Bottles",
-  "9": "Plastic",
-  "10": "Paper",
-  "11": "Branches",
+  0: "Irregular",
+  1: "Combustible",
+  2: "Non-Combustible",
+  8: "Bottles",
+  9: "Plastic",
+  10: "Paper",
+  11: "Branches",
 };
 
 export const getTrashIcon = (category: string | null): JSX.Element => {
@@ -34,6 +37,8 @@ export const getTrashIcon = (category: string | null): JSX.Element => {
         return React.createElement(FiPackage, { style: { color: 'rgba(185, 137, 32, 1)' } });
       case "Branches":
         return React.createElement(GiTreeBranch, { style: { color: 'rgba(199, 134, 14, 1)' } });
+      case "Irregular":
+        return React.createElement(FaExclamationCircle, { style: { color: 'rgba(255, 255, 0, 1)' } });
       default:
         return React.createElement(IoTrashBinSharp, { size: 24, color: "gray" });
     }

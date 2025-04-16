@@ -10,7 +10,7 @@ export const VisionResult: React.FC = () => {
   const { visionData } = useVision();
 
   if (!visionData) {
-    return <div>Vision API の結果はありません。</div>;
+    return <div> </div>;
   }
 
   return (

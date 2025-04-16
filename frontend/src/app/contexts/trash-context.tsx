@@ -5,7 +5,7 @@ import React from 'react';
 import { createContext, useContext, useState } from "react";
 
 // ゴミの種類
-export type TrashType = "Combustible" | "Non-Combustible" | "Bottles" | "Plastic"|"Paper"|"Branches"|"Not Collected";
+export type TrashType = "Irregular"|"Combustible" | "Non-Combustible" | "Bottles" | "Plastic"|"Paper"|"Branches"|"Not Collected";
 
 // 曜日
 export type WeekDay = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";

@@ -1,13 +1,10 @@
-//calendar
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Navigation } from "../components/navigation";
 import { Button } from "../components/ui/button";
-import { useState, useEffect } from "react"; // useEffectを追加
-
 import { useLanguage } from "../contexts/language-context";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useTrash,
   type TrashType,
@@ -29,14 +26,8 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { FaTrashAlt } from "react-icons/fa";
-
-
-import { fetchCalendarData } from '../api/sapporo_calendar';
-
-
-
-
-
+import axios from "axios";
+import IrregularComment from "../components/IrregularComment";
 
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
@@ -53,44 +44,47 @@ const getWeekdayFromNumber = (num: number): WeekDay => {
 };
 
 export default function CalendarPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 現在の日付で初期化
+  const [selectedDate] = useState(new Date());
   const { t, language } = useLanguage();
-  const router = useRouter();
-  const { region, getCollectionDays, getTrashTypesForWeekday } = useTrash();
+  // const router = useRouter();
+  const { region, getTrashTypesForWeekday } = useTrash();
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+  // const [setCalendarData] = useState(null); // カレンダーデータを状態として管理
+  // const [apiError, setApiError] = useState<string | null>(null); // API エラーを状態として管理
+  const searchParams = useSearchParams();
+  const area = searchParams.get("area");
+  // const [calendarData, setCalendarData] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
 
+  console.log("areaの値：", area);
 
+  // fetch(`/api?area=${encodeURIComponent(area || "")}`, { cache: "no-store" })
+  // .then((response) => response.json())
+  // .then((result) => console.log(result))
+  // .catch((error) => {
+  //   console.log(error);
+  // });
 
-
-
-
-
-
-
-
-  const area = region?.area_en;
-
-    useEffect(() => {
-        console.log('areaの値:', area); // area の値を出力
-
-        if (area) {
-            fetchCalendarData(area)
-                .then(data => {
-                    console.log('APIからのデータ:', data); // API からのデータを出力
-                })
-                .catch(error => {
-                    console.error('APIエラー:', error); // API エラーを出力
-                });
-        }
-    }, [area]);
-
-
-
-
-
-
-
-
+  fetch(`/api?area=${encodeURIComponent(area || "")}`, { cache: "no-store" })
+    .then((response) => response.json())
+    .then((data) => {
+      // 変数名を 'result' から 'data' に変更
+      console.log("API レスポンス:", data);
+      if (data && data.success && data.data) {
+        const records = data.data;
+        console.log("取得したデータレコード:", records);
+        // ここで records を使用してデータを表示したり、状態に保存したりする
+        setCalendarData(records); // 例: state に保存する場合
+      } else {
+        console.error("データの取得に失敗しました:", data);
+        // エラー処理
+      }
+    })
+    .catch((error) => {
+      console.error("Fetch エラー:", error);
+      // エラー処理
+    });
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
@@ -141,7 +135,6 @@ export default function CalendarPage() {
   const days = generateCalendarDays();
   const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
 
-
   const getTrashIcon = (trashType: TrashType) => {
     switch (trashType) {
       case "Combustible":
@@ -172,10 +165,10 @@ export default function CalendarPage() {
     <div className="flex flex-col min-h-screen">
       <Navigation />
       {/* モバイル版のレイアウト */}
-      <div className="flex-1 flex flex-col space-y-4">
+      <div className="flex-1 flex flex-col space-y-4 mt-5">
         <div className="bg-white p-4">
           <div className="flex justify-between items-center">
-            <div className="text-lg mb-2">
+            <div className="text-lg font-bold mb-2">
               {language === "ja"
                 ? `${selectedDate.getFullYear()}年 ${
                     selectedDate.getMonth() + 1
@@ -195,47 +188,48 @@ export default function CalendarPage() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          <div className="rounded-xl border border-[#cbe8ed] bg-white p-4 shadow-sm">
+            <TooltipProvider>
+              <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                {weekdays.map((day, i) => (
+                  <div key={i} className="py-1">
+                    {day}
+                  </div>
+                ))}
 
-          <TooltipProvider>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs">
-              {weekdays.map((day, i) => (
-                <div key={i} className="py-1">
-                  {day}
-                </div>
-              ))}
+                {days.map((day, i) => (
+                  <div
+                    key={i}
+                    className={`relative px-0 mb-1 py-0 pb-2 mt-2 h-14 flex flex-col items-center text-lg font-semibold justify-start ${
+                      day.selected ? "bg-[#cbe8ed] rounded-full" : ""
+                    } ${!day.current ? "text-gray-300" : ""}`}
+                  >
+                    <span className="mb-1">{day.day}</span>
 
-              {days.map((day, i) => (
-                <div
-                  key={i}
-                  className={`relative py-2 px-0 mt-2 h-14 flex flex-col items-center text-lg font-semibold justify-start ${
-                    day.selected ? "bg-[#cbe8ed] rounded-full" : ""
-                  } ${!day.current ? "text-gray-300" : ""}`}
-                >
-                  <span className="mb-1">{day.day}</span>
-
-                  {day.current &&
-                    day.trashTypes &&
-                    day.trashTypes.length > 0 && (
-                      <div className="flex justify-center space-x-0.5 mt-auto">
-                        {day.trashTypes.map((trashType, index) => (
-                          <Tooltip key={index}>
-                            <TooltipTrigger asChild>
-                              <div>{getTrashIcon(trashType)}</div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{getTrashName(trashType)}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        ))}
-                      </div>
-                    )}
-                </div>
-              ))}
-            </div>
-          </TooltipProvider>
+                    {day.current &&
+                      day.trashTypes &&
+                      day.trashTypes.length > 0 && (
+                        <div className="flex justify-center space-x-0.5 mt-auto">
+                          {day.trashTypes.map((trashType, index) => (
+                            <Tooltip key={index}>
+                              <TooltipTrigger asChild>
+                                <div>{getTrashIcon(trashType)}</div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{getTrashName(trashType)}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                ))}
+              </div>
+            </TooltipProvider>
+          </div>
         </div>
-
-        <div className="bg-gray-200 p-4">
+<IrregularComment />
+        <div className="bg-white p-4 mt-5">
           <VisionResult />
         </div>
       </div>
@@ -245,6 +239,3 @@ export default function CalendarPage() {
     </div>
   );
 }
-
-
-
