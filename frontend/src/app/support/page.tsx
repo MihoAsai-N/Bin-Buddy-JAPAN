@@ -39,18 +39,6 @@ export default function SupportPage() {
       { role: "user", content: question },
     ];
 
-    // LLMの応答をシミュレート（実際の実装ではAPIを呼び出す）
-    setTimeout(() => {
-      setChatHistory([
-        ...newChatHistory,
-        {
-          role: "assistant",
-          content:
-            "ご質問ありがとうございます。Bin Buddyはゴミ分別をサポートするアプリです。住所を設定し、カレンダーでゴミ収集日を確認し、カメラでゴミを撮影すると分別方法を教えてくれます。",
-        },
-      ]);
-    }, 500);
-
     setChatHistory(newChatHistory);
     setQuestion("");
 
