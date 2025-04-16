@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/app/admin/components/shadcn/ui/select";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
+import { Textarea } from "@/app/admin/components/shadcn/ui/textarea";
 
 export default function SchedulesPageWrapper() {
   // データ型定義
@@ -77,6 +78,7 @@ export default function SchedulesPageWrapper() {
   const [selectedTab, setSelectedTab] = useState("schedules");
   const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>();
   const [selectedArea, setSelectedArea] = useState<string | undefined>();
+  const [note, setNote] = useState("");
 
   // フィルター処理
   const filteredSchedules = schedules.filter(
@@ -246,6 +248,23 @@ export default function SchedulesPageWrapper() {
               )}
             </CardContent>
           </Card>
+        {/* 備考欄カード */}
+        <Card className="bg-white">
+            <CardHeader>
+              <CardTitle>備考欄（定期的でない収集）</CardTitle>
+              <CardDescription>
+                特別な収集予定などを入力すると、ユーザーに通知が行われます。
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="例：5月3日は臨時の粗大ごみ収集日です。"
+                className="min-h-[100px] border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6]"
+              />
+            </CardContent>
+          </Card>  
         </main>
 
         {/* 未払い時のオーバーレイ */}
