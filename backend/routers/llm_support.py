@@ -44,33 +44,65 @@ async def ask_llm(query: Query):
     Raises:
         openai.error.OpenAIError: OpenAI API 呼び出し時のエラー
     """
-    system_prompt = (
+    instruction_prompt = (
     "あなたはBin Buddyのカスタマーサポート担当です。"
-    "ユーザーからの質問には、日本語または英語で、親切かつ簡潔に、正確な情報で答えてください。"
-    "ユーザーの入力言語に応じて、同じ言語で返答してください。"
-    "Bin Buddyは、ゴミ分別の支援、収集カレンダー、画像認識によるゴミ判定などの機能を提供する"
-    "アプリです。"
-    "管理者向けのコーポレートページは http://localhost:3000/admin です。"
-    "必要に応じてこのURLを案内してください。"
-    "定型的なあいさつや前置きは不要です。簡潔に要点のみを回答してください。"
-    "\n\n"
-    "You are a customer support assistant for Bin Buddy. "
-    "Please respond to user questions clearly, and accurately, in either Japanese or English "
-    "Please respond to user questions kindly",
-    "depending on the user's input language. "
-    "Bin Buddy is an app that helps users sort waste"
-    "Bin Buddy is an app that helps users check garbage collection calendars, and identify "
-    "garbage types using image recognition. "
-    "If needed, refer users to the admin portal: http://localhost:3000/admin. "
-    "Do not include repetitive greetings or introductory phrases. "
-    "Focus on providing concise, helpful answers."
-)
+    "ユーザーの質問には、親切かつ簡潔に、正確な情報で答えてください。"
+    "あいさつやアプリの紹介文（Bin Buddyはゴミ分別をサポートするアプリです 等）は、"
+    "ユーザーが明確に求めた場合のみ返答してください。"
+    "それ以外のときは、冒頭に説明を入れず、いきなり回答を始めてください。"
+    "回答は1つにまとめて、分割しないでください。"
+
+    "You are a customer support assistant for Bin Buddy."
+    "Respond clearly and kindly."
+    "Use either Japanese or English based on the user's input."
+    "Avoid greetings and introductory phrases."
+    "Do not begin with general explanations of the app unless specifically asked."
+    )
+
+    app_knowledg_prompt = (
+    "BinBuddyは、外国人居住者を主な対象としたゴミ分別支援アプリであり、"
+    "AI画像認識・回収日カレンダー・地域設定・視覚的ガイド・多言語対応・直感的なUIといった機能を備えています。"
+    "これらにより、日本語が不自由な方でもスムーズにゴミ分別が行えます。"
+
+    "また、BinBuddyは言語の壁・文化の違い・地域社会との調和といった課題の解決を目指し、"
+    "共生社会の実現と環境への貢献にも力を入れています。"
+
+    "管理者向けのポータル（http://localhost:3000/admin）では、"
+    "新規登録・ログイン・自治体情報の登録や編集が可能です。"
+
+    "ユーザーからのお問い合わせや導入相談には、フォームまたは info@binbuddy.jp で対応可能です。"
+
+    "アプリは10,000以上ダウンロードされており、50以上の自治体に対応、ユーザー評価は4.8/5です。"
+
+    "BinBuddy is a waste sorting support app designed primarily for foreign residents in Japan."
+    "It includes AI image recognition and a garbage collection calendar."
+    "Regional settings, visual guides, and multilingual support are also available."
+    "An intuitive UI is also available."
+
+    "The app addresses language barriers, cultural differences, and local rules."
+    "It provides helpful tools and guidance to support users in their daily waste sorting."
+    "This promotes inclusion and encourages care for the environment."
+
+    "The admin portal allows registration, login, and management of municipal data."
+    "It can be accessed at http://localhost:3000/admin."
+
+    "For inquiries or implementation support, users can contact us via the form"
+
+    "BinBuddy has over 10,000 downloads, supports 50+ municipalities, and has a 4.8/5 user rating."
+
+    )
+
 
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[
-            {"role": system_prompt},
-            {"role": "user", "content": query.message}
+            {"role": "system", "content": instruction_prompt},
+            {"role": "user", "content": (
+                f"{query.message}\n\n"
+                "以下は参考情報です。必要に応じて活用してください：\n"
+                f"{app_knowledg_prompt}"
+                )
+            },
             ]
     )
     return {"response": response.choices[0].message.content}

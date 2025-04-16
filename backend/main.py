@@ -6,7 +6,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 # 既存ルーターの読み込み
-from routers import classify, checkout, admin_info, areas, districts, garbage_types, schedules, llm_support
+from routers import (
+    classify,
+    checkout,
+    admin_info,
+    areas,
+    districts,
+    garbage_types,
+    schedules,
+    llm_support
+    )
 
 # .envファイルの読み込み
 load_dotenv()
