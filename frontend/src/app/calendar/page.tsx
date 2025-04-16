@@ -31,6 +31,13 @@ import {
 import { FaTrashAlt } from "react-icons/fa";
 
 
+import { fetchCalendarData } from '../api/sapporo_calendar';
+
+
+
+
+
+
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
   const weekdays: WeekDay[] = [
@@ -51,6 +58,38 @@ export default function CalendarPage() {
   const router = useRouter();
   const { region, getCollectionDays, getTrashTypesForWeekday } = useTrash();
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+
+
+
+
+
+
+
+
+
+
+  const area = region?.area_en;
+
+    useEffect(() => {
+        console.log('areaの値:', area); // area の値を出力
+
+        if (area) {
+            fetchCalendarData(area)
+                .then(data => {
+                    console.log('APIからのデータ:', data); // API からのデータを出力
+                })
+                .catch(error => {
+                    console.error('APIエラー:', error); // API エラーを出力
+                });
+        }
+    }, [area]);
+
+
+
+
+
+
+
 
 
   // カレンダーの日付を生成
