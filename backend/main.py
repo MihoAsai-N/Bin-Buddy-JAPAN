@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 # 既存ルーターの読み込み
-from routers import classify, checkout, admin_info, areas, districts, garbage_types, schedules
+from routers import classify, checkout, admin_info, areas, districts, garbage_types, schedules, llm_support
 
 # .envファイルの読み込み
 load_dotenv()
@@ -30,6 +30,7 @@ app.include_router(areas.router)
 app.include_router(districts.router)
 app.include_router(garbage_types.router)
 app.include_router(schedules.router)
+app.include_router(llm_support.router)
 
 if __name__ == "__main__":
     import uvicorn
