@@ -20,11 +20,10 @@ import os
 from fastapi import APIRouter
 from pydantic import BaseModel
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 router = APIRouter()
 
 class Query(BaseModel):
@@ -45,7 +44,7 @@ async def ask_llm(query: Query):
     Raises:
         openai.error.OpenAIError: OpenAI API 呼び出し時のエラー
     """
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": query.message}]
     )
