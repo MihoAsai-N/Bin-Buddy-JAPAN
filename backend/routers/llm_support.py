@@ -60,7 +60,8 @@ def embed(text: str) -> list[float]:
 # FAISS インデックス構築（初期化）
 doc_embeddings = [embed(doc) for doc in documents]
 index = faiss.IndexFlatL2(len(doc_embeddings[0]))
-index.add(np.array(doc_embeddings).astype("float32"))#NOTE:VSCode の型チェッカー（Pylance や Pyright）による誤検知。無視しても機能上の問題はなし。
+index.add(np.array(doc_embeddings).astype("float32"))
+#NOTE:VSCode の型チェッカー（Pylance や Pyright）による誤検知。無視しても機能上の問題はなし。
 
 class Query(BaseModel):
     """ユーザーから送信される問い合わせ内容を保持するリクエストボディスキーマ。"""
