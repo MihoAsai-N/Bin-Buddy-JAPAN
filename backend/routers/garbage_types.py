@@ -10,9 +10,9 @@ router = APIRouter()
 
 # 仮データ
 mock_garbage_types = [
-    {"id": "1", "name": "可燃ごみ", "color": "bg-red-200 text-red-800"},
-    {"id": "2", "name": "不燃ごみ", "color": "bg-gray-300 text-gray-800"},
-    {"id": "3", "name": "資源ごみ", "color": "bg-green-200 text-green-800"},
+    {"id": "1", "name": "可燃ごみ", "color": "bg-red-100 text-red-800"},
+    {"id": "2", "name": "不燃ごみ", "color": "bg-gray-200 text-gray-800"},
+    {"id": "3", "name": "資源ごみ", "color": "bg-green-100 text-green-800"},
 ]
 
 @router.get("/garbage-types")

@@ -61,9 +61,15 @@ export default function SchedulesPageWrapper() {
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  const { data: districts } = useSWR<District[]>("http://localhost:8000/districts", fetcher);
+  const { data: districts } = useSWR<District[]>(
+    "http://localhost:8000/districts",
+    fetcher
+  );
 
-  const { data: areas } = useSWR<Area[]>("http://localhost:8000/areas", fetcher);
+  const { data: areas } = useSWR<Area[]>(
+    "http://localhost:8000/areas",
+    fetcher
+  );
 
   const { data: garbageTypes } = useSWR<GarbageType[]>(
     "http://localhost:8000/garbage-types",
@@ -75,7 +81,10 @@ export default function SchedulesPageWrapper() {
     fetcher
   );
 
-  const { data: adminInfo } = useSWR<AdminInfo>("http://localhost:8000/admin-info", fetcher);
+  const { data: adminInfo } = useSWR<AdminInfo>(
+    "http://localhost:8000/admin-info",
+    fetcher
+  );
 
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("schedules");
@@ -145,17 +154,15 @@ export default function SchedulesPageWrapper() {
                     value={selectedDistrict}
                     onValueChange={setSelectedDistrict}
                   >
-                    <SelectTrigger
-                    className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]"
-                    >
+                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
                       <SelectValue placeholder="地区を選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-[#4a5568]">
                       {districts?.map((district) => (
-                        <SelectItem 
-                        key={district.id} 
-                        value={district.id}
-                        className="data-[state=checked]:bg-[#e1f2f5] data-[state=checked]:text-[#78B9C6] hover:bg-[#f0f5f8]"
+                        <SelectItem
+                          key={district.id}
+                          value={district.id}
+                          className="data-[state=checked]:bg-[#e1f2f5] data-[state=checked]:text-[#78B9C6] hover:bg-[#f0f5f8]"
                         >
                           {district.name}
                         </SelectItem>
@@ -170,19 +177,17 @@ export default function SchedulesPageWrapper() {
                     onValueChange={setSelectedArea}
                     disabled={!selectedDistrict}
                   >
-                    <SelectTrigger
-                    className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]"
-                    >
+                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
                       <SelectValue placeholder="エリアを選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-[#4a5568]">
                       {areas
                         ?.filter((a) => a.districtId === selectedDistrict)
                         .map((area) => (
-                          <SelectItem 
-                          key={area.id}
-                          value={area.id}
-                          className="data-[state=checked]:bg-[#e1f2f5] data-[state=checked]:text-[#78B9C6] hover:bg-[#f0f5f8]"
+                          <SelectItem
+                            key={area.id}
+                            value={area.id}
+                            className="data-[state=checked]:bg-[#e1f2f5] data-[state=checked]:text-[#78B9C6] hover:bg-[#f0f5f8]"
                           >
                             {area.name}
                           </SelectItem>
@@ -235,6 +240,7 @@ export default function SchedulesPageWrapper() {
                             {getGarbageTypeName(schedule.garbageTypeId)}
                           </span>
                         </TableCell>
+
                         <TableCell className="text-center space-x-2">
                           <button
                             onClick={() => console.log("編集", schedule.id)}
