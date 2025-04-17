@@ -60,7 +60,7 @@ def embed(text: str) -> list[float]:
 # FAISS インデックス構築（初期化）
 doc_embeddings = [embed(doc) for doc in documents]
 index = faiss.IndexFlatL2(len(doc_embeddings[0]))
-index.add(np.array(doc_embeddings).astype("float32"))
+index.add(np.array(doc_embeddings).astype("float32"))# type: ignore
 #NOTE:VSCode の型チェッカー（Pylance や Pyright）による誤検知。無視しても機能上の問題はなし。
 
 class Query(BaseModel):
@@ -85,7 +85,8 @@ async def ask_llm(query: Query):
 
     # ユーザー入力のベクトル化と検索
     input_vec = np.array([embed(query.message)]).astype("float32")
-    _, I = index.search(input_vec, k=3) #NOTE:FAISS公式の例でも I が使われている。無視しても機能上の問題はなし。
+    _, I = index.search(input_vec, k=3) # type: ignore
+    #NOTE:FAISS公式の例でも I が使われている。無視しても機能上の問題はなし。
     context_docs = "\n\n".join([documents[i] for i in I[0]])
 
     user_prompt = (
