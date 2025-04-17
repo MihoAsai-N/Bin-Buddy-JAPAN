@@ -1,0 +1,9 @@
+﻿id,sorting_id,jp ,en ,zh
+1,1,燃やせるごみ（有料）/スプレー缶類（別袋無料）,Combustible Waste (Paid) / Spray Cans - Separate Bag Required(Free),可燃垃圾（收费）/ 喷雾罐类（需另装袋，免费）
+2,2,燃やせないごみ（有料）/加熱式たばこ・ライター（別袋無料）,Non-Combustible Waste (Paid) / Heated Tobacco & Lighters - Separate Bag Required(Free),不可燃垃圾（收费）/ 加热香烟・打火机（需另装袋，免费）
+3,8,びん・缶・ペット（無料）/乾電池（別袋無料）,"Bottles, Cans & PET (Free) / Dry Cell Batteries - Separate Bag Required(Free)",瓶子・罐子・PET塑料瓶（免费）/ 干电池（需另装袋，免费）
+4,9,容器プラ（無料）,Plastic Containers & Packaging (Free),塑料容器包装（免费）
+5,10,雑がみ（無料）,Miscellaneous Paper (Free),杂纸（免费）
+6,11,枝・葉・草（無料）,"Branches, Leaves & Grass (Free)",树枝・树叶・草（免费）
+7,,収集なし,Not Collected,不回收
+8,1,スプレー缶類,Aerosol cans,喷雾罐类
