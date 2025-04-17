@@ -75,10 +75,10 @@ const RegionForm: React.FC = () => {
 
       } catch (err) {
         console.error('APIエラー:', err);
-        setError('エリア情報の取得に失敗しました。');
+        setError('Failed to get area information.');
       }
     } else {
-      setError('エリアを選択してください。');
+      setError('Please select an area.');
     }
   };
 
@@ -109,7 +109,8 @@ const RegionForm: React.FC = () => {
                                 className="bg-[#8ebac1] hover:bg-[#789ea3] text-white px-8"
                                 disabled={isLoading}
                             >
-                                {isLoading ? '読み込み中...' : '検索'}
+                                {isLoading ? '読み込み中...' : t("main.go")}
+                            
                             </Button>
                         </div>
                     </form>
@@ -118,10 +119,10 @@ const RegionForm: React.FC = () => {
 
                     {areaCandidates.length > 0 && (
                         <div className='mt-7'>
-                            <Label htmlFor="area">エリアを選択してください</Label>
+                            <Label htmlFor="area">{t("main.selectAnArea")}</Label>
                             <Select onValueChange={(value) => setSelectedArea(areaCandidates.find(area => area.area_en === value) || null)} value={selectedArea?.area_en || ""}>
                                 <SelectTrigger id="area">
-                                    <SelectValue placeholder="エリアを選択" />
+                                    <SelectValue placeholder={t("main.areaSelect")} />
                                 </SelectTrigger>
                                 <SelectContent className='bg-white'>
                                     {areaCandidates.map((area) => (
@@ -136,7 +137,7 @@ const RegionForm: React.FC = () => {
                                     onClick={handleAreaSelect}
                                     className="bg-[#8ebac1] hover:bg-[#789ea3] text-white px-8"
                                 >
-                                    選択
+                                    OK
                                 </Button>
                             </div>
                         </div>

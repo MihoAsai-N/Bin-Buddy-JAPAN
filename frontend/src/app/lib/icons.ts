@@ -35,8 +35,8 @@ export const getTrashIcon = (category: string | null): JSX.Element => {
     case "Branches":
       return React.createElement(GiTreeBranch, { style: { color: 'rgba(199, 134, 14, 1)' } });
     case "Irregular":
-      return React.createElement(FaExclamationCircle, { style: { color: 'rgba(255, 255, 0, 1)' } });
+      return React.createElement(FaExclamationCircle, { style: { color: 'rgb(255, 202, 40)' } });
     default:
-      return React.createElement(IoTrashBinSharp, { size: 24, color: "gray" });
+      return React.createElement(IoTrashBinSharp, { color: "gray" });
   }
 };

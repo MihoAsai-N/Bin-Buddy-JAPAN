@@ -15,5 +15,6 @@ export const legendItems: LegendItem[] = [
   { category: "Bottles", labelKey: "result.Bottles", icon: getTrashIcon("Bottles") },
   { category: "Paper", labelKey: "result.Paper", icon: getTrashIcon("Paper") },
   { category: "Branches", labelKey: "result.Branches", icon: getTrashIcon("Branches") },
+  { category: "Irregular", labelKey: "result.Irregular", icon: getTrashIcon("Irregular") },
   { category: "Not Collected", labelKey: "result.Not", icon: getTrashIcon("Not Collected") },
 ];

@@ -16,10 +16,10 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { FaTrashAlt } from "react-icons/fa";
 import IrregularComment from "../components/IrregularComment";
 import { getGarbageDay } from "../lib/utils";
 import { getTrashIcon } from "./AddIcon";
+import { FcComments } from "react-icons/fc";
 
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
@@ -162,7 +162,7 @@ export default function CalendarPage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button>
-                  <FaTrashAlt className="h-4 w-4 mb-2" />
+                  <FcComments className="h-5 w-5 mb-2" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white">
