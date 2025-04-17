@@ -78,11 +78,12 @@ const translations = {
     "register.password": "パスワード",
     "register.confirm": "パスワード（確認）",
     "register.submit": "登録する",
-    "register.price": "月額料金: 500円",
+    "register.price": "月額料金: 200円",
     "register.features": "利用可能な機能:",
-    "register.feature.1": "無制限のゴミ分別",
+    "register.feature.1": "無制限のサポート",
     "register.feature.2": "収集日のリマインダー",
     "register.feature.3": "地域別のゴミ分別ルール",
+    "register.feature.4": "アカウントの共有",
 
     // サポート画面
     "support.title": "サポート",
@@ -170,11 +171,12 @@ const translations = {
     "register.password": "Password",
     "register.confirm": "Confirm Password",
     "register.submit": "Register",
-    "register.price": "Monthly fee: 500 JPY",
+    "register.price": "Monthly fee: 200 JPY",
     "register.features": "Available features:",
-    "register.feature.1": "Unlimited trash sorting",
+    "register.feature.1": "Unlimited support",
     "register.feature.2": "Collection day reminders",
     "register.feature.3": "Region-specific sorting rules",
+    "register.feature.4": "Account sharing",
 
     // Support Screen
     "support.title": "Support",
