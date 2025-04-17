@@ -1,7 +1,7 @@
 """FastAPI アプリケーションのエントリーポイント。CORS設定およびルーターを含む。"""
 
 # import os # 今は未使用
-import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -47,6 +47,7 @@ app.include_router(llm_support.router)
 # ルート確認用
 @app.get("/")
 def read_root():
+    """アプリケーションのルートパス。動作確認用のメッセージを返す。"""
     return {"message": "お前は今、正しくFastAPIに辿り着いた"}
 
 # 起動用（Dockerには不要だけどローカルで便利）
