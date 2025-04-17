@@ -10,10 +10,11 @@ SQLAlchemy ORMモデル定義ファイル。
 各モデルは SQLAlchemy の Base クラスを継承しており、FastAPI + PostgreSQL 環境で使用される。
 """
 
+from datetime import datetime
+
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
 
 Base = declarative_base()
 
@@ -36,7 +37,7 @@ class SortingNumber(Base):
     ごみの分類カテゴリを表すモデル（例：可燃ごみ、不燃ごみなど）。
     """
     __tablename__ = "sorting_numbers"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True )
     categories = Column(String, nullable=False)
 
     items = relationship("WasteItem", back_populates="category")
@@ -67,9 +68,11 @@ class CityArea(Base):
     __tablename__ = "sapporo_city_area"
     id = Column(Integer, primary_key=True)
     area = Column(String, nullable=False)
+    area_id = Column(Integer)
+    ward_id = Column(Integer)
 
     zipcodes = relationship("AreaZipcodeHigashi", back_populates="city_area")
-    area_sortings = relationship("AreaSorting", back_populates="area_rel")
+    # area_sortings = relationship("AreaSorting", back_populates="area_rel")
 
 
 # Area Zipcode (Higashi-ku)
@@ -77,9 +80,10 @@ class AreaZipcodeHigashi(Base):
     """
     地区と郵便番号の対応関係を持つモデル（札幌市東区を対象）。
     """
-    __tablename__ = "area_address_with_zip"
+    __tablename__ = "area_address_with_zipcode"
     id = Column(Integer, primary_key=True)
-    area = Column(Integer, ForeignKey("sapporo_city_area.id"))
+    area = Column(String)
+    area_id = Column(Integer, ForeignKey("sapporo_city_area.id"))
     area_en = Column(String)
     postalcode = Column(String)
 
@@ -103,12 +107,16 @@ class AreaSorting(Base):
     地区ごとに対応するごみ分類IDとの関係を保持するモデル。
     """
     __tablename__ = "area_sorting"
+
     id = Column(Integer, primary_key=True)
-    area = Column(Integer, ForeignKey("sapporo_city_area.id"))
+
+    # 表示用や検索用に使う文字列（市区名とか）
+    area = Column(String, nullable=True)  # 明示的に追加
+
     sorting_id = Column(Integer, ForeignKey("sorting_numbers.id"))
 
     sorting = relationship("SortingNumber", back_populates="area_sortings")
-    area_rel = relationship("CityArea", back_populates="area_sortings")
+    # area_rel = relationship("CityArea", back_populates="area_sortings")
 
 # AdminInfo
 class AdminInfo(Base):
@@ -127,4 +135,6 @@ class AdminInfo(Base):
     contact_person = Column(String)
     phone_number = Column(String)
     email = Column(String)
-    last_login = Column(DateTime) 
+    last_login = Column(DateTime)
+    payment_status = Column(String)
+    note = Column(String, nullable=True)
