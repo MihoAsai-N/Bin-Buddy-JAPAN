@@ -1,7 +1,7 @@
 "use client"
 
-import type React from "react"
 
+import React from 'react';
 import { Navigation } from "../components/navigation"
 import { useLanguage } from "../contexts/language-context"
 import { Button } from "../components/ui/button"
@@ -69,7 +69,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="pt-4">
-                <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
+                <Button type="submit" className="w-full bg-[#8ebac1] hover:bg-[#789ea3]">
                   {t("register.submit")}
                 </Button>
               </div>
@@ -80,16 +80,20 @@ export default function RegisterPage() {
             <p className="mt-2 font-medium">{t("register.features")}</p>
             <ul className="mt-2 space-y-1">
               <li className="flex items-center">
-                <Check className="mr-2 h-4 w-4 text-green-500" />
+                <Check className="mr-2 h-4 w-4 text-fuchsia-500" />
                 <span>{t("register.feature.1")}</span>
               </li>
               <li className="flex items-center">
-                <Check className="mr-2 h-4 w-4 text-green-500" />
+                <Check className="mr-2 h-4 w-4 text-fuchsia-500" />
                 <span>{t("register.feature.2")}</span>
               </li>
               <li className="flex items-center">
-                <Check className="mr-2 h-4 w-4 text-green-500" />
+                <Check className="mr-2 h-4 w-4 text-fuchsia-500" />
                 <span>{t("register.feature.3")}</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="mr-2 h-4 w-4 text-fuchsia-500" />
+                <span>{t("register.feature.4")}</span>
               </li>
             </ul>
           </CardFooter>

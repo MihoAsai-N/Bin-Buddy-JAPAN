@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react';
 import { signInWithEmailAndPassword, auth } from "../../../lib/firebaseConfig"
 import { useRouter } from "next/navigation"
 import Image from "next/image"

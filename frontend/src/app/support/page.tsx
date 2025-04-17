@@ -95,10 +95,7 @@ export default function SupportPage() {
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                 />
-                <Button
-                  type="submit"
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
+                <Button type="submit" className="bg-[#8ebac1] hover:bg-[#789ea3]">
                   {t("support.send")}
                 </Button>
               </form>

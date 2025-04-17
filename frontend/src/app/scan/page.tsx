@@ -4,98 +4,82 @@ import { Navigation } from "../components/navigation"
 import { useLanguage } from "../contexts/language-context"
 import { Button } from "../components/ui/button"
 import { useRouter } from "next/navigation"
-import { useState, useRef, useEffect, useCallback } from "react"
+import React, { useState, useRef, useEffect, useCallback } from "react"
 import { useTrash, type TrashType } from "../contexts/trash-context"
+import { useVision } from "../contexts/vision-context";
+import { StopScan } from "../components/StopScan"
+import { Camera } from "react-icons/fi";
+import { RiCameraLensAiLine } from "react-icons/ri";
+import { RiCameraLensFill } from "react-icons/ri";
 
 export default function ScanPage() {
   const { t: originalT, language } = useLanguage();
   const t = useCallback((key: string) => originalT(key), [originalT]);
-  const router = useRouter()
-  const { setTrashResult } = useTrash()
+  const router = useRouter();
+  const { setTrashResult } = useTrash();
+  const { setVisionData } = useVision();
 
-  const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false) // カメラプレビューの状態
-  const [capturedImage, setCapturedImage] = useState<string | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false) // API分析の状態
+  const [isCameraPreviewActive, setIsCameraPreviewActive] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null); // useRef でストリームを管理
 
   interface ClassifyResponse {
     predictions: { [key: string]: number };
     best_match: string | null;
   }
 
-  let stream: MediaStream | null = null;
-  const startCamera = async () => {
-
+  const startCamera = async () => { // useEffect の外で定義
     try {
-      console.log("42");//TODO:最後消す
-      stream = await navigator.mediaDevices.getUserMedia({
+      streamRef.current = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
-      })
-      console.log("44");//TODO:最後消す
+      });
       if (videoRef.current) {
-        console.log("カメラストリームを取得しました", stream);
-        videoRef.current.srcObject = stream;
-        
+        videoRef.current.srcObject = streamRef.current;
       }
     } catch (err) {
-      console.log("カメラの起動に失敗しました:", err);
       setError(t("scan.error.camera_failed"));
     }
   };
-  useEffect(() => {  
 
-    console.log("useEffect実行 - カメラ状態:", isCameraPreviewActive);
-    
-    if (isCameraPreviewActive) {
-      console.log("カメラを起動します");
-      startCamera();
-    } else if (stream) {
-      // カメラを停止
-      console.log("カメラを停止します");
-      stream.getTracks().forEach((track) => track.stop());
-      stream = null;
-    }
+  useEffect(() => {
+    setIsCameraPreviewActive(true);
+    startCamera();
 
-    // クリーンアップ関数
     return () => {
-      if (stream) {
-        console.log("コンポーネントアンマウント - カメラを停止します");
-        stream.getTracks().forEach((track) => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isCameraPreviewActive, language, t]);
-
-  const handleCancel = () => {
-    router.push("/calendar")
-  }
+  }, [language, t]);
 
   const captureImage = () => {
     if (videoRef.current && canvasRef.current && !isAnalyzing) {
-      const video = videoRef.current
-      const canvas = canvasRef.current
-      const context = canvas.getContext("2d")
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
 
       if (context) {
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageDataUrl = canvas.toDataURL("image/png")
-        setCapturedImage(imageDataUrl)
-        setIsCameraPreviewActive(false)
-        
-        // カメラを明示的に停止
-        if (video.srcObject) {
-          const stream = video.srcObject as MediaStream;
-          stream.getTracks().forEach(track => track.stop());
-          video.srcObject = null;
+        const imageDataUrl = canvas.toDataURL("image/png");
+        setCapturedImage(imageDataUrl);
+        setIsCameraPreviewActive(false);
+
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current = null;
+          videoRef.current.srcObject = null; //videoRef.current.srcObjectもnullにする。
         }
       }
     }
-  }
+  };
 
   const retakeImage = () => {
     setCapturedImage(null)
@@ -155,15 +139,19 @@ export default function ScanPage() {
             console.error("画像分析APIエラー:", errorData);
             setError(t("scan.error.analyze"));
           } else {
+            // const data: ClassifyResponse = await response.json();
+            // setTrashResult(data.best_match as TrashType || "unknown");
+            // router.push("/result");
             const data: ClassifyResponse = await response.json();
             setTrashResult(data.best_match as TrashType || "unknown");
-            router.push("/result");
+            setVisionData(data); // Ensure the type matches the updated definition
+            router.push("/calendar");
           }
         };
         img.onerror = (error) => {
           console.error("画像のロードに失敗しました:", error);
           setError(t("scan.error.image_load_failed"));
-          setIsAnalyzing(false); // ここを修正: setIsProcessing -> setIsAnalyzing
+          setIsAnalyzing(false);
         };
         img.src = capturedImage;
       } catch (error) {
@@ -184,54 +172,30 @@ export default function ScanPage() {
       <Navigation />
 
       <div className="flex-1 p-4 flex flex-col items-center justify-center space-y-6">
-        {error && (
-          <div className="text-red-500 mb-4 text-center">{error}</div>
-        )}
-
-        {!isCameraPreviewActive && !capturedImage && (
-          <>
-            <div className="text-center mb-8">{t("scan.take.photo")}</div>
-
-            <div className="relative">
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center">
-                <div
-                  className="w-24 h-24 border-4 border-red-500 rounded-full flex items-center justify-center cursor-pointer"
-                  onClick={() => {
-                    console.log("カメラを起動します");
-                    setIsCameraPreviewActive(true);
-                  }}
-                >
-                  <div className="w-20 h-20 bg-red-500 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            <Button variant="outline" className="mt-8" onClick={handleCancel}>
-              {t("scan.cancel")}
-            </Button>
-          </>
-        )}
+        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
 
         {isCameraPreviewActive && (
           <>
             <div className="relative w-full max-w-sm">
-              <video 
-                key={`video-${Date.now()}`} 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
+              <video
+                key={`video-${Date.now()}`}
+                ref={videoRef}
+                autoPlay
+                playsInline
                 muted
-                className="w-full rounded-lg border-2 border-gray-300" 
+                className="w-full rounded-lg border-2 border-gray-300"
               />
             </div>
 
-            <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={captureImage}>
+            {/* <Button className="bg-red-500 hover:bg-red-600 text-white rounded-full w-20 h-20" onClick={captureImage}>
               {t("scan.take.picture")}
-            </Button>
-
-            <Button variant="outline" onClick={handleCancel}>
-              {t("scan.cancel")}
-            </Button>
+            </Button> */}
+            <Button
+  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-19 h-19 flex items-center justify-center"
+  onClick={captureImage}
+>
+  <RiCameraLensFill   className="w-8 h-12" />
+</Button>
           </>
         )}
 
@@ -247,7 +211,7 @@ export default function ScanPage() {
               </Button>
 
               <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+                className="bg-gray-500 hover:bg-gray-700 text-white"
                 onClick={analyzeImage}
                 disabled={isAnalyzing}
               >
@@ -259,8 +223,10 @@ export default function ScanPage() {
 
         <canvas ref={canvasRef} className="hidden" />
 
-        <div className="text-xs text-gray-500 text-center mt-auto">{t("common.copyright")}</div>
+        <div className="text-xs text-[#2d3748] text-center mt-auto">{t("common.copyright")}</div>
       </div>
+
+<StopScan/>
     </div>
-  )
+  );
 }

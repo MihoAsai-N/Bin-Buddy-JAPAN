@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react';
 import Image from "next/image"
 import { User, Calendar, Settings, LogOut } from "lucide-react"
 import { Button } from "@/app/admin/components/shadcn/ui/button"

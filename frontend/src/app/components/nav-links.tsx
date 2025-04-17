@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react';
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useLanguage } from "../contexts/language-context"
@@ -10,13 +11,11 @@ export function NavLinks() {
   const { t } = useLanguage()
 
   const links = [
-    // { href: "/", label: t("common.main"), icon: <Home className="h-5 w-5" /> },
-    // { href: "/calendar", label: t("common.calendar"), icon: <Calendar className="h-5 w-5" /> },
     { href: "/scan", label: t("common.scan"), icon: <Camera className="h-5 w-5" /> },
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-2 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#cbe8ed] border-t flex justify-around">
       {links.map((link) => {
         const isActive = pathname === link.href
 
@@ -25,7 +24,7 @@ export function NavLinks() {
             key={link.href}
             href={link.href}
             className={`flex flex-col items-center px-4 py-2 ${
-              isActive ? "text-purple-600 font-bold" : "text-gray-500"
+              isActive ? "text-purple-600 font-bold" : " text-cyan-900 font-bold"
             }`}
           >
             {link.icon}

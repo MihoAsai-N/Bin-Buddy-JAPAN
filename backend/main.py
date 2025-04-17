@@ -4,6 +4,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+import os
 
 # 既存ルーターの読み込み
 from routers import (
@@ -14,7 +15,8 @@ from routers import (
     districts,
     garbage_types,
     schedules,
-    llm_support
+    llm_support,
+    area_search
     )
 
 # .envファイルの読み込み
@@ -33,6 +35,7 @@ app.add_middleware(
 
 # ルーターをアプリケーションに含める
 app.include_router(classify.router)
+app.include_router(area_search.router)
 app.include_router(checkout.router)
 app.include_router(admin_info.router)
 app.include_router(areas.router)
