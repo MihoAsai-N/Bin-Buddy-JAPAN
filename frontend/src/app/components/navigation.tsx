@@ -1,4 +1,6 @@
 "use client"
+
+import React from 'react';
 import { Menu, Circle, Globe, Calendar } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { useLanguage } from "../contexts/language-context"
@@ -18,8 +20,8 @@ export function Navigation({ title }: { title?: string }) {
       <Image
     src="/homeicon.png"
     alt="bin"
-    width={200}
-    height={200}
+    width={170}
+    height={160}
     className="mr-2"
   />
   </Link>

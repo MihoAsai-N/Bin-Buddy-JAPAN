@@ -1,4 +1,5 @@
 "use client"
+import React from 'react';
 import { usePathname } from "next/navigation"
 import { useLanguage } from "./../contexts/language-context"
 import { Home, Calendar, Camera, Settings, User, HelpCircle } from "lucide-react"

@@ -13,6 +13,7 @@ import {
   Smartphone,
   Users,
 } from "lucide-react"
+import React from "react"
 
 export default function Home() {
   return (
