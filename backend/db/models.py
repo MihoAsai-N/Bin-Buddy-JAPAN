@@ -18,7 +18,7 @@ class WasteItem(Base):
 # Sorting Numbers
 class SortingNumber(Base):
     __tablename__ = "sorting_numbers"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True )
     categories = Column(String, nullable=False)
 
     items = relationship("WasteItem", back_populates="category")
@@ -43,16 +43,19 @@ class CityArea(Base):
     __tablename__ = "sapporo_city_area"
     id = Column(Integer, primary_key=True)
     area = Column(String, nullable=False)
+    area_id = Column(Integer)
+    ward_id = Column(Integer)
 
     zipcodes = relationship("AreaZipcodeHigashi", back_populates="city_area")
-    area_sortings = relationship("AreaSorting", back_populates="area_rel")
+    # area_sortings = relationship("AreaSorting", back_populates="area_rel")
 
 
 # Area Zipcode (Higashi-ku)
 class AreaZipcodeHigashi(Base):
-    __tablename__ = "area_address_with_zip"
+    __tablename__ = "area_address_with_zipcode"
     id = Column(Integer, primary_key=True)
-    area = Column(Integer, ForeignKey("sapporo_city_area.id"))
+    area = Column(String)
+    area_id = Column(Integer, ForeignKey("sapporo_city_area.id"))
     area_en = Column(String)
     postalcode = Column(String)
 
@@ -70,12 +73,16 @@ class AddressTranslation(Base):
 # Area Sorting
 class AreaSorting(Base):
     __tablename__ = "area_sorting"
+
     id = Column(Integer, primary_key=True)
-    area = Column(Integer, ForeignKey("sapporo_city_area.id"))
+
+    # 表示用や検索用に使う文字列（市区名とか）
+    area = Column(String, nullable=True)  # 明示的に追加
+
     sorting_id = Column(Integer, ForeignKey("sorting_numbers.id"))
 
     sorting = relationship("SortingNumber", back_populates="area_sortings")
-    area_rel = relationship("CityArea", back_populates="area_sortings")
+    # area_rel = relationship("CityArea", back_populates="area_sortings")
 
 # AdminInfo
 class AdminInfo(Base):
@@ -92,3 +99,6 @@ class AdminInfo(Base):
     phone_number = Column(String)
     email = Column(String)
     last_login = Column(DateTime) 
+    payment_status = Column(String)
+    note = Column(String, nullable= True)
+
