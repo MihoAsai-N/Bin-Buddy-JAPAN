@@ -10,16 +10,6 @@ import { GiTreeBranch } from "react-icons/gi";
 import { IoTrashBinSharp } from "react-icons/io5";
 import { FaExclamationCircle } from "react-icons/fa";
 
-// const categoryIds = {
-// 　0: "Irregular"
-//   1: "Combustible",
-//   2: "Non-Combustible",
-//   8: "Bottles",
-//   9: "Plastic",
-//   10: "Paper",
-//   11: "Branches",
-// };
-
 export const getTrashIcon = (category: string | null): JSX.Element => {
   switch (category) {
     case "Combustible":

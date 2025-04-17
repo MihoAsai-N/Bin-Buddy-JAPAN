@@ -15,7 +15,7 @@ type RegionSchedule = {
   [key in TrashType]: WeekDay[]; // キーの型を TrashType に修正
 };
 
-// 地域データ
+//地域データ
 const regionData: { [key: string]: RegionSchedule } = {
   tokyo: {
     Combustible: ["monday", "thursday"],

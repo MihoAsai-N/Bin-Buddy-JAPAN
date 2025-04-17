@@ -162,7 +162,7 @@ export async function GET(request: NextRequest) {
     if (externalApiResult && externalApiResult.success && externalApiResult.result && externalApiResult.result.records) {
       const formattedData = externalApiResult.result.records.map((record: { [x: string]: any; }) => {
         const date = record["日付"];
-        const value = record["東区①"];
+        const value = record[`${area}`];
         return { [date]: value };
       });
       return NextResponse.json({ data: formattedData, success: true });
