@@ -1,3 +1,4 @@
+//scan
 "use client"
 
 import { Navigation } from "../components/navigation"
@@ -27,6 +28,8 @@ export default function ScanPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null); // useRef でストリームを管理
+  const area = localStorage.getItem("selectedArea") || "default-area"; // 適宜キー名を調整
+
 
   interface ClassifyResponse {
     predictions: { [key: string]: number };
@@ -145,7 +148,7 @@ export default function ScanPage() {
             const data: ClassifyResponse = await response.json();
             setTrashResult(data.best_match as TrashType || "unknown");
             setVisionData(data); // Ensure the type matches the updated definition
-            router.push("/calendar");
+            router.push(`/calendar?area=${area}&fromScan=true`);
           }
         };
         img.onerror = (error) => {

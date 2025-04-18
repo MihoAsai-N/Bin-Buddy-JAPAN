@@ -42,6 +42,7 @@ app.include_router(areas.router)
 app.include_router(districts.router)
 app.include_router(garbage_types.router)
 app.include_router(schedules.router)
+
 app.include_router(llm_support.router)
 
 # ルート確認用

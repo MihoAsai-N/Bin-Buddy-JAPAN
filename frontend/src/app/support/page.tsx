@@ -73,7 +73,7 @@ export default function SupportPage() {
           <CardContent>
             <div className="space-y-4">
               {chatHistory.length > 0 && (
-                <div className="border rounded-lg p-4 max-h-60 overflow-y-auto space-y-4">
+                <div className="border rounded-lg p-4 max-h-120 overflow-y-auto space-y-4">
                   {chatHistory.map((message, index) => (
                     <div
                       key={index}
