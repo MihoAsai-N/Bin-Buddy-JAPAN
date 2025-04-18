@@ -111,7 +111,7 @@ const translations = {
   en: {
     // Navigation
     "app.title": "Bin Buddy Japan",
-    "nav.region.settings": "Region Settings",
+    "nav.region.settings": "Area Settings",
     "nav.user.registration": "User Registration",
     "nav.support": "Support",
 
