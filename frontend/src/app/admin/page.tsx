@@ -13,6 +13,7 @@ import {
   Smartphone,
   Users,
 } from "lucide-react"
+import React from "react"
 
 export default function Home() {
   return (
@@ -96,7 +97,7 @@ export default function Home() {
                 <div className="relative w-[300px] h-[600px] rounded-[40px] border-8 border-gray-800 overflow-hidden shadow-xl">
                   <div className="absolute top-0 w-full h-6 bg-gray-800 z-10"></div>
                   <Image
-                    src="/placeholder.svg?height=600&width=300"
+                    src="/screenshot.png"
                     alt="BinBuddy アプリのスクリーンショット"
                     width={300}
                     height={600}
@@ -225,15 +226,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/placeholder.svg?height=400&width=600"
-                  alt="ゴミ分別に困る外国人居住者"
-                  width={600}
-                  height={400}
-                  className="rounded-lg object-cover shadow-lg"
-                />
-              </div>
+              
             </div>
           </div>
         </section>
@@ -265,6 +258,15 @@ export default function Home() {
                 <p className="text-center">
                   適切なゴミ分別を促進することで、リサイクル率の向上と環境保護に貢献します。
                 </p>
+              </div>
+              <div className="flex items-center justify-center">
+                <Image
+                  src="/living_together.png"
+                  alt="共生社会"
+                  width={600}
+                  height={400}
+                  className="rounded-lg object-cover"
+                />
               </div>
             </div>
           </div>
@@ -320,15 +322,7 @@ export default function Home() {
                   <Button variant="outline">info@binbuddy.jp</Button>
                 </div>
               </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/placeholder.svg?height=300&width=500"
-                  alt="BinBuddyサポートチーム"
-                  width={500}
-                  height={300}
-                  className="rounded-lg object-cover shadow-lg"
-                />
-              </div>
+              
             </div>
           </div>
         </section>
@@ -336,13 +330,7 @@ export default function Home() {
       <footer className="w-full border-t py-6 md:py-0 bg-gray-900 text-white">
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <div className="flex items-center gap-2">
-            <Image
-              src="/BinBuddy_Logo.png"
-              alt="BinBuddy Logo"
-              width={100}
-              height={40}
-              className="h-8 w-auto brightness-0 invert"
-            />
+            
             <p className="text-sm leading-loose md:text-left">© 2025 BinBuddy株式会社. All rights reserved.</p>
           </div>
           <div className="flex gap-4">

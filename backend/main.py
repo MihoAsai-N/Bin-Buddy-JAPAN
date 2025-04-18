@@ -1,6 +1,16 @@
+"""FastAPI アプリケーションのエントリーポイント。CORS設定およびルーターを含む。"""
+
+# import os # 今は未使用
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import classify
+from dotenv import load_dotenv
+import os
+
+# 既存ルーターの読み込み
+from routers import classify, checkout, admin_info, area_search
+
+# .envファイルの読み込み
+load_dotenv()
 
 app = FastAPI()
 
@@ -15,6 +25,9 @@ app.add_middleware(
 
 # ルーターをアプリケーションに含める
 app.include_router(classify.router)
+app.include_router(area_search.router)
+app.include_router(checkout.router)
+app.include_router(admin_info.router)
 
 # ルート確認用
 @app.get("/")
