@@ -29,6 +29,7 @@ app.include_router(area_search.router)
 app.include_router(checkout.router)
 app.include_router(admin_info.router)
 
+
 # ルート確認用
 @app.get("/")
 def read_root():
