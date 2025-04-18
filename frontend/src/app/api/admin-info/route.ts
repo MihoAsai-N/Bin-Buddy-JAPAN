@@ -11,7 +11,7 @@ let mockAdminInfo = {
   contactPerson: "水井 花子",
   phoneNumber: "123-4567-89",
   email: "sapporo@binbuddy.jp",
-  paymentStatus: "unpaid",
+  paymentStatus: "paid",
   lastLogin: "2023-04-10 09:30",
 };
 

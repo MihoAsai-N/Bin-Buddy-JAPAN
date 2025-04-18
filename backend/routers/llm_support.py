@@ -62,7 +62,6 @@ doc_embeddings = [embed(doc) for doc in documents]
 index = faiss.IndexFlatL2(len(doc_embeddings[0]))
 index.add(np.array(doc_embeddings).astype("float32"))# type: ignore
 #NOTE:VSCode の型チェッカー（Pylance や Pyright）による誤検知。無視しても機能上の問題はなし。
-
 class Query(BaseModel):
     """ユーザーから送信される問い合わせ内容を保持するリクエストボディスキーマ。"""
     message: str
