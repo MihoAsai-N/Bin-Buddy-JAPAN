@@ -68,7 +68,7 @@ export default function SchedulesPageWrapper() {
 
   // SWRを使ってデータを取得
   const { data: districts } = useSWR<District[]>("http://localhost:8000/districts", fetcher);
-  const { data: areas } = useSWR<Area[]>("http://localhost:8000/areas", fetcher);
+  const { data: areas } = useSWR<Area[]>("http://localhost:8000/admin_areas", fetcher);
   const { data: garbageTypes } = useSWR<GarbageType[]>("http://localhost:8000/garbage-types", fetcher);
   const { data: schedules = [] } = useSWR<Schedule[]>("http://localhost:8000/schedules", fetcher);
   const { data: adminInfo } = useSWR<AdminInfo>("http://localhost:8000/admin-info", fetcher);
