@@ -1,42 +1,64 @@
-"use client"
+"use client";
 
+import React from "react";
 
-import React from 'react';
-import { Navigation } from "../components/navigation"
-import { useLanguage } from "../contexts/language-context"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion"
-import { useState } from "react"
+import { Navigation } from "../components/navigation";
+import { useLanguage } from "../contexts/language-context";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../components/ui/accordion";
+import { useState } from "react";
+import { askSupport } from "../lib/llmapi";
 
 export default function SupportPage() {
-  const { t } = useLanguage()
-  const [question, setQuestion] = useState("")
-  const [chatHistory, setChatHistory] = useState<{ role: "user" | "assistant"; content: string }[]>([])
+  const { t } = useLanguage();
+  const [question, setQuestion] = useState("");
+  const [chatHistory, setChatHistory] = useState<
+    { role: "user" | "assistant"; content: string }[]
+  >([]);
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!question.trim()) return
+  const handleSend = async(e: React.FormEvent) => {
+    e.preventDefault();
+    if (!question.trim()) return;
 
     // ユーザーの質問をチャット履歴に追加
-    const newChatHistory: { role: "user" | "assistant"; content: string }[] = [...chatHistory, { role: "user", content: question }]
+    const newChatHistory: { role: "user" | "assistant"; content: string }[] = [
+      ...chatHistory,
+      { role: "user", content: question },
+    ];
 
-    // LLMの応答をシミュレート（実際の実装ではAPIを呼び出す）
-    setTimeout(() => {
-      setChatHistory([
-        ...newChatHistory,
+    setChatHistory(newChatHistory);
+    setQuestion("");
+
+    try {
+      const answer = await askSupport(question);
+      setChatHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: answer },
+      ]);
+    } catch (err) {
+      console.error(err)
+      setChatHistory((prev) => [
+        ...prev,
         {
           role: "assistant",
-          content:
-            "ご質問ありがとうございます。Bin Buddyはゴミ分別をサポートするアプリです。住所を設定し、カレンダーでゴミ収集日を確認し、カメラでゴミを撮影すると分別方法を教えてくれます。",
+          content: "エラーが発生しました。もう一度お試しください。",
         },
-      ])
-    }, 500)
-
-    setChatHistory(newChatHistory)
-    setQuestion("")
-  }
+      ]);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen px-4 sm:px-6 md:px-25 lg:px-60">
@@ -51,12 +73,14 @@ export default function SupportPage() {
           <CardContent>
             <div className="space-y-4">
               {chatHistory.length > 0 && (
-                <div className="border rounded-lg p-4 max-h-60 overflow-y-auto space-y-4">
+                <div className="border rounded-lg p-4 max-h-120 overflow-y-auto space-y-4">
                   {chatHistory.map((message, index) => (
                     <div
                       key={index}
                       className={`p-2 rounded-lg ${
-                        message.role === "user" ? "bg-purple-100 ml-8" : "bg-gray-100 mr-8"
+                        message.role === "user"
+                          ? "bg-purple-100 ml-8"
+                          : "bg-gray-100 mr-8"
                       }`}
                     >
                       {message.content}
@@ -97,9 +121,10 @@ export default function SupportPage() {
           </CardContent>
         </Card>
 
-        <div className="text-xs text-gray-500 text-center mt-4">{t("common.copyright")}</div>
+        <div className="text-xs text-gray-500 text-center mt-4">
+          {t("common.copyright")}
+        </div>
       </div>
     </div>
-  )
+  );
 }
-

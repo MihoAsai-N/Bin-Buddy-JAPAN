@@ -49,11 +49,11 @@ const translations = {
     "scan.processing": "処理中...",
     "scan.take.picture": "撮影する",
     "scan.retake": "撮り直す",
-    "scan.analyze": "分析する",
+    "scan.analyze": "調べる",
 
     // 結果画面
     "result.title": "分別結果",
-    "result.trash.type": "ゴミの種類:",
+    "result.trash.type": "ゴミの種類",
     "result.collection.day": "収集日:",
     "result.back.to.calendar": "カレンダーに戻る",
 
@@ -111,7 +111,7 @@ const translations = {
   en: {
     // Navigation
     "app.title": "Bin Buddy Japan",
-    "nav.region.settings": "Region Settings",
+    "nav.region.settings": "Area Settings",
     "nav.user.registration": "User Registration",
     "nav.support": "Support",
 
@@ -149,7 +149,7 @@ const translations = {
 
     // Result Screen
     "result.title": "Sorting Result",
-    "result.trash.type": "Trash Type:",
+    "result.trash.type": "Trash Type",
     "result.collection.day": "Collection Day:",
     "result.back.to.calendar": "Back to Calendar",
 

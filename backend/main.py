@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 # 既存ルーターの読み込み
-from routers import classify, checkout, admin_info, area_search
+from routers import classify, checkout, admin_info, area_search,llm_support
 
 # .envファイルの読み込み
 load_dotenv()
@@ -28,6 +28,7 @@ app.include_router(classify.router)
 app.include_router(area_search.router)
 app.include_router(checkout.router)
 app.include_router(admin_info.router)
+app.include_router(llm_support.router)
 
 # ルート確認用
 @app.get("/")

@@ -20,6 +20,7 @@ import IrregularComment from "../components/IrregularComment";
 import { getGarbageDay } from "../lib/utils";
 import { getTrashIcon } from "./AddIcon";
 import { FcComments } from "react-icons/fc";
+import { useRouter } from "next/router";
 
 // 数値から曜日を取得する関数
 const getWeekdayFromNumber = (num: number): WeekDay => {
@@ -42,36 +43,26 @@ export default function CalendarPage() {
   // const [isLegendOpen] = useState(false);
   const searchParams = useSearchParams();
   const area = searchParams.get("area");
+  const storageKey = `calendarData`;
   const [calendarData, setCalendarData] = useState<
     { [key: string]: string | null }[] | null
   >(null);
 
-  console.log("areaの値：", area);//TODO:確認後削除
-  useEffect(() => {
-    console.log("areaの値：", area);
-    fetch(`/api?area=${encodeURIComponent(area || "")}`, { cache: "no-store" })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("API レスポンス:", data);
-        if (data && data.success && data.data) {
-          const newRecords = data.data;
-          console.log("取得したデータレコード:", newRecords);
-  
-          // 現在の calendarData と新しい records を比較
-          if (JSON.stringify(calendarData) !== JSON.stringify(newRecords)) {
-            setCalendarData(newRecords);
-          } else {
-            console.log("データは変更されていません。");
-          }
-        } else {
-          console.error("データの取得に失敗しました:", data);
-        }
-      })
-      .catch((error) => {
-        console.error("Fetch エラー:", error);
-      });
-  });
+  console.log("areaの値：", area);//TODO:確認後削除  
 
+  useEffect(() => {  
+    const storedData = localStorage.getItem(storageKey);
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        setCalendarData(parsed);
+      } catch (e) {
+        console.error("localStorageのパースに失敗:", e);
+      }
+    }
+  },[]);
+  
+  
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
@@ -201,7 +192,7 @@ export default function CalendarPage() {
           </div>
         </div>
         <IrregularComment />
-        <div className="bg-white p-4 mt-5">
+        <div className="bg-white p-4 mt-10 mb-20 text-center">
           <VisionResult />
         </div>
       </div>
