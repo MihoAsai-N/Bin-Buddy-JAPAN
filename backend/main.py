@@ -45,6 +45,7 @@ app.include_router(schedules.router)
 
 app.include_router(llm_support.router)
 
+
 # ルート確認用
 @app.get("/")
 def read_root():
