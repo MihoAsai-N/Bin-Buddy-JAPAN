@@ -1,4 +1,3 @@
-//RegionForm
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -34,6 +33,7 @@ const RegionForm: React.FC = () => {
     const router = useRouter();
     const { setRegion } = useTrash();
     const { t } = useLanguage();
+    const storageKey = `calendarData`;
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,6 +69,24 @@ const RegionForm: React.FC = () => {
           area: area,
           area_en: selectedArea.area_en,
         });
+
+
+        fetch(`/api?area=${encodeURIComponent(area)}`, { cache: "no-store" })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.success && data.data) {
+            const newRecords = data.data;
+            localStorage.setItem(storageKey, JSON.stringify(newRecords));
+          } else {
+            console.log("データの取得に失敗:", data);
+          }
+        })
+        .catch((error) => {
+          console.log("Fetch エラー:", error);
+        });
+
+
+
 
         // クエリパラメータを使用して area を渡す
         router.push(`/calendar?area=${encodeURIComponent(area)}`);
