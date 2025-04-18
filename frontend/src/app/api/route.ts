@@ -138,6 +138,7 @@
 // }
 // ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 // key 日付：value "1"のかたちに編集済み
+// api/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {

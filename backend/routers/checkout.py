@@ -13,19 +13,22 @@ router = APIRouter()
 
 # Stripe決済用のエンドポイント
 @router.post("/create-payment-intent")
-async def create_payment_intent():
+async def create_payment_intent(request: Request):
     """
     クライアント側でのカード決済のための PaymentIntent を作成し、
     client_secret を返す。
     
     Returns:
-        dict[str, str | None]: PaymentIntent の client_secret を含む辞書
+    dict[str, str | None]: PaymentIntent の client_secret を含む辞書
     """
+    body = await request.json()
+    admin_uid = body.get("admin_uid")
     try:
         intent = stripe.PaymentIntent.create(
-            amount=120000,  # セント単位 (¥20)
+            amount=120000,
             currency="jpy",
-            payment_method_types=["card"]
+            payment_method_types=["card"],
+            metadata={"admin_uid": admin_uid or "unknown"}
         )
         return {"clientSecret": intent.client_secret}
     except Exception as e:
@@ -60,6 +63,7 @@ async def stripe_webhook(request: Request):
     # イベント処理例
     if event["type"] == "payment_intent.succeeded":
         payment_intent = event["data"]["object"]
-        print(f"✅ 支払い成功: {payment_intent['id']}")
+        admin_uid = payment_intent["metadata"].get("admin_uid")
+        print(f"✅ 支払い成功: {payment_intent['id']} / UID: {admin_uid}")
 
     return {"status": "success"}

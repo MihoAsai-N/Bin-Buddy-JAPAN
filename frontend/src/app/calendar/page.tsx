@@ -1,3 +1,4 @@
+//calendar/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -137,7 +138,6 @@ export default function CalendarPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
-      {/* モバイル版のレイアウト */}
       <div className="flex-1 flex flex-col space-y-4 mt-5">
         <div className="bg-white p-4">
           <div className="flex justify-between items-center">

@@ -1,12 +1,28 @@
+"""
+SQLAlchemy ORMモデル定義ファイル。
+
+このモジュールでは、BinBuddyアプリのデータベース構造に対応するモデルクラスを定義している。
+- ごみ分類情報（WasteItem, SortingNumber）
+- 地区と郵便番号の関連情報（CityArea, AreaZipcodeHigashi）
+- 多言語対応の翻訳情報（SortingTranslation, AddressTranslation）
+- 管理者情報（AdminInfo）
+
+各モデルは SQLAlchemy の Base クラスを継承しており、FastAPI + PostgreSQL 環境で使用される。
+"""
+
+from datetime import datetime
+
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
 
 Base = declarative_base()
 
 # Waste Items
 class WasteItem(Base):
+    """
+    ごみ項目モデル。分類IDに紐づく個別のごみ項目名を保持する。
+    """
     __tablename__ = "waste_item_with_id"
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
@@ -17,6 +33,9 @@ class WasteItem(Base):
 
 # Sorting Numbers
 class SortingNumber(Base):
+    """
+    ごみの分類カテゴリを表すモデル（例：可燃ごみ、不燃ごみなど）。
+    """
     __tablename__ = "sorting_numbers"
     id = Column(Integer, primary_key=True )
     categories = Column(String, nullable=False)
@@ -28,6 +47,9 @@ class SortingNumber(Base):
 
 # Sorting Translations
 class SortingTranslation(Base):
+    """
+    ごみの分類カテゴリに対応する多言語翻訳（日本語、英語、中国語）を保持する。
+    """
     __tablename__ = "sorting_translations"
     id = Column(Integer, primary_key=True)
     sorting_id = Column(Integer, ForeignKey("sorting_numbers.id"), nullable=False)
@@ -40,6 +62,9 @@ class SortingTranslation(Base):
 
 # Sapporo City Area
 class CityArea(Base):
+    """
+    札幌市の地区名モデル。地区と郵便番号や分類情報との関連を持つ。
+    """
     __tablename__ = "sapporo_city_area"
     id = Column(Integer, primary_key=True)
     area = Column(String, nullable=False)
@@ -52,6 +77,9 @@ class CityArea(Base):
 
 # Area Zipcode (Higashi-ku)
 class AreaZipcodeHigashi(Base):
+    """
+    地区と郵便番号の対応関係を持つモデル（札幌市東区を対象）。
+    """
     __tablename__ = "area_address_with_zipcode"
     id = Column(Integer, primary_key=True)
     area = Column(String)
@@ -64,6 +92,9 @@ class AreaZipcodeHigashi(Base):
 
 # Address Translations
 class AddressTranslation(Base):
+    """
+    地区名の多言語翻訳（日本語、英語）を保持するモデル。
+    """
     __tablename__ = "address_translation"
     id = Column(Integer, primary_key=True)
     jp = Column(String)
@@ -72,6 +103,9 @@ class AddressTranslation(Base):
 
 # Area Sorting
 class AreaSorting(Base):
+    """
+    地区ごとに対応するごみ分類IDとの関係を保持するモデル。
+    """
     __tablename__ = "area_sorting"
 
     id = Column(Integer, primary_key=True)
@@ -86,6 +120,9 @@ class AreaSorting(Base):
 
 # AdminInfo
 class AdminInfo(Base):
+    """
+    管理者の自治体情報を保持するモデル。ログイン情報なども含む。
+    """
     __tablename__ = "admin_info"
 
     id = Column(Integer, primary_key=True)
@@ -98,7 +135,6 @@ class AdminInfo(Base):
     contact_person = Column(String)
     phone_number = Column(String)
     email = Column(String)
-    last_login = Column(DateTime) 
+    last_login = Column(DateTime)
     payment_status = Column(String)
-    note = Column(String, nullable= True)
-
+    note = Column(String, nullable=True)

@@ -71,6 +71,8 @@ const CheckoutForm = () => {
       // 支払い意図を作成
       const res = await fetch("http://localhost:8000/create-payment-intent", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_uid: "admin-test-1234" }),
       });
 
       if (!res.ok) {
