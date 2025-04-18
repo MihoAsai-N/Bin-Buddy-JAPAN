@@ -46,7 +46,7 @@ class CityArea(Base):
     area_id = Column(Integer)
     ward_id = Column(Integer)
 
-    zipcodes = relationship("AreaZipcodeHigashi", back_populates="city_area")
+    # zipcodes = relationship("AreaZipcodeHigashi", back_populates="city_area")
     # area_sortings = relationship("AreaSorting", back_populates="area_rel")
 
 
@@ -55,11 +55,11 @@ class AreaZipcodeHigashi(Base):
     __tablename__ = "area_address_with_zipcode"
     id = Column(Integer, primary_key=True)
     area = Column(String)
-    area_id = Column(Integer, ForeignKey("sapporo_city_area.id"))
+    area_id = Column(Integer)
     area_en = Column(String)
-    postalcode = Column(String)
+    address = Column(String)
+    zipcode = Column(String)
 
-    city_area = relationship("CityArea", back_populates="zipcodes")
 
 
 # Address Translations

@@ -30,6 +30,7 @@ app.include_router(checkout.router)
 app.include_router(admin_info.router)
 app.include_router(llm_support.router)
 
+
 # ルート確認用
 @app.get("/")
 def read_root():

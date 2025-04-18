@@ -42,7 +42,7 @@ const RegionForm: React.FC = () => {
         setError(null);
 
         try {
-          const response = await fetch(`http://localhost:8000/areas?postal_code=${postalCode}`);
+          const response = await fetch(`http://localhost:8000/areas?zipcode=${postalCode}`);
           if (!response.ok) {
               throw new Error('Failed to fetch area candidates');
           }
