@@ -1,13 +1,17 @@
 """FastAPI アプリケーションのエントリーポイント。CORS設定およびルーターを含む。"""
 
-# import os # 今は未使用
+import sys
+import os
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+# `/app` をモジュール検索パスに追加（Docker用）#NOTE: Pylintエラーより優先
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from fastapi import FastAPI # pylint: disable=wrong-import-position
+from fastapi.middleware.cors import CORSMiddleware # pylint: disable=wrong-import-position
+from dotenv import load_dotenv # pylint: disable=wrong-import-position
 
 # 既存ルーターの読み込み
-from routers import (
+from routers import ( # pylint: disable=wrong-import-position
     classify,
     checkout,
     admin_info,
@@ -18,6 +22,7 @@ from routers import (
     llm_support,
     area_search
     )
+
 
 # .envファイルの読み込み
 load_dotenv()
@@ -56,3 +61,4 @@ def read_root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
