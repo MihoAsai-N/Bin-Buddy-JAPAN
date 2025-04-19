@@ -73,7 +73,8 @@ export default function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          municipalityCode: "01100",
+          uid: user.uid,
+          municipalityCode: formData.municipalityCode,
           municipalityName: formData.municipalityName,
           furigana: formData.furigana,
           postalCode: formData.postalCode,
@@ -83,6 +84,7 @@ export default function Register() {
           phoneNumber: formData.phoneNumber,
           email: formData.email,
           lastLogin: new Date().toISOString(), // 現在時刻
+          paymentStatus: "unpaid"
         }),
       });
 

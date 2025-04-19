@@ -80,12 +80,14 @@ async def create_admin_info(request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=409, detail="管理者情報はすでに登録されています")
 
     data = await request.json()
+    print("受信したデータ:", data)
 
     if "lastLogin" not in data:
         data["lastLogin"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     # スネークケースに変換
     admin = AdminInfo(
+        uid=data.get("uid"),
         municipality_code=data.get("municipalityCode"),
         municipality_name=data.get("municipalityName"),
         furigana=data.get("furigana"),

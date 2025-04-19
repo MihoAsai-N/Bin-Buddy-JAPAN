@@ -126,6 +126,7 @@ class AdminInfo(Base):
     __tablename__ = "admin_info"
 
     id = Column(Integer, primary_key=True)
+    uid = Column(String, unique=True, nullable=False)
     municipality_code = Column(String)
     municipality_name = Column(String)
     furigana = Column(String)
