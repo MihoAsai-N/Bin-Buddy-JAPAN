@@ -5,34 +5,32 @@ admin_info.py
 """
 
 from datetime import datetime
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends, HTTPException
+from sqlalchemy.orm import Session
+from utils.converters import admin_info_to_response #TODO: VSCode の .env に PYTHONPATH を設定
+from db.models import AdminInfo
+from db.session import get_db
 
 router = APIRouter()
 
-# 仮データ
-admin_info = {
-    "municipalityCode": "01100",
-    "municipalityName": "札幌市",
-    "furigana": "サッポロシ",
-    "postalCode": "060-8611",
-    "address": "北海道札幌市中央区北1条西2丁目",
-    "department": "環境局 環境事業部",
-    "contactPerson": "水井 花子",
-    "phoneNumber": "123-4567-89",
-    "email": "sapporo@binbuddy.jp",
-    "paymentStatus": "paid",
-    "lastLogin": "2023-04-10 09:30"
-}
-
 @router.get("/admin-info")
-async def get_admin_info():
+def get_admin_info(db: Session = Depends(get_db)):
     """
     管理者情報を取得するエンドポイント。
+
+    Returns:
+        dict: データベースから取得した管理者情報（キャメルケース形式）
+    
+    Raises:
+        HTTPException: 管理者情報が存在しない場合は 404 を返す。
     """
-    return admin_info
+    admin = db.query(AdminInfo).first()
+    if not admin:
+        raise HTTPException(status_code=404, detail="管理者情報が見つかりません")
+    return admin_info_to_response(admin)
 
 @router.put("/admin-info")
-async def update_admin_info(request: Request):
+async def update_admin_info(request: Request, db: Session = Depends(get_db)):
     """
     管理者情報を更新するエンドポイント。
 
@@ -42,32 +40,71 @@ async def update_admin_info(request: Request):
     Returns:
         dict: 更新後の管理者情報
     """
+    admin = db.query(AdminInfo).first()
+    if not admin:
+        raise HTTPException(status_code=404, detail="管理者情報が見つかりません")
+
     data = await request.json()
-    admin_info.update(data)
-    return admin_info
+
+    for key, value in data.items():
+        if hasattr(admin, key):
+            setattr(admin, key, value)
+
+    db.commit()
+    db.refresh(admin)
+
+    return {
+        "message": "管理者情報を更新しました",
+        "data": admin_info_to_response(admin),
+    }
 
 @router.post("/admin-info")
-async def create_admin_info(request: Request):
+async def create_admin_info(request: Request, db: Session = Depends(get_db)):
     """
     管理者情報を新規登録するエンドポイント。
-    既存データを上書きする形で登録（仮実装）
+
+    既存の情報がある場合はエラーを返す（重複登録防止のため）。
+    `lastLogin` が指定されていない場合は現在時刻を自動で設定する。
 
     Args:
-        request (Request): 登録データを含むリクエスト
+        request (Request): 新規登録データを含むリクエスト
 
     Returns:
-        dict: 登録された管理者情報
+        dict: 登録された管理者情報（キャメルケース形式）
+
+    Raises:
+        HTTPException: 既に管理者情報が存在する場合（409 Conflict）
     """
+    existing_admin = db.query(AdminInfo).first()
+    if existing_admin:
+        raise HTTPException(status_code=409, detail="管理者情報はすでに登録されています")
+
     data = await request.json()
 
-    # lastLogin がなければ現在時刻を入れる（ISO文字列→"YYYY-MM-DD HH:MM"へ変換）
     if "lastLogin" not in data:
         data["lastLogin"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    admin_info.clear()
-    admin_info.update(data)
+    # スネークケースに変換
+    admin = AdminInfo(
+        municipality_code=data.get("municipalityCode"),
+        municipality_name=data.get("municipalityName"),
+        furigana=data.get("furigana"),
+        postal_code=data.get("postalCode"),
+        address=data.get("address"),
+        department=data.get("department"),
+        contact_person=data.get("contactPerson"),
+        phone_number=data.get("phoneNumber"),
+        email=data.get("email"),
+        payment_status=data.get("paymentStatus"),
+        last_login=datetime.strptime(data.get("lastLogin"), "%Y-%m-%d %H:%M"),
+        note=data.get("note"),
+    )
+
+    db.add(admin)
+    db.commit()
+    db.refresh(admin)
 
     return {
-        "message": "管理者情報を登録しました（モック）",
-        "data": admin_info
+        "message": "管理者情報を登録しました",
+        "data": admin_info_to_response(admin),
     }
