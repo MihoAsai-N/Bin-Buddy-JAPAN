@@ -4,7 +4,9 @@ admin_info.py
 管理者情報の取得・更新に関する FastAPI ルーター。
 """
 
+from typing import Optional
 from datetime import datetime
+from pydantic import BaseModel
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlalchemy.orm import Session
 from utils.converters import admin_info_to_response #TODO: VSCode の .env に PYTHONPATH を設定
@@ -12,6 +14,29 @@ from db.models import AdminInfo
 from db.session import get_db
 
 router = APIRouter()
+
+# Pydanticモデルを定義
+class AdminInfoCreate(BaseModel):
+    """
+    管理者情報の登録リクエストに使用するPydanticモデル。
+
+    クライアントから受け取る管理者情報の構造を定義し、
+    バリデーションや型チェックに使用されます。
+    """
+    uid: str
+    municipalityCode: str
+    municipalityName: str
+    furigana: str
+    postalCode: str
+    address: str
+    department: str
+    contactPerson: str
+    phoneNumber: str
+    email: str
+    paymentStatus: str
+    lastLogin: datetime  # ISO 8601形式対応
+    note: Optional[str] = None
+
 
 @router.get("/admin-info")
 def get_admin_info(db: Session = Depends(get_db)):
@@ -59,15 +84,14 @@ async def update_admin_info(request: Request, db: Session = Depends(get_db)):
     }
 
 @router.post("/admin-info")
-async def create_admin_info(request: Request, db: Session = Depends(get_db)):
+async def create_admin_info(
+    admin_data: AdminInfoCreate, db: Session = Depends(get_db)
+):
     """
     管理者情報を新規登録するエンドポイント。
 
     既存の情報がある場合はエラーを返す（重複登録防止のため）。
     `lastLogin` が指定されていない場合は現在時刻を自動で設定する。
-
-    Args:
-        request (Request): 新規登録データを含むリクエスト
 
     Returns:
         dict: 登録された管理者情報（キャメルケース形式）
@@ -75,31 +99,27 @@ async def create_admin_info(request: Request, db: Session = Depends(get_db)):
     Raises:
         HTTPException: 既に管理者情報が存在する場合（409 Conflict）
     """
-    existing_admin = db.query(AdminInfo).first()
+
+    # UID で重複チェック
+    existing_admin = db.query(AdminInfo).filter(AdminInfo.uid == admin_data.uid).first()
     if existing_admin:
-        raise HTTPException(status_code=409, detail="管理者情報はすでに登録されています")
-
-    data = await request.json()
-    print("受信したデータ:", data)
-
-    if "lastLogin" not in data:
-        data["lastLogin"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+        raise HTTPException(status_code=409, detail="このUIDはすでに登録されています")
 
     # スネークケースに変換
     admin = AdminInfo(
-        uid=data.get("uid"),
-        municipality_code=data.get("municipalityCode"),
-        municipality_name=data.get("municipalityName"),
-        furigana=data.get("furigana"),
-        postal_code=data.get("postalCode"),
-        address=data.get("address"),
-        department=data.get("department"),
-        contact_person=data.get("contactPerson"),
-        phone_number=data.get("phoneNumber"),
-        email=data.get("email"),
-        payment_status=data.get("paymentStatus"),
-        last_login=datetime.strptime(data.get("lastLogin"), "%Y-%m-%d %H:%M"),
-        note=data.get("note"),
+        uid=admin_data.uid,
+        municipality_code=admin_data.municipalityCode,
+        municipality_name=admin_data.municipalityName,
+        furigana=admin_data.furigana,
+        postal_code=admin_data.postalCode,
+        address=admin_data.address,
+        department=admin_data.department,
+        contact_person=admin_data.contactPerson,
+        phone_number=admin_data.phoneNumber,
+        email=admin_data.email,
+        payment_status=admin_data.paymentStatus,
+        last_login=admin_data.lastLogin,
+        note=admin_data.note,
     )
 
     db.add(admin)
