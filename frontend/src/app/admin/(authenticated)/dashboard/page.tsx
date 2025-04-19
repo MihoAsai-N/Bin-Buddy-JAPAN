@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,9 @@ import {
 } from "@/app/admin/components/shadcn/ui/tabs";
 import { Calendar, Settings } from "lucide-react";
 import Sidebar from "@/app/admin/components/common/Sidebar";
-import AdminHeader from "@/app/admin/components/common/AdminHeader"; // ✅ 追加
+import AdminHeader from "@/app/admin/components/common/AdminHeader";
+import { auth } from "@/app/lib/firebaseConfig";
+import { onAuthStateChanged, User } from "firebase/auth";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -19,11 +21,20 @@ export default function DashboardPage() {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("schedules");
 
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const {
     data: adminInfo,
     error,
     isLoading,
-  } = useSWR("/api/admin-info", fetcher);
+  } = useSWR(user ? `/admin-info?uid=${user.uid}` : null, fetcher);
 
   useEffect(() => {
     if (selectedTab === "settings") {
@@ -33,7 +44,8 @@ export default function DashboardPage() {
     }
   }, [selectedTab, router]);
 
-  if (isLoading) return <p className="p-6">読み込み中...</p>;
+  if (!user) return <p className="p-6">ユーザー情報を取得中...</p>;
+  if (isLoading) return <p className="p-6">管理者情報を読み込み中...</p>;
   if (error || !adminInfo)
     return <p className="p-6 text-red-500">管理者情報の取得に失敗しました</p>;
 
@@ -48,11 +60,15 @@ export default function DashboardPage() {
       <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
       <div className="flex flex-1 flex-col">
-        <AdminHeader
-          contactPerson={adminInfo.contactPerson}
-          onSettingsClick={() => setSelectedTab("settings")}
-          onLogout={handleLogout}
-        />
+        {adminInfo ? (
+          <AdminHeader
+            contactPerson={adminInfo.contactPerson}
+            onSettingsClick={() => setSelectedTab("settings")}
+            onLogout={handleLogout}
+          />
+        ) : (
+          <div className="p-6">管理者情報を読み込み中...</div>
+        )}
 
         {/* 決済ステータス表示欄 */}
         <div className="bg-white px-6 py-4 border-b">

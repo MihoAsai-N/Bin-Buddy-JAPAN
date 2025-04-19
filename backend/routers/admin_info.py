@@ -7,7 +7,7 @@ admin_info.py
 from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from utils.converters import admin_info_to_response #TODO: VSCode の .env に PYTHONPATH を設定
 from db.models import AdminInfo
@@ -39,9 +39,12 @@ class AdminInfoCreate(BaseModel):
 
 
 @router.get("/admin-info")
-def get_admin_info(db: Session = Depends(get_db)):
+def get_admin_info(
+    uid: str = Query(..., description="FirebaseのUID"),
+    db: Session = Depends(get_db)
+    ):
     """
-    管理者情報を取得するエンドポイント。
+    指定されたUIDに対応する管理者情報を取得するエンドポイント。
 
     Returns:
         dict: データベースから取得した管理者情報（キャメルケース形式）
@@ -49,7 +52,7 @@ def get_admin_info(db: Session = Depends(get_db)):
     Raises:
         HTTPException: 管理者情報が存在しない場合は 404 を返す。
     """
-    admin = db.query(AdminInfo).first()
+    admin = db.query(AdminInfo).filter(AdminInfo.uid == uid).first()
     if not admin:
         raise HTTPException(status_code=404, detail="管理者情報が見つかりません")
     return admin_info_to_response(admin)

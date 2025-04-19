@@ -24,6 +24,7 @@ import { Input } from "@/app/admin/components/shadcn/ui/input";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
 import { mutate } from "swr";
+import { useAuth } from "@/app/contexts/auth-context"
 
 const fetcher = (url: string) =>
   fetch(`http://localhost:8000${url}`).then((res) => res.json());
@@ -45,12 +46,13 @@ type AdminInfo = {
 export default function SettingsPage() {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("settings");
+  const { data: user } = useAuth();
 
   const {
     data: adminInfo,
     error,
     isLoading,
-  } = useSWR<AdminInfo>("/admin-info", fetcher);
+  } = useSWR(user ? `/admin-info?uid=${user.uid}` : null, fetcher);
   const [formData, setFormData] = useState<AdminInfo | null>(null);
 
   useEffect(() => {
@@ -106,11 +108,15 @@ export default function SettingsPage() {
       <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
       <div className="flex flex-1 flex-col">
+        {adminInfo ? (
         <AdminHeader
           contactPerson={adminInfo!.contactPerson}
           onSettingsClick={() => setSelectedTab("settings")}
           onLogout={handleLogout}
         />
+        ) : (
+          <div className="p-6">管理者情報を読み込み中...</div>
+        )}
 
         {/* 決済ステータス表示欄 */}
         {adminInfo && (
@@ -172,43 +178,46 @@ export default function SettingsPage() {
                   {
                     id: "municipalityCode",
                     label: "地方公共団体コード",
-                    value: adminInfo!.municipalityCode,
+                    value: adminInfo?.municipalityCode ?? "",
                   },
                   {
                     id: "municipalityName",
                     label: "自治体名",
-                    value: adminInfo!.municipalityName,
+                    value: adminInfo?.municipalityName ?? "",
                   },
                   {
                     id: "furigana",
                     label: "フリガナ",
-                    value: adminInfo!.furigana,
+                    value: adminInfo?.furigana ?? "",
                   },
                   {
                     id: "postalCode",
                     label: "郵便番号",
-                    value: adminInfo!.postalCode,
+                    value: adminInfo?.postalCode ?? "",
                   },
-                  { id: "address", label: "住所", value: adminInfo!.address },
+                  { id: "address", 
+                    label: "住所", 
+                    value: adminInfo?.address ?? ""
+                  },
                   {
                     id: "department",
                     label: "担当部署",
-                    value: adminInfo!.department,
+                    value: adminInfo?.department ?? "",
                   },
                   {
                     id: "contactPerson",
                     label: "担当者名",
-                    value: adminInfo!.contactPerson,
+                    value: adminInfo?.contactPerson ?? "",
                   },
                   {
                     id: "phoneNumber",
                     label: "電話番号",
-                    value: adminInfo!.phoneNumber,
+                    value: adminInfo?.phoneNumber ?? "",
                   },
                   {
                     id: "email",
                     label: "メールアドレス",
-                    value: adminInfo!.email,
+                    value: adminInfo?.email ?? "",
                     type: "email",
                   },
                 ].map(({ id, label, type = "text" }) => (
