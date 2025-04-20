@@ -1,128 +1,16 @@
+// C:\Users\miffi\nire\最終PJ\section9_binbuddy\frontend\src\app\admin\(authenticated)\dashboard\page.tsx
 "use client";
 
 import React from "react";
-import { useState, useEffect } from "react";
-import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/app/admin/components/shadcn/ui/tabs";
-import { Calendar, Settings } from "lucide-react";
-import Sidebar from "@/app/admin/components/common/Sidebar";
-import AdminHeader from "@/app/admin/components/common/AdminHeader";
-import { auth } from "@/app/lib/firebaseConfig";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { useEffect } from "react";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-export default function DashboardPage() {
+export default function DashboardRedirectPage() {
   const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState("schedules");
-
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
+    router.replace("/admin/dashboard/schedules"); // または settings でもOK
+  }, [router]);
 
-  const {
-    data: adminInfo,
-    error,
-    isLoading,
-  } = useSWR(user ? `/admin-info?uid=${user.uid}` : null, fetcher);
-
-  useEffect(() => {
-    if (selectedTab === "settings") {
-      router.push("/admin/dashboard/settings");
-    } else if (selectedTab === "schedules") {
-      router.push("/admin/dashboard/schedules");
-    }
-  }, [selectedTab, router]);
-
-  if (!user) return <p className="p-6">ユーザー情報を取得中...</p>;
-  if (isLoading) return <p className="p-6">管理者情報を読み込み中...</p>;
-  if (error || !adminInfo)
-    return <p className="p-6 text-red-500">管理者情報の取得に失敗しました</p>;
-
-  const handleLogout = () => {
-    if (confirm("ログアウトしてもよろしいですか？")) {
-      router.push("/admin/login");
-    }
-  };
-
-  return (
-    <div className="flex min-h-screen bg-[#f0f5f8] text-[#4a5568]">
-      <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-
-      <div className="flex flex-1 flex-col">
-        {adminInfo ? (
-          <AdminHeader
-            contactPerson={adminInfo.contactPerson}
-            onSettingsClick={() => setSelectedTab("settings")}
-            onLogout={handleLogout}
-          />
-        ) : (
-          <div className="p-6">管理者情報を読み込み中...</div>
-        )}
-
-        {/* 決済ステータス表示欄 */}
-        <div className="bg-white px-6 py-4 border-b">
-          <p className="text-sm">
-            決済ステータス：{" "}
-            <span
-              className={`font-semibold ${
-                adminInfo.paymentStatus === "paid"
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
-            >
-              {adminInfo.paymentStatus === "paid" ? "支払い済み" : "未払い"}
-            </span>
-          </p>
-        </div>
-
-        {/* モバイル用タブ */}
-        <div className="border-b bg-white p-2 md:hidden">
-          <Tabs
-            value={selectedTab}
-            onValueChange={(val) => {
-              if (val === "schedules" && adminInfo.paymentStatus === "unpaid")
-                return;
-              setSelectedTab(val);
-            }}
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="schedules"
-                disabled={adminInfo.paymentStatus === "unpaid"}
-                className={
-                  adminInfo.paymentStatus === "unpaid"
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                収集スケジュール
-              </TabsTrigger>
-              <TabsTrigger value="settings">
-                <Settings className="mr-2 h-4 w-4" />
-                管理者設定
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          {/* 決済案内メッセージ */}
-          {adminInfo.paymentStatus === "unpaid" && (
-            <p className="text-sm text-red-600 mt-2">
-              ※ご利用には決済が必要です。設定ページからお支払いを完了してください。
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  return <p className="p-6">ダッシュボードに移動中...</p>;
 }
