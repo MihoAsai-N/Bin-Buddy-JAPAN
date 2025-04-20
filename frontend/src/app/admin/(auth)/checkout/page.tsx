@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 
+import { useAuth } from "@/app/contexts/auth-context";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -48,6 +49,7 @@ const cardElementOptions = {
 
 // 決済フォームコンポーネント
 const CheckoutForm = () => {
+  const { data: user } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -72,7 +74,7 @@ const CheckoutForm = () => {
       const res = await fetch("http://localhost:8000/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ admin_uid: "admin-test-1234" }),
+        body: JSON.stringify({ admin_uid: user?.uid, }),
       });
 
       if (!res.ok) {

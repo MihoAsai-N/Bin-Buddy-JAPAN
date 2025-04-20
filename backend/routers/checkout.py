@@ -4,6 +4,12 @@ import os
 from fastapi import APIRouter, HTTPException, Request
 import stripe
 from dotenv import load_dotenv
+from sqlalchemy.orm import Session
+from fastapi import Depends
+from db.session import get_db
+from db.models import AdminInfo
+from datetime import datetime
+
 
 load_dotenv()
 
@@ -23,6 +29,7 @@ async def create_payment_intent(request: Request):
     """
     body = await request.json()
     admin_uid = body.get("admin_uid")
+    print("📦 受け取ったadmin_uid:", admin_uid)
     try:
         intent = stripe.PaymentIntent.create(
             amount=120000,
@@ -36,7 +43,7 @@ async def create_payment_intent(request: Request):
 
 # Stripe Webhook受信用のエンドポイント
 @router.post("/webhook")
-async def stripe_webhook(request: Request):
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     """
     Stripeから送信されたWebhookリクエストを検証・処理するエンドポイント。
 
@@ -57,6 +64,7 @@ async def stripe_webhook(request: Request):
         event = stripe.Webhook.construct_event(
             payload, sig_header, webhook_secret
         )
+        print("📩 Webhook受信:", event["type"])
     except Exception as exc:
         raise HTTPException(status_code=400, detail="Webhook署名が正しくありません") from exc
 
@@ -65,5 +73,11 @@ async def stripe_webhook(request: Request):
         payment_intent = event["data"]["object"]
         admin_uid = payment_intent["metadata"].get("admin_uid")
         print(f"✅ 支払い成功: {payment_intent['id']} / UID: {admin_uid}")
+        if admin_uid:
+            admin = db.query(AdminInfo).filter_by(uid=admin_uid).first()
+            if admin:
+                admin.payment_status = "paid"
+                admin.payment_date = datetime.utcnow()
+                db.commit()
 
     return {"status": "success"}

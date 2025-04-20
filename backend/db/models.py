@@ -138,4 +138,5 @@ class AdminInfo(Base):
     email = Column(String)
     last_login = Column(DateTime)
     payment_status = Column(String)
+    payment_date = Column(DateTime, nullable=True)
     note = Column(String, nullable=True)
