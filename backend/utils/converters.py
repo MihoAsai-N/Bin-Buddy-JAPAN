@@ -40,5 +40,6 @@ def admin_info_to_response(admin: Any) -> dict[str, Any]:
         "email": admin.email,
         "paymentStatus": admin.payment_status,
         "lastLogin": admin.last_login.strftime("%Y-%m-%d %H:%M") if admin.last_login else None,
+        "paymentDate": admin.payment_date.isoformat() if admin.payment_date else None,
         "note": admin.note,
     }
