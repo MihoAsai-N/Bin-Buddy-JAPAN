@@ -1,10 +1,11 @@
-// frontend/src/__tests__/admin/login.test.tsx
+// frontend/src/app/__tests__/admin/login.test.tsx
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import LoginPage from "@/app/admin/(auth)/login/page";
 import { vi } from "vitest";
 import { useRouter } from "next/navigation";
 import * as firebaseAuth from "../../../lib/firebaseConfig";
+import { FirebaseError } from "firebase/app";
 
 // Routerのモック
 vi.mock("next/navigation", () => ({
@@ -54,7 +55,7 @@ describe("LoginPage", () => {
     });
   });
 
-  it("異常系: メールアドレスが無効な形式ならバリデーションエラーを表示", async () => {
+  it("異常系: メールアドレスが無効な形式の場合、バリデーションエラーを表示", async () => {
     render(<LoginPage />);
 
     fireEvent.change(screen.getByPlaceholderText("admin@binbuddy.jp"), {
@@ -69,7 +70,7 @@ describe("LoginPage", () => {
     });
   });
 
-  it("異常系: パスワードが6文字未満ならバリデーションエラーを表示", async () => {
+  it("異常系: パスワードが6文字未満の場合、バリデーションエラーを表示", async () => {
     render(<LoginPage />);
 
     fireEvent.change(screen.getByLabelText("パスワード"), {
@@ -84,10 +85,12 @@ describe("LoginPage", () => {
     });
   });
 
-  it("異常系: Firebaseエラーが発生した場合はalertが表示される", async () => {
+  it("異常系: FirebaseErrorが発生した場合、アラートを表示", async () => {
     const mockAlert = vi.spyOn(window, "alert").mockImplementation(() => {});
     const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
-    mockSignIn.mockRejectedValue({ message: "ログイン失敗エラー" });
+    mockSignIn.mockRejectedValue(
+      new FirebaseError("auth/unknown", "認証エラーが発生しました")
+    );
 
     render(<LoginPage />);
 
@@ -102,7 +105,34 @@ describe("LoginPage", () => {
 
     await waitFor(() => {
       expect(mockAlert).toHaveBeenCalledWith(
-        "ログイン失敗: ログイン失敗エラー"
+        "ログイン失敗: 認証エラーが発生しました"
+      );
+    });
+
+    mockAlert.mockRestore();
+  });
+
+  it("異常系: パスワードが間違っていてログインに失敗する", async () => {
+    const mockAlert = vi.spyOn(window, "alert").mockImplementation(() => {});
+    const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
+    mockSignIn.mockRejectedValue(
+      new FirebaseError("auth/wrong-password", "パスワードが間違っています")
+    );
+
+    render(<LoginPage />);
+
+    fireEvent.change(screen.getByPlaceholderText("admin@binbuddy.jp"), {
+      target: { value: "admin@binbuddy.jp" },
+    });
+    fireEvent.change(screen.getByLabelText("パスワード"), {
+      target: { value: "wrongpass" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /ログイン/i }));
+
+    await waitFor(() => {
+      expect(mockAlert).toHaveBeenCalledWith(
+        "ログイン失敗: パスワードが間違っています"
       );
     });
 
