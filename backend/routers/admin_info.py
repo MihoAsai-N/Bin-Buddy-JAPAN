@@ -37,6 +37,20 @@ class AdminInfoCreate(BaseModel):
     lastLogin: datetime  # ISO 8601形式対応
     note: Optional[str] = None
 
+CAMEL_TO_SNAKE = {
+    "municipalityCode": "municipality_code",
+    "municipalityName": "municipality_name",
+    "furigana": "furigana",
+    "postalCode": "postal_code",
+    "address": "address",
+    "department": "department",
+    "contactPerson": "contact_person",
+    "phoneNumber": "phone_number",
+    "email": "email",
+    "paymentStatus": "payment_status",
+    "lastLogin": "last_login",
+    "note": "note",
+}
 
 @router.get("/admin-info")
 def get_admin_info(
@@ -58,7 +72,11 @@ def get_admin_info(
     return admin_info_to_response(admin)
 
 @router.put("/admin-info")
-async def update_admin_info(request: Request, db: Session = Depends(get_db)):
+async def update_admin_info(
+    request: Request,
+    uid: str = Query(..., description="FirebaseのUID"),
+    db: Session = Depends(get_db)
+):
     """
     管理者情報を更新するエンドポイント。
 
@@ -68,15 +86,18 @@ async def update_admin_info(request: Request, db: Session = Depends(get_db)):
     Returns:
         dict: 更新後の管理者情報
     """
-    admin = db.query(AdminInfo).first()
+    print("✅ PUT /admin-info エンドポイントに到達しました")
+    admin = db.query(AdminInfo).filter(AdminInfo.uid == uid).first()
     if not admin:
         raise HTTPException(status_code=404, detail="管理者情報が見つかりません")
 
     data = await request.json()
+    print("受け取ったデータ:", data)
 
-    for key, value in data.items():
-        if hasattr(admin, key):
-            setattr(admin, key, value)
+    for camel_key, value in data.items():
+        snake_key = CAMEL_TO_SNAKE.get(camel_key)
+        if snake_key and hasattr(admin, snake_key):
+            setattr(admin, snake_key, value)
 
     db.commit()
     db.refresh(admin)

@@ -79,8 +79,12 @@ export default function SettingsPage() {
   };
 
   const handleSave = async () => {
+    if (!user || !user.uid || !formData) {
+      alert("ユーザー情報が見つかりません");
+      return;
+    }
     try {
-      const res = await fetch("http://localhost:8000/admin-info", {
+      const res = await fetch(`http://localhost:8000/admin-info?uid=${user.uid}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +92,7 @@ export default function SettingsPage() {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
-        await mutate("http://localhost:8000/admin-info"); //SWRのキャッシュ更新
+        await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`); //SWRのキャッシュ更新
         alert("保存しました");
       } else {
         alert("保存に失敗しました");
