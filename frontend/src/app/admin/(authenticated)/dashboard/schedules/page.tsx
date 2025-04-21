@@ -320,7 +320,7 @@ export default function SchedulesPageWrapper() {
           {/* 備考欄カード */}
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle>備考欄（定期的でない収集）</CardTitle>
+              <CardTitle>全体へのお知らせ（全エリア対象）</CardTitle>
               <CardDescription>
                 特別な収集予定などを入力すると、ユーザーに通知が行われます。
               </CardDescription>
