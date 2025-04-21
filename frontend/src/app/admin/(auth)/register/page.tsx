@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -11,7 +11,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../../components/shadcn/ui/button";
 import { Input } from "../../components/shadcn/ui/input";
-import { Label } from "../../components/shadcn/ui/label";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import {
   Card,
@@ -21,47 +20,50 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/shadcn/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/app/admin/components/shadcn/ui/form";
+
 import BackToMainLink from "../../components/common/BackToMainLink";
 import { FirebaseError } from "firebase/app";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema } from "./registerSchema";
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    municipalityCode: "",
-    municipalityName: "",
-    furigana: "",
-    postalCode: "",
-    address: "",
-    department: "",
-    contactPersonName: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    mode: "onChange", // 入力中にバリデーション
+    defaultValues: {
+      municipalityCode: "",
+      municipalityName: "",
+      furigana: "",
+      postalCode: "",
+      address: "",
+      department: "",
+      contactPersonName: "",
+      phoneNumber: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("パスワードが一致しません");
-      return;
-    }
-
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
     try {
       // 1. Firebase Authentication に新規登録
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        formData.email,
-        formData.password
+        data.email,
+        data.password
       );
       const user = userCredential.user;
       console.log("登録成功:", user);
@@ -73,28 +75,29 @@ export default function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          municipalityCode: "01100",
-          municipalityName: formData.municipalityName,
-          furigana: formData.furigana,
-          postalCode: formData.postalCode,
-          address: formData.address,
-          department: formData.department,
-          contactPerson: formData.contactPersonName,
-          phoneNumber: formData.phoneNumber,
-          email: formData.email,
+          uid: user.uid,
+          municipalityCode: data.municipalityCode,
+          municipalityName: data.municipalityName,
+          furigana: data.furigana,
+          postalCode: data.postalCode,
+          address: data.address,
+          department: data.department,
+          contactPerson: data.contactPersonName,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
           lastLogin: new Date().toISOString(), // 現在時刻
+          paymentStatus: "unpaid",
         }),
       });
 
       if (!res.ok) {
         throw new Error("FastAPIへの登録に失敗しました");
       }
-    
+
       const result = await res.json();
       console.log("FastAPI 登録成功:", result);
-      
-      setIsSubmitted(true);
 
+      setIsSubmitted(true);
     } catch (error) {
       if (error instanceof FirebaseError) {
         console.error("登録エラー:", error.message);
@@ -105,8 +108,6 @@ export default function Register() {
       }
     }
   };
-
-
 
   if (isSubmitted) {
     return (
@@ -184,180 +185,247 @@ export default function Register() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="municipalityCode">
-                      地方公共団体コード <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="municipalityCode"
-                      name="municipalityCode"
-                      placeholder="例：131130"
-                      value={formData.municipalityCode ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="municipalityName">
-                      自治体名 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="municipalityName"
-                      name="municipalityName"
-                      placeholder="例：東京都渋谷区"
-                      value={formData.municipalityName ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="furigana">
-                      フリガナ <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="furigana"
-                      name="furigana"
-                      placeholder="例：トウキョウトシブヤク"
-                      value={formData.furigana ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="postalCode">
-                      郵便番号 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="postalCode"
-                      name="postalCode"
-                      placeholder="例：150-8010"
-                      value={formData.postalCode ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="address">
-                      住所 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      placeholder="例：東京都渋谷区宇田川町1-1"
-                      value={formData.address ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="department">
-                      担当部署 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="department"
-                      name="department"
-                      placeholder="例：環境政策部"
-                      value={formData.department ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="contactPersonName">
-                      担当者名 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="contactPersonName"
-                      name="contactPersonName"
-                      placeholder="例：山田 太郎"
-                      value={formData.contactPersonName ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phoneNumber">
-                      電話番号 <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      placeholder="例：03-1234-5678"
-                      value={formData.phoneNumber ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">
-                      メールアドレス <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="例：yamada@city.shibuya.tokyo.jp"
-                      value={formData.email ?? ""}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="password">
-                        パスワード <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formData.password ?? ""}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">
-                        パスワード（確認）{" "}
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        value={formData.confirmPassword ?? ""}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-sm text-[#4a5568]">
-                  <p>
-                    <span className="text-red-500">*</span> は必須項目です
-                  </p>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-[#78B9C6] hover:bg-[#6aaab7]"
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
                 >
-                  登録する
-                </Button>
-              </form>
+                  <div className="grid gap-4">
+                    <FormField
+                      control={form.control}
+                      name="municipalityCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            地方公共団体コード{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="municipalityCode"
+                              placeholder="例：131130"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="municipalityName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            自治体名 <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="municipalityName"
+                              placeholder="例：東京都渋谷区"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="furigana"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            フリガナ <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="furigana"
+                              placeholder="例：トウキョウトシブヤク"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="postalCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            郵便番号 <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="postalCode"
+                              placeholder="例：150-8010"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            住所 <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="address"
+                              placeholder="例：東京都渋谷区宇田川町1-1"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="department"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            担当部署 <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="department"
+                              placeholder="例：環境政策部"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="contactPersonName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            担当者名 <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="contactPersonName"
+                              placeholder="例：山田 太郎"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            電話番号 <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="phoneNumber"
+                              placeholder="例：03-1234-5678"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            メールアドレス{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="email"
+                              type="email"
+                              placeholder="例：yamada@city.shibuya.tokyo.jp"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            パスワード <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input id="password" type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            パスワード（確認）{" "}
+                            <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              id="confirmPassword"
+                              type="password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="text-sm text-[#4a5568]">
+                    <p>
+                      <span className="text-red-500">*</span> は必須項目です
+                    </p>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#78B9C6] hover:bg-[#6aaab7]"
+                  >
+                    登録する
+                  </Button>
+                </form>
+              </Form>
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-between gap-4">
               <p className="text-center text-sm text-[#4a5568]">

@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,7 @@ import { Input } from "@/app/admin/components/shadcn/ui/input";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
 import { mutate } from "swr";
+import { useAuth } from "@/app/contexts/auth-context";
 
 const fetcher = (url: string) =>
   fetch(`http://localhost:8000${url}`).then((res) => res.json());
@@ -40,17 +41,19 @@ type AdminInfo = {
   email: string;
   paymentStatus: "paid" | "unpaid";
   lastLogin: string;
+  paymentDate: string;
 };
 
 export default function SettingsPage() {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState("settings");
+  const { data: user } = useAuth();
 
   const {
     data: adminInfo,
     error,
     isLoading,
-  } = useSWR<AdminInfo>("/admin-info", fetcher);
+  } = useSWR(user ? `/admin-info?uid=${user.uid}` : null, fetcher);
   const [formData, setFormData] = useState<AdminInfo | null>(null);
 
   useEffect(() => {
@@ -77,16 +80,23 @@ export default function SettingsPage() {
   };
 
   const handleSave = async () => {
+    if (!user || !user.uid || !formData) {
+      alert("ユーザー情報が見つかりません");
+      return;
+    }
     try {
-      const res = await fetch("http://localhost:8000/admin-info", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `http://localhost:8000/admin-info?uid=${user.uid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       if (res.ok) {
-        await mutate("http://localhost:8000/admin-info"); //SWRのキャッシュ更新
+        await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`); //SWRのキャッシュ更新
         alert("保存しました");
       } else {
         alert("保存に失敗しました");
@@ -106,11 +116,15 @@ export default function SettingsPage() {
       <Sidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
       <div className="flex flex-1 flex-col">
-        <AdminHeader
-          contactPerson={adminInfo!.contactPerson}
-          onSettingsClick={() => setSelectedTab("settings")}
-          onLogout={handleLogout}
-        />
+        {adminInfo ? (
+          <AdminHeader
+            contactPerson={adminInfo!.contactPerson}
+            onSettingsClick={() => setSelectedTab("settings")}
+            onLogout={handleLogout}
+          />
+        ) : (
+          <div className="p-6">管理者情報を読み込み中...</div>
+        )}
 
         {/* 決済ステータス表示欄 */}
         {adminInfo && (
@@ -172,43 +186,47 @@ export default function SettingsPage() {
                   {
                     id: "municipalityCode",
                     label: "地方公共団体コード",
-                    value: adminInfo!.municipalityCode,
+                    value: adminInfo?.municipalityCode ?? "",
                   },
                   {
                     id: "municipalityName",
                     label: "自治体名",
-                    value: adminInfo!.municipalityName,
+                    value: adminInfo?.municipalityName ?? "",
                   },
                   {
                     id: "furigana",
                     label: "フリガナ",
-                    value: adminInfo!.furigana,
+                    value: adminInfo?.furigana ?? "",
                   },
                   {
                     id: "postalCode",
                     label: "郵便番号",
-                    value: adminInfo!.postalCode,
+                    value: adminInfo?.postalCode ?? "",
                   },
-                  { id: "address", label: "住所", value: adminInfo!.address },
+                  {
+                    id: "address",
+                    label: "住所",
+                    value: adminInfo?.address ?? "",
+                  },
                   {
                     id: "department",
                     label: "担当部署",
-                    value: adminInfo!.department,
+                    value: adminInfo?.department ?? "",
                   },
                   {
                     id: "contactPerson",
                     label: "担当者名",
-                    value: adminInfo!.contactPerson,
+                    value: adminInfo?.contactPerson ?? "",
                   },
                   {
                     id: "phoneNumber",
                     label: "電話番号",
-                    value: adminInfo!.phoneNumber,
+                    value: adminInfo?.phoneNumber ?? "",
                   },
                   {
                     id: "email",
                     label: "メールアドレス",
-                    value: adminInfo!.email,
+                    value: adminInfo?.email ?? "",
                     type: "email",
                   },
                 ].map(({ id, label, type = "text" }) => (
@@ -233,6 +251,55 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* 決済情報カード（paymentStatusが "paid" のときのみ表示） */}
+          {adminInfo?.paymentStatus === "paid" && (
+            <Card className="bg-white mt-6">
+              <CardHeader>
+                <CardTitle>決済情報</CardTitle>
+                <CardDescription>
+                  管理者アカウントの決済日および次回決済期限日を確認できます。
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentDate">決済日</Label>
+                    <Input
+                      id="paymentDate"
+                      type="text"
+                      readOnly
+                      value={
+                        adminInfo?.paymentDate
+                          ? new Date(adminInfo.paymentDate).toLocaleDateString(
+                              "ja-JP"
+                            )
+                          : ""
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="nextPaymentDue">次回決済期限日</Label>
+                    <Input
+                      id="nextPaymentDue"
+                      type="text"
+                      readOnly
+                      value={
+                        adminInfo?.paymentDate
+                          ? new Date(
+                              new Date(adminInfo.paymentDate).setFullYear(
+                                new Date(adminInfo.paymentDate).getFullYear() +
+                                  1
+                              )
+                            ).toLocaleDateString("ja-JP")
+                          : ""
+                      }
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* パスワード変更カード */}
           <Card className="bg-white">

@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 import { useState } from "react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/auth-context";
 import AdminHeader from "@/app/admin/components/common/AdminHeader";
 import Sidebar from "@/app/admin/components/common/Sidebar";
 import {
@@ -67,19 +68,44 @@ export default function SchedulesPageWrapper() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   // SWRを使ってデータを取得
-  const { data: districts } = useSWR<District[]>("http://localhost:8000/districts", fetcher);
-  const { data: areas } = useSWR<Area[]>("http://localhost:8000/admin_areas", fetcher);
-  const { data: garbageTypes } = useSWR<GarbageType[]>("http://localhost:8000/garbage-types", fetcher);
-  const { data: schedules = [] } = useSWR<Schedule[]>("http://localhost:8000/schedules", fetcher);
-  const { data: adminInfo } = useSWR<AdminInfo>("http://localhost:8000/admin-info", fetcher);
+  const { data: districts } = useSWR<District[]>(
+    "http://localhost:8000/districts",
+    fetcher
+  );
+  const { data: areas } = useSWR<Area[]>(
+    "http://localhost:8000/admin_areas",
+    fetcher
+  );
+  const { data: garbageTypes } = useSWR<GarbageType[]>(
+    "http://localhost:8000/garbage-types",
+    fetcher
+  );
+  const { data: schedules = [] } = useSWR<Schedule[]>(
+    "http://localhost:8000/schedules",
+    fetcher
+  );
+  const { data: user } = useAuth(); // Firebase の uid を取得
 
+  const {
+    data: adminInfo,
+    error: adminInfoError,
+    isLoading: adminInfoLoading,
+  } = useSWR<AdminInfo>(
+    user?.uid ? `http://localhost:8000/admin-info?uid=${user.uid}` : null,
+    fetcher
+  );
   const router = useRouter();
 
   // ステート定義
   const [selectedTab, setSelectedTab] = useState("schedules");
-  const [selectedDistrict, setSelectedDistrict] = useState<string | undefined>();
+  const [selectedDistrict, setSelectedDistrict] = useState<
+  string | undefined
+  >();
   const [selectedArea, setSelectedArea] = useState<string | undefined>();
   const [note, setNote] = useState("");
+
+  if (adminInfoLoading) return <p>管理者情報を取得中...</p>;
+  if (adminInfoError || !adminInfo) return <p>取得に失敗しました</p>;
 
   // フィルター処理
   const filteredSchedules = schedules.filter(
@@ -89,10 +115,14 @@ export default function SchedulesPageWrapper() {
   );
 
   // 表示名取得関数
-  const getGarbageTypeName = (id: string) => garbageTypes?.find((t) => t.id === id)?.name || "";
-  const getGarbageTypeColor = (id: string) => garbageTypes?.find((t) => t.id === id)?.color || "";
-  const getDistrictName = (id: string) => districts?.find((d) => d.id === id)?.name || "";
-  const getAreaName = (id: string) => areas?.find((a) => a.id === id)?.name || "";
+  const getGarbageTypeName = (id: string) =>
+    garbageTypes?.find((t) => t.id === id)?.name || "";
+  const getGarbageTypeColor = (id: string) =>
+    garbageTypes?.find((t) => t.id === id)?.color || "";
+  const getDistrictName = (id: string) =>
+    districts?.find((d) => d.id === id)?.name || "";
+  const getAreaName = (id: string) =>
+    areas?.find((a) => a.id === id)?.name || "";
 
   // ログアウト処理
   const handleLogout = () => {
@@ -117,10 +147,12 @@ export default function SchedulesPageWrapper() {
           <Tabs value={selectedTab} onValueChange={setSelectedTab}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="schedules">
-                <Calendar className="mr-2 h-4 w-4" />収集スケジュール
+                <Calendar className="mr-2 h-4 w-4" />
+                収集スケジュール
               </TabsTrigger>
               <TabsTrigger value="settings">
-                <Settings className="mr-2 h-4 w-4" />管理者設定
+                <Settings className="mr-2 h-4 w-4" />
+                管理者設定
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -141,7 +173,10 @@ export default function SchedulesPageWrapper() {
                 {/* 地区セレクト */}
                 <div className="space-y-2">
                   <Label htmlFor="district-select">地区</Label>
-                  <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
+                  <Select
+                    value={selectedDistrict}
+                    onValueChange={setSelectedDistrict}
+                  >
                     <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
                       <SelectValue placeholder="地区を選択" />
                     </SelectTrigger>
@@ -195,7 +230,9 @@ export default function SchedulesPageWrapper() {
               <CardTitle>収集スケジュール</CardTitle>
               <CardDescription>
                 {selectedDistrict && selectedArea
-                  ? `${getDistrictName(selectedDistrict)} ${getAreaName(selectedArea)}のごみ収集スケジュール`
+                  ? `${getDistrictName(selectedDistrict)} ${getAreaName(
+                      selectedArea
+                    )}のごみ収集スケジュール`
                   : selectedDistrict
                   ? `${getDistrictName(selectedDistrict)}のごみ収集スケジュール`
                   : "地区とエリアを選択してください"}
@@ -216,12 +253,16 @@ export default function SchedulesPageWrapper() {
                   <TableBody>
                     {filteredSchedules.map((schedule) => (
                       <TableRow key={schedule.id}>
-                        <TableCell>{getDistrictName(schedule.districtId)}</TableCell>
+                        <TableCell>
+                          {getDistrictName(schedule.districtId)}
+                        </TableCell>
                         <TableCell>{getAreaName(schedule.areaId)}</TableCell>
                         <TableCell>{schedule.day}</TableCell>
                         <TableCell>
                           <span
-                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getGarbageTypeColor(schedule.garbageTypeId)}`}
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getGarbageTypeColor(
+                              schedule.garbageTypeId
+                            )}`}
                           >
                             {getGarbageTypeName(schedule.garbageTypeId)}
                           </span>
@@ -249,8 +290,8 @@ export default function SchedulesPageWrapper() {
               )}
             </CardContent>
           </Card>
-        {/* 備考欄カード */}
-        <Card className="bg-white">
+          {/* 備考欄カード */}
+          <Card className="bg-white">
             <CardHeader>
               <CardTitle>備考欄（定期的でない収集）</CardTitle>
               <CardDescription>
@@ -265,7 +306,7 @@ export default function SchedulesPageWrapper() {
                 className="min-h-[100px] border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6]"
               />
             </CardContent>
-          </Card>  
+          </Card>
         </main>
 
         {/* 未払い時のオーバーレイ */}
@@ -278,7 +319,10 @@ export default function SchedulesPageWrapper() {
                   この機能をご利用いただくには決済が必要です。
                 </p>
                 <p className="text-gray-700 text-sm mt-2">
-                  <a href="/admin/dashboard/settings" className="text-blue-600 underline">
+                  <a
+                    href="/admin/dashboard/settings"
+                    className="text-blue-600 underline"
+                  >
                     管理者設定ページ
                   </a>{" "}
                   からお支払いを完了してください。
