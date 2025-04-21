@@ -37,6 +37,7 @@ import {
 } from "@/app/admin/components/shadcn/ui/select";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Textarea } from "@/app/admin/components/shadcn/ui/textarea";
+import { Button } from "@/app/admin/components/shadcn/ui/button";
 
 export default function SchedulesPageWrapper() {
   // データ型定義
@@ -99,7 +100,7 @@ export default function SchedulesPageWrapper() {
   // ステート定義
   const [selectedTab, setSelectedTab] = useState("schedules");
   const [selectedDistrict, setSelectedDistrict] = useState<
-  string | undefined
+    string | undefined
   >();
   const [selectedArea, setSelectedArea] = useState<string | undefined>();
   const [note, setNote] = useState("");
@@ -128,6 +129,32 @@ export default function SchedulesPageWrapper() {
   const handleLogout = () => {
     if (confirm("ログアウトしてもよろしいですか？")) {
       router.push("/admin/login");
+    }
+  };
+
+  // 備考欄保存処理
+  const handleNoteSave = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/schedules/note", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          note,
+          districtId: selectedDistrict,
+          areaId: selectedArea,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("備考の保存に失敗しました");
+      }
+
+      alert("備考を保存しました！");
+      // 必要に応じてデータ再取得（例: mutate()）
+    } catch (error: any) {
+      alert("エラーが発生しました: " + error.message);
     }
   };
 
@@ -305,6 +332,14 @@ export default function SchedulesPageWrapper() {
                 placeholder="例：5月3日は臨時の粗大ごみ収集日です。"
                 className="min-h-[100px] border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6]"
               />
+              <div className="flex justify-end mt-4">
+                <Button
+                  onClick={handleNoteSave}
+                  className="bg-[#78B9C6] text-white hover:bg-[#67a3b1]"
+                >
+                  保存する
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </main>
