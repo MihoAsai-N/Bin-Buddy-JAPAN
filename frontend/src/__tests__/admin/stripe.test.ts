@@ -8,13 +8,13 @@ const validParams: StripePaymentParams = {
   currency: "jpy",
   cardNumber: "4242424242424242",
   expMonth: 12,
-  expYear: 2030,
+  expYear: 34,
   cvc: "123",
 };
 
 describe("Stripe 決済処理", () => {
-  let mockCreateToken: any;
-  let mockCreateCharge: any;
+  let mockCreateToken: any; //FIXME:any型
+  let mockCreateCharge: any; //FIXME:any型
 
   beforeEach(() => {
     vi.resetModules();
