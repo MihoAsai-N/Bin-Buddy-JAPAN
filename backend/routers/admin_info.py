@@ -93,8 +93,18 @@ async def update_admin_info(
         dict: 更新後の管理者情報
     """
     print("✅ PUT /admin-info エンドポイントに到達しました")
+    print("🔎 UIDクエリパラメータ:", uid)
+
+    try:
+        data = await request.json()
+        print("📦 リクエストボディ:", data)
+    except Exception as e:
+        print("❌ JSONパース失敗:", str(e))
+        raise HTTPException(status_code=400, detail="不正なJSONです")
+
     admin = db.query(AdminInfo).filter(AdminInfo.uid == uid).first()
     if not admin:
+        print("⚠️ UIDに該当する管理者が見つかりません")
         raise HTTPException(status_code=404, detail="管理者情報が見つかりません")
 
     data = await request.json()
@@ -102,6 +112,7 @@ async def update_admin_info(
 
     for camel_key, value in data.items():
         snake_key = CAMEL_TO_SNAKE.get(camel_key)
+        print(f"🔁 マッピング: {camel_key} → {snake_key} = {value}")
         if snake_key and hasattr(admin, snake_key):
             setattr(admin, snake_key, value)
 

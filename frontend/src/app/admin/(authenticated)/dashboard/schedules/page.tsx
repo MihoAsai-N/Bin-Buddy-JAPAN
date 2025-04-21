@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
-import useSWR from "swr";
+import { useState, useEffect } from "react";
+import useSWR, { mutate } from "swr";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/auth-context";
 import AdminHeader from "@/app/admin/components/common/AdminHeader";
@@ -63,6 +63,7 @@ export default function SchedulesPageWrapper() {
     email: string;
     paymentStatus: "paid" | "unpaid";
     lastLogin: string;
+    note?: string;
   };
 
   // データ取得関数
@@ -105,6 +106,12 @@ export default function SchedulesPageWrapper() {
   const [selectedArea, setSelectedArea] = useState<string | undefined>();
   const [note, setNote] = useState("");
 
+  useEffect(() => {
+    if (adminInfo) {
+      setNote(adminInfo.note ?? "");
+    }
+  }, [adminInfo]);
+
   if (adminInfoLoading) return <p>管理者情報を取得中...</p>;
   if (adminInfoError || !adminInfo) return <p>取得に失敗しました</p>;
 
@@ -134,26 +141,44 @@ export default function SchedulesPageWrapper() {
 
   // 備考欄保存処理
   const handleNoteSave = async () => {
+    if (!user || !user.uid || !note) {
+      alert("ユーザー認証情報が取得できませんでした。");
+      return;
+    }
+  
     try {
-      const response = await fetch("http://localhost:8000/schedules/note", {
+
+      console.log("📤 送信準備:", {
+        uid: user?.uid,
+        note: note,
+      });
+
+      const response = await fetch(
+        `http://localhost:8000/admin-info?uid=${user.uid}`, 
+        {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          note,
-          districtId: selectedDistrict,
-          areaId: selectedArea,
-        }),
+        body: JSON.stringify(
+          {note}
+        ),
       });
+
+      console.log("📥 レスポンスステータス:", response.status);
+
+      const responseBody = await response.text(); // JSONではなく生で見る
+      console.log("📦 レスポンスボディ:", responseBody);
 
       if (!response.ok) {
         throw new Error("備考の保存に失敗しました");
       }
+      await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`);
+
 
       alert("備考を保存しました！");
       // 必要に応じてデータ再取得（例: mutate()）
-    } catch (error: any) {
+    } catch (error: any) { //FIXME: any
       alert("エラーが発生しました: " + error.message);
     }
   };
