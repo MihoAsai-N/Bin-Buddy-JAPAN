@@ -25,24 +25,10 @@ import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
 import { mutate } from "swr";
 import { useAuth } from "@/app/contexts/auth-context";
+import { AdminInfo } from "@/types/admin";
 
 const fetcher = (url: string) =>
   fetch(`http://localhost:8000${url}`).then((res) => res.json());
-
-type AdminInfo = {
-  municipalityCode: string;
-  municipalityName: string;
-  furigana: string;
-  postalCode: string;
-  address: string;
-  department: string;
-  contactPerson: string;
-  phoneNumber: string;
-  email: string;
-  paymentStatus: "paid" | "unpaid";
-  lastLogin: string;
-  paymentDate: string;
-};
 
 export default function SettingsPage() {
   const router = useRouter();

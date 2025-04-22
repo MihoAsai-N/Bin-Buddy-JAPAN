@@ -38,33 +38,14 @@ import {
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Textarea } from "@/app/admin/components/shadcn/ui/textarea";
 import { Button } from "@/app/admin/components/shadcn/ui/button";
+import { District } from "@/types/district";
+import { Area } from "@/types/area";
+import { GarbageType } from "@/types/garbage-type";
+import { Schedule } from "@/types/schedule";
+import { AdminInfo } from "@/types/admin";
 
 export default function SchedulesPageWrapper() {
-  // データ型定義
-  type District = { id: string; name: string };
-  type Area = { id: string; districtId: string; name: string };
-  type GarbageType = { id: string; name: string; color: string };
-  type Schedule = {
-    id: string;
-    districtId: string;
-    areaId: string;
-    day: string;
-    garbageTypeId: string;
-  };
-  type AdminInfo = {
-    municipalityCode: string;
-    municipalityName: string;
-    furigana: string;
-    postalCode: string;
-    address: string;
-    department: string;
-    contactPerson: string;
-    phoneNumber: string;
-    email: string;
-    paymentStatus: "paid" | "unpaid";
-    lastLogin: string;
-    note?: string;
-  };
+
 
   // データ取得関数
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -177,7 +158,6 @@ export default function SchedulesPageWrapper() {
 
 
       alert("備考を保存しました！");
-      // 必要に応じてデータ再取得（例: mutate()）
     } catch (error: any) { //FIXME: any
       alert("エラーが発生しました: " + error.message);
     }

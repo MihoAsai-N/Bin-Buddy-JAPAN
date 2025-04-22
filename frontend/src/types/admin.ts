@@ -1,3 +1,5 @@
+export type PaymentStatus = "paid" | "unpaid";
+
 export interface AdminInfo {
     municipalityCode: string;
     municipalityName: string;
@@ -8,8 +10,9 @@ export interface AdminInfo {
     contactPerson: string;
     phoneNumber: string;
     email: string;
-    paymentStatus: "paid" | "unpaid";
+    paymentStatus: PaymentStatus;
     lastLogin: string;
+    paymentDate?: string;
     note?: string;
   }
   
