@@ -90,7 +90,7 @@ export default function Home() {
                     アプリをダウンロード
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
-                  <Button variant="outline">詳細を見る</Button>
+                  <Button variant="outline" className="bg-white">詳細を見る</Button>
                 </div>
               </div>
               <div className="flex items-center justify-center">
@@ -259,16 +259,17 @@ export default function Home() {
                   適切なゴミ分別を促進することで、リサイクル率の向上と環境保護に貢献します。
                 </p>
               </div>
-              <div className="flex items-center justify-center">
+              
+            </div>
+            <div className="flex items-center justify-center py-0">
                 <Image
                   src="/living_together.png"
                   alt="共生社会"
-                  width={600}
-                  height={400}
+                  width={1200}
+                  height={800}
                   className="rounded-lg object-cover"
                 />
               </div>
-            </div>
           </div>
         </section>
 
@@ -319,7 +320,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">お問い合わせフォーム</Button>
-                  <Button variant="outline">info@binbuddy.jp</Button>
+                  <Button variant="outline" className="bg-white">info@binbuddy.jp</Button>
                 </div>
               </div>
               
