@@ -10,15 +10,15 @@ router = APIRouter()
 
 # 仮データ
 mock_areas = [
-    {"id": "1", "districtId": "1", "name": "エリア①"},
-    {"id": "2", "districtId": "1", "name": "エリア②"},
-    {"id": "3", "districtId": "1", "name": "エリア③"},
+    {"id": "1", "districtId": "1", "name": "中央区①"},
+    {"id": "2", "districtId": "1", "name": "中央区②"},
+    {"id": "3", "districtId": "1", "name": "中央区③"},
     {"id": "4", "districtId": "2", "name": "東区①"},
-    {"id": "5", "districtId": "2", "name": "東区②"},
-    {"id": "6", "districtId": "2", "name": "東区③"},
-    {"id": "7", "districtId": "2", "name": "東区④"},
-    {"id": "8", "districtId": "2", "name": "東区⑤"},
-    {"id": "9", "districtId": "2", "name": "東区⑥"},
+    {"id": "5", "districtId": "2", "name": "東区①"},
+    {"id": "6", "districtId": "2", "name": "東区①"},
+    {"id": "7", "districtId": "2", "name": "東区①"},
+    {"id": "8", "districtId": "2", "name": "東区②"},
+    {"id": "9", "districtId": "2", "name": "東区②"},
 ]
 
 @router.get("/admin_areas")
