@@ -209,7 +209,7 @@ export default function SchedulesPageWrapper() {
                     value={selectedDistrict}
                     onValueChange={setSelectedDistrict}
                   >
-                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
+                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 text-[#4a5568]">
                       <SelectValue placeholder="地区を選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-[#4a5568]">
@@ -234,7 +234,7 @@ export default function SchedulesPageWrapper() {
                     onValueChange={setSelectedArea}
                     disabled={!selectedDistrict}
                   >
-                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
+                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 text-[#4a5568]">
                       <SelectValue placeholder="エリアを選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-[#4a5568]">
