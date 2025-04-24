@@ -335,7 +335,7 @@ export default function SchedulesPageWrapper() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="例：5月3日は臨時の粗大ごみ収集日です。"
-                className="min-h-[100px] border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6]"
+                className="min-h-[100px] border border-[#78B9C6] focus:ring-2"
               />
               <div className="flex justify-end mt-4">
                 <Button
