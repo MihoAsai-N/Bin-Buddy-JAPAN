@@ -20,7 +20,8 @@ from routers import ( # pylint: disable=wrong-import-position
     garbage_types,
     schedules,
     llm_support,
-    area_search
+    area_search,
+    municipalities
     )
 
 
@@ -49,6 +50,7 @@ app.include_router(garbage_types.router)
 app.include_router(schedules.router)
 
 app.include_router(llm_support.router)
+app.include_router(municipalities.router)
 
 
 # ルート確認用

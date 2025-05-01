@@ -205,6 +205,35 @@ export default function Register() {
                               id="municipalityCode"
                               placeholder="例：131130"
                               {...field}
+                              onBlur={async (e) => {
+                                field.onBlur(); // Hook Form の内部状態も維持
+
+                                const code = e.target.value;
+                                if (code.length === 6) {
+                                  try {
+                                    const res = await fetch(
+                                      `http://localhost:8000/municipalities/${code}`
+                                    );
+                                    if (!res.ok)
+                                      throw new Error("存在しないコードです");
+                                    const data = await res.json();
+
+                                    // 補完された値をformに反映（setValueで直接反映）
+                                    form.setValue(
+                                      "municipalityName",
+                                      data.municipalityName
+                                    );
+                                    form.setValue("furigana", data.furigana);
+                                    form.setValue(
+                                      "postalCode",
+                                      data.postalCode
+                                    );
+                                    form.setValue("address", data.address);
+                                  } catch (err) {
+                                    console.error("補完失敗:", err);
+                                  }
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
