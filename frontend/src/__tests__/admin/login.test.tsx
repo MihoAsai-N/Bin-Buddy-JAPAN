@@ -1,21 +1,37 @@
 // frontend/src/app/__tests__/admin/login.test.tsx
 
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import LoginPage from "@/app/admin/(auth)/login/page";
-import { vi } from "vitest";
-import { useRouter } from "next/navigation";
-import * as firebaseAuth from "../../../lib/firebaseConfig";
+import LoginPage from "../../app/admin/(auth)/login/page";
+import * as firebaseAuth from "../../app/lib/firebaseConfig";
 import { FirebaseError } from "firebase/app";
+import type { User, UserCredential } from "firebase/auth";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+import "@testing-library/jest-dom";
 
-// Routerのモック
+
+const mockPush = vi.fn();
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: vi.fn(),
+  push: mockPush,
+  back: vi.fn(),
+  forward: vi.fn(),
+  refresh: vi.fn(),
+  replace: vi.fn(),
+  prefetch: vi.fn(),
   }),
 }));
 
+const mockUser: Partial<User> = {
+  uid: "test-user",
+  email: "admin@binbuddy.jp",
+  emailVerified: true,
+  isAnonymous: false,
+};
+
 // Firebaseのモック
-vi.mock("../../../lib/firebaseConfig", async () => {
+vi.mock("../../app/lib/firebaseConfig", async () => {
   return {
     auth: {},
     signInWithEmailAndPassword: vi.fn(),
@@ -28,11 +44,11 @@ describe("LoginPage", () => {
   });
 
   it("正常系: メールとパスワードを正しく入力するとログイン処理が呼ばれる", async () => {
-    const mockPush = vi.fn();
+    // const mockPush = vi.fn();
     const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
-    mockSignIn.mockResolvedValue({ user: { uid: "test-user" } });
-
-    vi.mocked(useRouter).mockReturnValue({ push: mockPush });
+    mockSignIn.mockResolvedValue({
+      user: mockUser as User,
+    } as UserCredential);
 
     render(<LoginPage />);
 
