@@ -27,7 +27,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/admin/components/shadcn/ui/form";
+} from "../../components/shadcn/ui/form";
 
 import BackToMainLink from "../../components/common/BackToMainLink";
 import { FirebaseError } from "firebase/app";
@@ -408,7 +408,7 @@ export default function Register() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
+                          <FormLabel htmlFor="password">
                             パスワード <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
@@ -424,7 +424,7 @@ export default function Register() {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
+                          <FormLabel htmlFor="confirmPassword">
                             パスワード（確認）{" "}
                             <span className="text-red-500">*</span>
                           </FormLabel>
