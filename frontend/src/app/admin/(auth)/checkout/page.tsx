@@ -23,6 +23,7 @@ import {
 } from "../../components/shadcn/ui/card";
 import { ArrowLeft, CheckCircle, CreditCard, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { processPayment } from "@/app/admin/utils/stripe";
 
 // Stripe の公開鍵
 const stripePromise = loadStripe(
@@ -89,11 +90,7 @@ const CheckoutForm = () => {
       }
 
       // 支払いを確定
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-        },
-      });
+      const result = await processPayment(stripe, elements, clientSecret);
 
       if (result.error) {
         throw new Error(
