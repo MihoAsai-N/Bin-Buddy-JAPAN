@@ -1,21 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Register from "../../app/admin/(auth)/register/page";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import React from "react";
-import * as firebase from "../../app/lib/firebaseConfig";
-// import type { MockedFunction } from "vitest";
-
-// 関数の型を取得
-// type CreateUserFn = typeof import("../../app/lib/firebaseConfig").createUserWithEmailAndPassword;
-
-// 型アノテーション付きでlet宣言
-// let mockCreateUserWithEmailAndPassword: MockedFunction<CreateUserFn>;
-
-// Firebase モジュールのモック（vi.fn()を直接使い、別の変数で取得）
-vi.mock("../../app/lib/firebaseConfig.ts", () => ({
-  createUserWithEmailAndPassword: vi.fn<typeof import("../../app/lib/firebaseConfig").createUserWithEmailAndPassword>(),
+vi.mock("../../app/lib/firebaseConfig", () => ({
+  createUserWithEmailAndPassword: vi.fn(),
+  auth: {},
 }));
-
 
 // Next.js の useRouter モック
 vi.mock("next/navigation", () => ({
@@ -29,9 +15,15 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import React from "react";
+import { FirebaseError } from "firebase/app";
+
 describe("Register Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal("alert", vi.fn());
   });
 
   afterEach(() => {
@@ -64,7 +56,7 @@ describe("Register Page", () => {
       target: { value: "山田 太郎" },
     });
     fireEvent.change(screen.getByPlaceholderText("例：03-1234-5678"), {
-      target: { value: "03-1234-5678" },
+      target: { value: "0312345678" },
     });
     fireEvent.change(
       screen.getByPlaceholderText("例：yamada@city.shibuya.tokyo.jp"),
@@ -81,8 +73,12 @@ describe("Register Page", () => {
   };
 
   it("正常系: 入力→登録成功→完了メッセージ表示", async () => {
-    const mockCreateUser = firebase.createUserWithEmailAndPassword as ReturnType<typeof vi.fn>;
-    mockCreateUser.mockResolvedValueOnce({
+    const Register = (await import("../../app/admin/(auth)/register/page")).default;
+    // createUserWithEmailAndPassword をモックから取得
+    const { createUserWithEmailAndPassword } = await import("../../app/lib/firebaseConfig");
+
+    // モック関数として動作させる
+    (createUserWithEmailAndPassword as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       user: {
         uid: "test-uid",
         email: "admin@binbuddy.jp",
@@ -104,18 +100,22 @@ describe("Register Page", () => {
   });
 
   it("異常系: Firebaseで登録済みメールでエラー", async () => {
-    // vi.fn() でモックされた関数を型安全に取り出す
-    const mockCreateUser = firebase.createUserWithEmailAndPassword as ReturnType<typeof vi.fn>;
+    const Register = (await import("../../app/admin/(auth)/register/page")).default;
+    const { createUserWithEmailAndPassword } = await import("../../app/lib/firebaseConfig");
   
-    mockCreateUser.mockRejectedValueOnce({
-      code: "auth/email-already-in-use",
-      message: "このメールアドレスは既に使用されています。",
-    });
-
-  // alertのスパイ
-  const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
-  console.log("🧪 alertSpy準備完了");
-
+    // FirebaseError のインスタンスを作成
+    const firebaseError = new FirebaseError(
+      "auth/email-already-in-use",
+      "このメールアドレスは既に使用されています。"
+    );
+  
+    // モック関数にエラーを返すよう設定
+    (createUserWithEmailAndPassword as ReturnType<typeof vi.fn>).mockRejectedValueOnce(firebaseError);
+  
+    // alert のモック
+    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+    console.log("🧪 alertSpy準備完了");
+  
     render(<Register />);
     fillForm();
     fireEvent.click(screen.getByRole("button", { name: "登録する" }));
@@ -127,12 +127,13 @@ describe("Register Page", () => {
       );
     });
   });
-  
 
   it("異常系: フォーム未入力でバリデーションエラーが表示される", async () => {
+    const Register = (await import("../../app/admin/(auth)/register/page")).default;
+  
     render(<Register />);
     fireEvent.click(screen.getByRole("button", { name: "登録する" }));
-
+  
     await waitFor(() => {
       expect(
         screen.getAllByText(/必須項目です|入力してください/).length
@@ -141,22 +142,19 @@ describe("Register Page", () => {
   });
 
   it("異常系: FastAPI登録失敗時にアラート表示", async () => {
-    // Firebaseモック関数を型付きで取得
-    const mockCreateUser = firebase.createUserWithEmailAndPassword as ReturnType<typeof vi.fn>;
+    // Register と firebaseConfig を遅延インポート
+    const Register = (await import("../../app/admin/(auth)/register/page")).default;
+    const { createUserWithEmailAndPassword } = await import("../../app/lib/firebaseConfig");
   
     // Firebaseユーザー作成は成功とする
-    mockCreateUser.mockResolvedValueOnce({
+    (createUserWithEmailAndPassword as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       user: { uid: "test-uid" },
     });
-
-    // fetch を型付きでモック
-    const mockFetch: typeof fetch = vi.fn().mockResolvedValue(
-      new Error("ネットワークエラー")
-    );
-    
-    globalThis.fetch = mockFetch;    
-
-  const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+  
+    // fetch を mock（成功だが返却値がエラー）
+    global.fetch = vi.fn().mockResolvedValue(new Error("ネットワークエラー"));
+  
+    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
   
     render(<Register />);
     fillForm();
@@ -166,22 +164,21 @@ describe("Register Page", () => {
       expect(alertSpy).toHaveBeenCalledWith("予期しないエラーが発生しました");
     });
   });
-
+  
   it("異常系: FastAPIへの通信が例外で失敗した場合にアラート表示", async () => {
-    // Firebaseモック関数を型付きで取得
-    const mockCreateUser = firebase.createUserWithEmailAndPassword as ReturnType<typeof vi.fn>;
+    // Register コンポーネントを遅延インポート
+    const Register = (await import("../../app/admin/(auth)/register/page")).default;
+    const { createUserWithEmailAndPassword } = await import("../../app/lib/firebaseConfig");
   
     // Firebaseユーザー作成は成功とする
-    mockCreateUser.mockResolvedValueOnce({
+    (createUserWithEmailAndPassword as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       user: { uid: "test-uid" },
     });
   
     // fetch が reject されるようにモック
-  vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ネットワークエラー")));
-
-  const alertSpy = vi.spyOn(window, "alert").mockImplementation((msg) => {
-    console.log("🧪 alert called with:", msg);
-  });
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ネットワークエラー")));
+  
+    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
   
     render(<Register />);
     fillForm();
@@ -190,6 +187,6 @@ describe("Register Page", () => {
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith("予期しないエラーが発生しました");
     });
-  });
+  });  
   
 })
