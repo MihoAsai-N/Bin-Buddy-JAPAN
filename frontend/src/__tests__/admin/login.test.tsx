@@ -9,7 +9,6 @@ import type { User, UserCredential } from "firebase/auth";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import "@testing-library/jest-dom";
 
-
 const mockPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
@@ -44,7 +43,6 @@ describe("LoginPage", () => {
   });
 
   it("正常系: メールとパスワードを正しく入力するとログイン処理が呼ばれる", async () => {
-    // const mockPush = vi.fn();
     const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
     mockSignIn.mockResolvedValue({
       user: mockUser as User,
