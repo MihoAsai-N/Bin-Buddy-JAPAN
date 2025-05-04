@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -57,7 +57,12 @@ export default function Register() {
     },
   });
 
+  useEffect(() => {
+    console.log("🧪 form errors:", form.formState.errors);
+  }, [form.formState.errors]);
+
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    console.log("🧪 onSubmit に入りました");
     try {
       // 1. Firebase Authentication に新規登録
       const userCredential = await createUserWithEmailAndPassword(
@@ -98,10 +103,17 @@ export default function Register() {
       console.log("FastAPI 登録成功:", result);
 
       setIsSubmitted(true);
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        console.error("登録エラー:", error.message);
-        alert("登録に失敗しました: " + error.message);
+    } catch (error: unknown) {
+      console.error("🧪 catchブロック入りました:", error);
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        "message" in error &&
+        (error as { code: string }).code === "auth/email-already-in-use"
+      ) {
+        const err = error as { message: string };
+        alert("登録に失敗しました: " + err.message);
       } else {
         console.error("予期しないエラー:", error);
         alert("予期しないエラーが発生しました");
