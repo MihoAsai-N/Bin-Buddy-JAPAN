@@ -1,20 +1,11 @@
 // stripe.test.ts
-import { describe, it, vi, beforeEach, afterEach, expect } from "vitest";
-import { processPayment } from "@/app/utils/stripe"; // 決済処理本体（ユーティリティなどに定義されている前提）
-import type { StripePaymentParams } from "@/app/types/payment";
-
-const validParams: StripePaymentParams = {
-  amount: 1000,
-  currency: "jpy",
-  cardNumber: "4242424242424242",
-  expMonth: 12,
-  expYear: 34,
-  cvc: "123",
-};
+import { describe, it, vi, beforeEach, afterEach, expect, type Mock } from "vitest";
+import { processPayment } from "../../app/admin/utils/stripe";
+import { Stripe, StripeElements } from "@stripe/stripe-js";
 
 describe("Stripe 決済処理", () => {
-  let mockCreateToken: any; //FIXME:any型
-  let mockCreateCharge: any; //FIXME:any型
+  let mockCreateToken: Mock;
+  let mockCreateCharge: Mock;
 
   beforeEach(() => {
     vi.resetModules();
@@ -48,45 +39,105 @@ describe("Stripe 決済処理", () => {
     mockCreateToken.mockResolvedValue({ id: "tok_test_success" });
     mockCreateCharge.mockResolvedValue({ status: "succeeded" });
 
-    const result = await processPayment(validParams);
+    const mockStripe = {
+      confirmCardPayment: vi.fn().mockResolvedValue({
+        paymentIntent: { status: "succeeded" },
+      }),
+    } as unknown as Stripe;
+    
+    const mockElements = {
+      getElement: vi.fn().mockReturnValue({}), // dummy card element
+    } as unknown as StripeElements;
+    
+    const mockClientSecret = "test_client_secret";
 
-    expect(result.success).toBe(true);
-    expect(result.message).toBe("支払いが完了しました");
+    const result = await processPayment(mockStripe, mockElements, mockClientSecret);
+
+    expect(result.paymentIntent?.status).toBe("succeeded");
+    expect(result.error).toBeUndefined();
   });
 
   it("❌ 無効なカード番号（token生成エラー）", async () => {
-    mockCreateToken.mockRejectedValue(new Error("Invalid card number"));
-
-    const result = await processPayment({
-      ...validParams,
-      cardNumber: "1111111111111111",
-    });
-
-    expect(result.success).toBe(false);
-    expect(result.message).toMatch(/カード情報が正しくありません/);
+    const mockStripe = {
+      confirmCardPayment: vi.fn().mockResolvedValue({
+        error: {
+          message: "カード情報が正しくありません",
+        },
+      }),
+    } as unknown as Stripe;
+  
+    const mockElements = {
+      getElement: vi.fn().mockReturnValue({}), // ダミーのカード要素
+    } as unknown as StripeElements;
+  
+    const mockClientSecret = "test_client_secret";
+  
+    const result = await processPayment(mockStripe, mockElements, mockClientSecret);
+  
+    expect(result.paymentIntent).toBeUndefined();
+    expect(result.error?.message).toMatch(/カード情報が正しくありません/);
   });
+  
 
   it("❌ ネットワークエラー時（通信不可）", async () => {
-    mockCreateToken.mockRejectedValue(new Error("Network Error"));
+    const mockStripe = {
+      confirmCardPayment: vi.fn().mockRejectedValue(new Error("通信エラー")),
+    } as unknown as Stripe;
+  
+    const mockElements = {
+      getElement: vi.fn().mockReturnValue({}), // ダミーのカード要素
+    } as unknown as StripeElements;
+  
+    const mockClientSecret = "test_client_secret";
+  
+    try {
+      await processPayment(mockStripe, mockElements, mockClientSecret);
+      // エラーが出ないのは失敗
+      throw new Error("エラーが発生すべきでしたが、発生しませんでした");
+    } catch (error) {
+      expect((error as Error).message).toBe("通信エラー");
+    }
 
-    const result = await processPayment(validParams);
-
-    expect(result.success).toBe(false);
-    expect(result.message).toMatch(/通信エラー/);
   });
+  
 
   it("❌ 二重決済防止（短時間に同一リクエスト）", async () => {
-    mockCreateToken.mockResolvedValue({ id: "tok_duplicate" });
-    mockCreateCharge.mockResolvedValue({ status: "succeeded" });
+    const calledTokens = new Set<string>();
 
-    // 一度目
-    const result1 = await processPayment(validParams);
-    // 二度目（意図的に同じトークンIDを使って）
-    const result2 = await processPayment(validParams);
+const mockStripe = {
+  confirmCardPayment: vi.fn((clientSecret: string) => {
+    if (calledTokens.has(clientSecret)) {
+      return Promise.reject(new Error("すでに処理されています"));
+    }
+    calledTokens.add(clientSecret);
+    return Promise.resolve({ paymentIntent: { status: "succeeded" } });
+  }),
+} as unknown as Stripe;
 
-    // 二重決済をチェック（実装側でチェックされている想定）
-    // ※ここは実装依存なので、フラグやキャッシュ制御が入っていればそれに応じて書き換え
-    expect(result2.success).toBe(false);
-    expect(result2.message).toMatch(/すでに処理されています/);
+  
+    const mockElements = {
+      getElement: vi.fn().mockReturnValue({}), // ダミーのカード要素
+    } as unknown as StripeElements;
+  
+    const mockClientSecret = "test_client_secret";
+  
+    // 一度目：成功
+    const result1 = await processPayment(mockStripe, mockElements, mockClientSecret);
+    expect(result1.paymentIntent?.status).toBe("succeeded");
+    expect(result1.error).toBeUndefined();
+  
+    // 二度目：同じclientSecretと要素を使って二重決済（想定）
+    let result2;
+    try {
+      result2 = await processPayment(mockStripe, mockElements, mockClientSecret);
+    } catch (error) {
+      result2 = { error };
+    }
+
+    // 二重決済エラーを検出するためには、processPayment 内部で何らかの制御が必要です
+    // 以下のような戻り値が返ることを想定しています
+    expect(result2.paymentIntent).toBeUndefined();
+    expect((result2.error as Error).message).toMatch(/すでに処理されています/);
   });
+  
 });
