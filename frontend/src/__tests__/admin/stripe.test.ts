@@ -49,7 +49,7 @@ describe("Stripe 決済処理", () => {
       getElement: vi.fn().mockReturnValue({}), // dummy card element
     } as unknown as StripeElements;
     
-    const mockClientSecret = "test_client_secret";
+    const mockClientSecret = "test_secret_valid";
 
     const result = await processPayment(mockStripe, mockElements, mockClientSecret);
 
@@ -70,7 +70,7 @@ describe("Stripe 決済処理", () => {
       getElement: vi.fn().mockReturnValue({}), // ダミーのカード要素
     } as unknown as StripeElements;
   
-    const mockClientSecret = "test_client_secret";
+    const mockClientSecret = "test_secret_invalid";
   
     const result = await processPayment(mockStripe, mockElements, mockClientSecret);
   
@@ -88,7 +88,7 @@ describe("Stripe 決済処理", () => {
       getElement: vi.fn().mockReturnValue({}), // ダミーのカード要素
     } as unknown as StripeElements;
   
-    const mockClientSecret = "test_client_secret";
+    const mockClientSecret = "test_secret_network_error";
   
     try {
       await processPayment(mockStripe, mockElements, mockClientSecret);
@@ -119,7 +119,7 @@ const mockStripe = {
       getElement: vi.fn().mockReturnValue({}), // ダミーのカード要素
     } as unknown as StripeElements;
   
-    const mockClientSecret = "test_client_secret";
+    const mockClientSecret = "test_secret_duplicate";
   
     // 一度目：成功
     const result1 = await processPayment(mockStripe, mockElements, mockClientSecret);
