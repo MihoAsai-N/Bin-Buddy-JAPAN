@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 
-import { useAuth } from "@/app/contexts/auth-context";
+import { useAuth } from "../../../../app/contexts/auth-context";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +23,7 @@ import {
 } from "../../components/shadcn/ui/card";
 import { ArrowLeft, CheckCircle, CreditCard, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { processPayment } from "@/app/admin/utils/stripe";
+import { processPayment } from "../../../../app/admin/utils/stripe";
 
 // Stripe の公開鍵
 const stripePromise = loadStripe(
