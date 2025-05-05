@@ -27,7 +27,7 @@ import { processPayment } from "../../../../app/admin/utils/stripe";
 
 // Stripe の公開鍵
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
 // カード要素のスタイル
@@ -62,6 +62,12 @@ const CheckoutForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // ✅ Firebaseのユーザー情報がない場合は処理を中止
+    if (!user || !user.uid) {
+      setMessage("ログイン情報が取得できませんでした");
+      return;
+    }
+
     if (!stripe || !elements) {
       setMessage("Stripeの準備ができていません");
       return;
@@ -94,7 +100,7 @@ const CheckoutForm = () => {
 
       if (result.error) {
         throw new Error(
-          result.error.message ?? "支払い処理中にエラーが発生しました",
+          result.error.message ?? "支払い処理中にエラーが発生しました"
         );
       } else if (result.paymentIntent?.status === "succeeded") {
         setIsSuccess(true);
