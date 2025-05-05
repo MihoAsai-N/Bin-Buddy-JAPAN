@@ -13,12 +13,12 @@ const mockPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-  push: mockPush,
-  back: vi.fn(),
-  forward: vi.fn(),
-  refresh: vi.fn(),
-  replace: vi.fn(),
-  prefetch: vi.fn(),
+    push: mockPush,
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
   }),
 }));
 
