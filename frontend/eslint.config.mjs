@@ -1,44 +1,27 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import prettierPlugin from "eslint-plugin-prettier";
 import vitestPlugin from "eslint-plugin-vitest";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-
-  // Vitest, Prettier, TypeScript 追加ルール
-  ...compat.extends(
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "plugin:vitest/recommended",
-  ),
-
+export default [
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
-      parser: "@typescript-eslint/parser",
+      parser: tsParser,
       parserOptions: {
-        sourceType: "module",
         ecmaVersion: "latest",
+        sourceType: "module",
       },
     },
     plugins: {
-      "@typescript-eslint": tsPlugin,
+      "@typescript-eslint": tseslint,
+      prettier: prettierPlugin,
       vitest: vitestPlugin,
     },
     rules: {
-      // 必要に応じて追加ルールを記述
+      ...tseslint.configs.recommended.rules,
+      ...vitestPlugin.configs.recommended.rules,
+      "prettier/prettier": "warn",
     },
   },
 ];
-
-export default eslintConfig;
