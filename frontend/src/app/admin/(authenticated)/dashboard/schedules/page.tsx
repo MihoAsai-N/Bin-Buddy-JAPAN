@@ -144,7 +144,7 @@ export default function SchedulesPageWrapper() {
 
       console.log("📥 レスポンスステータス:", response.status);
 
-      const responseBody = await response.text(); // JSONではなく生で見る
+      const responseBody = await response.text();
       console.log("📦 レスポンスボディ:", responseBody);
 
       if (!response.ok) {
@@ -153,9 +153,12 @@ export default function SchedulesPageWrapper() {
       await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`);
 
       alert("備考を保存しました！");
-    } catch (error: any) {
-      //FIXME: any
-      alert("エラーが発生しました: " + error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert("エラーが発生しました: " + error.message);
+      } else {
+        alert("予期しないエラーが発生しました");
+      }
     }
   };
 
