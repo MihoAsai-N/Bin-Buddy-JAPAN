@@ -30,7 +30,7 @@ import {
 } from "../../components/shadcn/ui/form";
 
 import BackToMainLink from "../../components/common/BackToMainLink";
-import { FirebaseError } from "firebase/app";
+// import { FirebaseError } from "firebase/app";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
