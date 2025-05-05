@@ -1,13 +1,18 @@
 // Stripe決済処理を分離したユーティリティ
-import { PaymentIntentResult, Stripe, StripeElements, StripeError } from "@stripe/stripe-js";
+import {
+  PaymentIntentResult,
+  Stripe,
+  StripeElements,
+  StripeError,
+} from "@stripe/stripe-js";
 
 const usedClientSecrets = new Set<string>();
 
 export const processPayment = async (
   stripe: Stripe,
   elements: StripeElements,
-  clientSecret: string
-) : Promise<PaymentIntentResult> => {
+  clientSecret: string,
+): Promise<PaymentIntentResult> => {
   if (usedClientSecrets.has(clientSecret)) {
     const error: StripeError = {
       type: "invalid_request_error", // Stripeの定義されている error type のひとつ
@@ -15,10 +20,10 @@ export const processPayment = async (
       code: "payment_intent_duplicate",
     };
     return {
-      error
+      error,
     };
   }
-  
+
   const cardElement = elements.getElement("card");
   if (!cardElement) {
     throw new Error("カード情報が入力されていません");

@@ -6,7 +6,7 @@ import { User, Calendar, Settings, LogOut } from "lucide-react";
 import { Button } from "@/app/admin/components/shadcn/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/auth-context";
-import useSWR from "swr"; 
+import useSWR from "swr";
 
 interface SidebarProps {
   selectedTab: string;
@@ -20,11 +20,9 @@ export default function Sidebar({ selectedTab, setSelectedTab }: SidebarProps) {
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  const {
-    data: adminInfo,
-  } = useSWR(
+  const { data: adminInfo } = useSWR(
     user?.uid ? `http://localhost:8000/admin-info?uid=${user.uid}` : null,
-    fetcher
+    fetcher,
   );
 
   const handleLogout = () => {
@@ -52,7 +50,9 @@ export default function Sidebar({ selectedTab, setSelectedTab }: SidebarProps) {
           <h3 className="text-sm font-medium text-[#2d3748]">
             {adminInfo?.municipalityName ?? "取得中"}
           </h3>
-          <p className="text-xs text-[#4a5568]">{adminInfo?.department ?? "取得中"}</p>
+          <p className="text-xs text-[#4a5568]">
+            {adminInfo?.department ?? "取得中"}
+          </p>
         </div>
         <nav className="space-y-1">
           <Button

@@ -1,14 +1,29 @@
 // trash-context.tsx
 "use client";
 
-import React from 'react';
+import React from "react";
 import { createContext, useContext, useState } from "react";
 
 // ゴミの種類
-export type TrashType = "Irregular"|"Combustible" | "Non-Combustible" | "Bottles" | "Plastic"|"Paper"|"Branches"|"Not Collected";
+export type TrashType =
+  | "Irregular"
+  | "Combustible"
+  | "Non-Combustible"
+  | "Bottles"
+  | "Plastic"
+  | "Paper"
+  | "Branches"
+  | "Not Collected";
 
 // 曜日
-export type WeekDay = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+export type WeekDay =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
 
 // 地域ごとの収集日設定
 type RegionSchedule = {
@@ -37,7 +52,6 @@ const regionData: { [key: string]: RegionSchedule } = {
   },
 };
 
-
 type TrashContextType = {
   region: { area: string; area_en: string };
   setRegion: (region: { area: string; area_en: string }) => void;
@@ -54,10 +68,8 @@ const TrashContext = createContext<TrashContextType | undefined>(undefined);
 
 export function TrashProvider({ children }: { children: React.ReactNode }) {
   const [region, setRegion] = useState<string>("default");
-  const [trashResult, setTrashResult] = useState<TrashType | null>(null); 
-  const [visionResult, setVisionResult] = useState<any>(null); 
-
-
+  const [trashResult, setTrashResult] = useState<TrashType | null>(null);
+  const [visionResult, setVisionResult] = useState<any>(null);
 
   // 収集日を取得する関数
   const getCollectionDays = (trashType: TrashType): WeekDay[] => {

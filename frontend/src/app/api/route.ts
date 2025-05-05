@@ -1,11 +1,9 @@
-
 // export async function GET(
 //   request: Request) {
 //   const { searchParams } = new URL(request.url);
 //   const test = searchParams.get('area');
-//   console.log(test) 
+//   console.log(test)
 // }
-
 
 //アクセス成功↓↓
 // export async function GET(request: Request) {
@@ -139,11 +137,11 @@
 // ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 // key 日付：value "1"のかたちに編集済み
 // api/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const area = searchParams.get('area');
+  const area = searchParams.get("area");
 
   const url = `https://ckan.pf-sapporo.jp/api/3/action/datastore_search_sql?sql=SELECT "日付", "${area}" FROM "a261bccd-4383-487f-aa2d-3a502469e7ad" WHERE "日付" >= '2025-01-01' AND "日付" < '2026-01-01'`;
   const encoded = encodeURI(url);
@@ -154,26 +152,49 @@ export async function GET(request: NextRequest) {
     });
 
     if (!response.ok) {
-      console.error(`外部 API エラー: ${response.status} - ${response.statusText}`);
-      return NextResponse.json({ success: false, error: `データの取得に失敗しました (${response.status})` }, { status: response.status });
+      console.error(
+        `外部 API エラー: ${response.status} - ${response.statusText}`,
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          error: `データの取得に失敗しました (${response.status})`,
+        },
+        { status: response.status },
+      );
     }
 
     const externalApiResult = await response.json();
 
-    if (externalApiResult && externalApiResult.success && externalApiResult.result && externalApiResult.result.records) {
-      const formattedData = externalApiResult.result.records.map((record: { [x: string]: any; }) => {
-        const date = record["日付"];
-        const value = record[`${area}`];
-        return { [date]: value };
-      });
+    if (
+      externalApiResult &&
+      externalApiResult.success &&
+      externalApiResult.result &&
+      externalApiResult.result.records
+    ) {
+      const formattedData = externalApiResult.result.records.map(
+        (record: { [x: string]: any }) => {
+          const date = record["日付"];
+          const value = record[`${area}`];
+          return { [date]: value };
+        },
+      );
       return NextResponse.json({ data: formattedData, success: true });
     } else {
-      console.error("外部 API から期待するデータ構造ではありません:", externalApiResult);
-      return NextResponse.json({ success: false, error: "データの取得に失敗しました" });
+      console.error(
+        "外部 API から期待するデータ構造ではありません:",
+        externalApiResult,
+      );
+      return NextResponse.json({
+        success: false,
+        error: "データの取得に失敗しました",
+      });
     }
-
   } catch (error: any) {
     console.error("API fetch error:", error.message);
-    return NextResponse.json({ success: false, error: `API エラーが発生しました: ${error.message}` }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: `API エラーが発生しました: ${error.message}` },
+      { status: 500 },
+    );
   }
 }

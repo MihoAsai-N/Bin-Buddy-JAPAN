@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 import Image from "next/image";
 import { Button } from "@/app/admin/components/shadcn/ui/button";
 import {
@@ -19,13 +19,25 @@ type HeaderProps = {
   onLogout: () => void;
 };
 
-export default function AdminHeader({ contactPerson, onSettingsClick, onLogout }: HeaderProps) {
+export default function AdminHeader({
+  contactPerson,
+  onSettingsClick,
+  onLogout,
+}: HeaderProps) {
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-6">
       <div className="flex items-center md:hidden">
-        <Image src="/BinBuddy_Logo.png" alt="BinBuddy Logo" width={120} height={50} className="h-8 w-auto" />
+        <Image
+          src="/BinBuddy_Logo.png"
+          alt="BinBuddy Logo"
+          width={120}
+          height={50}
+          className="h-8 w-auto"
+        />
       </div>
-      <h1 className="text-lg font-medium text-[#2d3748] hidden md:block">管理者ダッシュボード</h1>
+      <h1 className="text-lg font-medium text-[#2d3748] hidden md:block">
+        管理者ダッシュボード
+      </h1>
       <div className="flex items-center">
         <Button variant="ghost" size="icon" className="mr-2">
           <Bell className="h-5 w-5" />
@@ -40,7 +52,10 @@ export default function AdminHeader({ contactPerson, onSettingsClick, onLogout }
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white shadow-md rounded-md">
+          <DropdownMenuContent
+            align="end"
+            className="bg-white shadow-md rounded-md"
+          >
             <DropdownMenuLabel>マイアカウント</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onSettingsClick}>

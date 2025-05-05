@@ -41,7 +41,7 @@ const Page: NextPage = () => {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         values.username,
-        values.password
+        values.password,
       );
       console.log("ログイン成功:", userCredential.user);
       router.push("/admin/dashboard");

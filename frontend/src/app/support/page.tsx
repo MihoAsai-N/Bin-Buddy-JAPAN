@@ -29,7 +29,7 @@ export default function SupportPage() {
     { role: "user" | "assistant"; content: string }[]
   >([]);
 
-  const handleSend = async(e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!question.trim()) return;
 
@@ -49,7 +49,7 @@ export default function SupportPage() {
         { role: "assistant", content: answer },
       ]);
     } catch (err) {
-      console.error(err)
+      console.error(err);
       setChatHistory((prev) => [
         ...prev,
         {
@@ -95,7 +95,10 @@ export default function SupportPage() {
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                 />
-                <Button type="submit" className="bg-[#8ebac1] hover:bg-[#789ea3]">
+                <Button
+                  type="submit"
+                  className="bg-[#8ebac1] hover:bg-[#789ea3]"
+                >
                   {t("support.send")}
                 </Button>
               </form>

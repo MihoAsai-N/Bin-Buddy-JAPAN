@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React from "react";
 
 import { useAuth } from "../../../../app/contexts/auth-context";
 import { useState } from "react";
@@ -27,7 +27,7 @@ import { processPayment } from "../../../../app/admin/utils/stripe";
 
 // Stripe の公開鍵
 const stripePromise = loadStripe(
-  "pk_test_51RBRhUDtvvwujPXxWGVgk0VfW3Z1wSaGr4BYnG4yAsbxaYQ7PsPqOK6Swcrxb1gAMSVWICNrZ4GLioPqN4gjH2ti00txSSUlvj"
+  "pk_test_51RBRhUDtvvwujPXxWGVgk0VfW3Z1wSaGr4BYnG4yAsbxaYQ7PsPqOK6Swcrxb1gAMSVWICNrZ4GLioPqN4gjH2ti00txSSUlvj",
 );
 
 // カード要素のスタイル
@@ -75,7 +75,7 @@ const CheckoutForm = () => {
       const res = await fetch("http://localhost:8000/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ admin_uid: user?.uid, }),
+        body: JSON.stringify({ admin_uid: user?.uid }),
       });
 
       if (!res.ok) {
@@ -94,7 +94,7 @@ const CheckoutForm = () => {
 
       if (result.error) {
         throw new Error(
-          result.error.message ?? "支払い処理中にエラーが発生しました"
+          result.error.message ?? "支払い処理中にエラーが発生しました",
         );
       } else if (result.paymentIntent?.status === "succeeded") {
         setIsSuccess(true);

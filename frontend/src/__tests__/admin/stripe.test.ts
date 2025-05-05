@@ -62,7 +62,7 @@ describe("Stripe 決済処理", () => {
     const result = await processPayment(
       mockStripe,
       mockElements,
-      mockClientSecret
+      mockClientSecret,
     );
 
     expect(result.paymentIntent?.status).toBe("succeeded");
@@ -87,7 +87,7 @@ describe("Stripe 決済処理", () => {
     const result = await processPayment(
       mockStripe,
       mockElements,
-      mockClientSecret
+      mockClientSecret,
     );
 
     expect(result.paymentIntent).toBeUndefined();
@@ -137,7 +137,7 @@ describe("Stripe 決済処理", () => {
     const result1 = await processPayment(
       mockStripe,
       mockElements,
-      mockClientSecret
+      mockClientSecret,
     );
     expect(result1.paymentIntent?.status).toBe("succeeded");
     expect(result1.error).toBeUndefined();
@@ -148,7 +148,7 @@ describe("Stripe 決済処理", () => {
       result2 = await processPayment(
         mockStripe,
         mockElements,
-        mockClientSecret
+        mockClientSecret,
       );
     } catch (error) {
       result2 = { error };

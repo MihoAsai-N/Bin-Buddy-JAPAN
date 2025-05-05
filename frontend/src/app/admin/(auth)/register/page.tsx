@@ -68,7 +68,7 @@ export default function Register() {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         data.email,
-        data.password
+        data.password,
       );
       const user = userCredential.user;
       console.log("登録成功:", user);
@@ -224,7 +224,7 @@ export default function Register() {
                                 if (code.length === 6) {
                                   try {
                                     const res = await fetch(
-                                      `http://localhost:8000/municipalities/${code}`
+                                      `http://localhost:8000/municipalities/${code}`,
                                     );
                                     if (!res.ok)
                                       throw new Error("存在しないコードです");
@@ -233,12 +233,12 @@ export default function Register() {
                                     // 補完された値をformに反映（setValueで直接反映）
                                     form.setValue(
                                       "municipalityName",
-                                      data.municipalityName
+                                      data.municipalityName,
                                     );
                                     form.setValue("furigana", data.furigana);
                                     form.setValue(
                                       "postalCode",
-                                      data.postalCode
+                                      data.postalCode,
                                     );
                                     form.setValue("address", data.address);
                                   } catch (err) {

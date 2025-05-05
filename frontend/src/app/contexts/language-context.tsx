@@ -137,7 +137,8 @@ const translations = {
 
     //irregular Screen
     "irregular.comment1": "Old clothes collection",
-    "irregular.comment2": "Large-sized garbage *Advance application required (charges apply per household)",
+    "irregular.comment2":
+      "Large-sized garbage *Advance application required (charges apply per household)",
 
     // Scan Screen
     "scan.take.photo": "Please take a photo of the trash",
@@ -206,7 +207,7 @@ const translations = {
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {

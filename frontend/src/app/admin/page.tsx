@@ -1,6 +1,6 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "../../app/admin/components/shadcn/ui/button"
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "../../app/admin/components/shadcn/ui/button";
 import {
   Calendar,
   Camera,
@@ -12,8 +12,8 @@ import {
   ShieldCheck,
   Smartphone,
   Users,
-} from "lucide-react"
-import React from "react"
+} from "lucide-react";
+import React from "react";
 
 export default function Home() {
   return (
@@ -30,21 +30,35 @@ export default function Home() {
             />
           </div>
           <nav className="hidden md:flex gap-6">
-            <Link href="#features" className="text-sm font-medium hover:underline">
+            <Link
+              href="#features"
+              className="text-sm font-medium hover:underline"
+            >
               機能
             </Link>
             <Link href="#about" className="text-sm font-medium hover:underline">
               背景
             </Link>
-            <Link href="#vision" className="text-sm font-medium hover:underline">
+            <Link
+              href="#vision"
+              className="text-sm font-medium hover:underline"
+            >
               ビジョン
             </Link>
-            <Link href="#download" className="text-sm font-medium hover:underline">
+            <Link
+              href="#download"
+              className="text-sm font-medium hover:underline"
+            >
               ダウンロード
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="hidden sm:flex"
+            >
               <Link href="/admin/register">新規登録</Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
@@ -79,7 +93,8 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter text-[#2d3748] sm:text-4xl md:text-5xl lg:text-6xl/none">
-                    ゴミ分別をもっと<span className="text-[#78B9C6]">簡単に</span>
+                    ゴミ分別をもっと
+                    <span className="text-[#78B9C6]">簡単に</span>
                   </h1>
                   <p className="max-w-[600px] text-[#4a5568] md:text-xl">
                     BinBuddyは、AIを活用して外国人居住者のゴミ分別をサポートする革新的なアプリです。
@@ -90,7 +105,9 @@ export default function Home() {
                     アプリをダウンロード
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
-                  <Button variant="outline" className="bg-white">詳細を見る</Button>
+                  <Button variant="outline" className="bg-white">
+                    詳細を見る
+                  </Button>
                 </div>
               </div>
               <div className="flex items-center justify-center">
@@ -113,7 +130,9 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter text-[#2d3748] sm:text-4xl md:text-5xl">主な機能</h2>
+                <h2 className="text-3xl font-bold tracking-tighter text-[#2d3748] sm:text-4xl md:text-5xl">
+                  主な機能
+                </h2>
                 <p className="max-w-[900px] text-[#4a5568] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   BinBuddyは、ゴミ分別を簡単かつ直感的に行えるよう設計されています。
                 </p>
@@ -133,7 +152,9 @@ export default function Home() {
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#dbeaee]">
                   <Calendar className="h-8 w-8 text-[#78B9C6]" />
                 </div>
-                <h3 className="text-xl font-bold text-[#2d3748]">回収日カレンダー</h3>
+                <h3 className="text-xl font-bold text-[#2d3748]">
+                  回収日カレンダー
+                </h3>
                 <p className="text-center text-[#4a5568]">
                   お住まいの地域に合わせた回収日をカレンダーに表示し、いつ捨てればよいかが一目でわかります。
                 </p>
@@ -151,7 +172,9 @@ export default function Home() {
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#dbeaee]">
                   <ImageIcon className="h-8 w-8 text-[#78B9C6]" />
                 </div>
-                <h3 className="text-xl font-bold text-[#2d3748]">視覚的ガイド</h3>
+                <h3 className="text-xl font-bold text-[#2d3748]">
+                  視覚的ガイド
+                </h3>
                 <p className="text-center text-[#4a5568]">
                   画像やアイコンを豊富に使用し、言語に頼らずとも直感的に理解できるデザインを採用しています。
                 </p>
@@ -169,7 +192,9 @@ export default function Home() {
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#dbeaee]">
                   <Smartphone className="h-8 w-8 text-[#78B9C6]" />
                 </div>
-                <h3 className="text-xl font-bold text-[#2d3748]">使いやすいUI</h3>
+                <h3 className="text-xl font-bold text-[#2d3748]">
+                  使いやすいUI
+                </h3>
                 <p className="text-center text-[#4a5568]">
                   シンプルで直感的なユーザーインターフェースにより、誰でも簡単に使いこなせます。
                 </p>
@@ -178,7 +203,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-[#f0f5f8]">
+        <section
+          id="about"
+          className="w-full py-12 md:py-24 lg:py-32 bg-[#f0f5f8]"
+        >
           <div className="container px-4 md:px-6">
             <div className="grid gap-10 lg:grid-cols-2">
               <div className="flex flex-col justify-center space-y-4">
@@ -218,7 +246,9 @@ export default function Home() {
                       <ShieldCheck className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-[#2d3748]">地域社会との調和</h3>
+                      <h3 className="font-medium text-[#2d3748]">
+                        地域社会との調和
+                      </h3>
                       <p className="text-sm text-[#4a5568]">
                         ゴミ分別のルールを守ることは、地域社会と良好な関係を築く上で重要な要素です。
                       </p>
@@ -226,7 +256,6 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              
             </div>
           </div>
         </section>
@@ -238,7 +267,9 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">BinBuddyが目指す社会</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                  BinBuddyが目指す社会
+                </h2>
                 <p className="max-w-[900px] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   在日外国人の方が地域に溶け込む際の障害がひとつでも減り、お互いが隣人としてよい関係を築ける社会を目指しています。
                 </p>
@@ -247,11 +278,15 @@ export default function Home() {
             <div className="mx-auto grid max-w-5xl gap-6 py-12 md:grid-cols-3">
               <div className="flex flex-col items-center space-y-4 rounded-lg bg-white/15 p-6 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">言語の壁を超える</h3>
-                <p className="text-center">言語に関係なく、誰もが簡単に理解できる直感的なサービスを提供します。</p>
+                <p className="text-center">
+                  言語に関係なく、誰もが簡単に理解できる直感的なサービスを提供します。
+                </p>
               </div>
               <div className="flex flex-col items-center space-y-4 rounded-lg bg-white/15 p-6 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">地域社会との調和</h3>
-                <p className="text-center">正しいゴミ分別を通じて、地域社会との良好な関係構築をサポートします。</p>
+                <p className="text-center">
+                  正しいゴミ分別を通じて、地域社会との良好な関係構築をサポートします。
+                </p>
               </div>
               <div className="flex flex-col items-center space-y-4 rounded-lg bg-white/15 p-6 backdrop-blur-sm">
                 <h3 className="text-xl font-bold">環境への貢献</h3>
@@ -259,17 +294,16 @@ export default function Home() {
                   適切なゴミ分別を促進することで、リサイクル率の向上と環境保護に貢献します。
                 </p>
               </div>
-              
             </div>
             <div className="flex items-center justify-center py-0">
-                <Image
-                  src="/living_together.png"
-                  alt="共生社会"
-                  width={1200}
-                  height={800}
-                  className="rounded-lg object-cover"
-                />
-              </div>
+              <Image
+                src="/living_together.png"
+                alt="共生社会"
+                width={1200}
+                height={800}
+                className="rounded-lg object-cover"
+              />
+            </div>
           </div>
         </section>
 
@@ -285,14 +319,18 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col gap-4 min-[400px]:flex-row">
-                <Button className="bg-[#78B9C6] hover:bg-[#6aaab7] h-14 px-8 text-lg">App Storeからダウンロード</Button>
+                <Button className="bg-[#78B9C6] hover:bg-[#6aaab7] h-14 px-8 text-lg">
+                  App Storeからダウンロード
+                </Button>
                 <Button variant="outline" className="h-14 px-8 text-lg">
                   Google Playで手に入れる
                 </Button>
               </div>
               <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
-                  <div className="text-4xl font-bold text-[#425B80]">10,000+</div>
+                  <div className="text-4xl font-bold text-[#425B80]">
+                    10,000+
+                  </div>
                   <p className="text-[#4a5568]">ダウンロード数</p>
                 </div>
                 <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
@@ -313,17 +351,22 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-2">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tighter text-[#2d3748] sm:text-4xl">お問い合わせ</h2>
+                  <h2 className="text-3xl font-bold tracking-tighter text-[#2d3748] sm:text-4xl">
+                    お問い合わせ
+                  </h2>
                   <p className="max-w-[600px] text-[#4a5568] md:text-xl/relaxed">
                     BinBuddyについてのご質問や、導入に関するお問い合わせはこちらからお願いします。
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">お問い合わせフォーム</Button>
-                  <Button variant="outline" className="bg-white">info@binbuddy.jp</Button>
+                  <Button className="bg-[#78B9C6] hover:bg-[#6aaab7]">
+                    お問い合わせフォーム
+                  </Button>
+                  <Button variant="outline" className="bg-white">
+                    info@binbuddy.jp
+                  </Button>
                 </div>
               </div>
-              
             </div>
           </div>
         </section>
@@ -331,8 +374,9 @@ export default function Home() {
       <footer className="w-full border-t py-6 md:py-0 bg-gray-900 text-white">
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <div className="flex items-center gap-2">
-            
-            <p className="text-sm leading-loose md:text-left">© 2025 BinBuddy株式会社. All rights reserved.</p>
+            <p className="text-sm leading-loose md:text-left">
+              © 2025 BinBuddy株式会社. All rights reserved.
+            </p>
           </div>
           <div className="flex gap-4">
             <Link href="#" className="text-sm font-medium hover:underline">
@@ -341,15 +385,21 @@ export default function Home() {
             <Link href="#" className="text-sm font-medium hover:underline">
               利用規約
             </Link>
-            <Link href="/admin/register" className="text-sm font-medium hover:underline">
+            <Link
+              href="/admin/register"
+              className="text-sm font-medium hover:underline"
+            >
               新規登録
             </Link>
-            <Link href="/admin/login" className="text-sm font-medium hover:underline">
+            <Link
+              href="/admin/login"
+              className="text-sm font-medium hover:underline"
+            >
               管理者ログイン
             </Link>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

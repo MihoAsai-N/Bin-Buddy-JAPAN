@@ -46,7 +46,7 @@ describe("Register Page", () => {
       screen.getByPlaceholderText("例：東京都渋谷区宇田川町1-1"),
       {
         target: { value: "東京都渋谷区宇田川町1-1" },
-      }
+      },
     );
     fireEvent.change(screen.getByPlaceholderText("例：環境政策部"), {
       target: { value: "環境政策部" },
@@ -61,7 +61,7 @@ describe("Register Page", () => {
       screen.getByPlaceholderText("例：yamada@city.shibuya.tokyo.jp"),
       {
         target: { value: "test@example.com" },
-      }
+      },
     );
     fireEvent.change(screen.getByLabelText("パスワード *"), {
       target: { value: "password123" },
@@ -113,7 +113,7 @@ describe("Register Page", () => {
     // FirebaseError のインスタンスを作成
     const firebaseError = new FirebaseError(
       "auth/email-already-in-use",
-      "このメールアドレスは既に使用されています。"
+      "このメールアドレスは既に使用されています。",
     );
 
     // モック関数にエラーを返すよう設定
@@ -132,7 +132,7 @@ describe("Register Page", () => {
     await waitFor(() => {
       console.log("🧪 alertSpy calls:", alertSpy.mock.calls);
       expect(alertSpy).toHaveBeenCalledWith(
-        "登録に失敗しました: このメールアドレスは既に使用されています。"
+        "登録に失敗しました: このメールアドレスは既に使用されています。",
       );
     });
   });
@@ -146,7 +146,7 @@ describe("Register Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getAllByText(/必須項目です|入力してください/).length
+        screen.getAllByText(/必須項目です|入力してください/).length,
       ).toBeGreaterThan(0);
     });
   });
@@ -198,7 +198,7 @@ describe("Register Page", () => {
     // fetch が reject されるようにモック
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockRejectedValue(new Error("ネットワークエラー"))
+      vi.fn().mockRejectedValue(new Error("ネットワークエラー")),
     );
 
     const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});

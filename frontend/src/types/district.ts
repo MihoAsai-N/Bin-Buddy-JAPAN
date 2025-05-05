@@ -1,5 +1,4 @@
 export interface District {
-    id: string;
-    name: string;
-  }
-  
+  id: string;
+  name: string;
+}

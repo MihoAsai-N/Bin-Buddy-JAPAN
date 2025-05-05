@@ -1,5 +1,5 @@
 // layout.tsx
-import React from 'react';
+import React from "react";
 import { NavLinks } from "./components/nav-links";
 import { SideNavigation } from "./components/side-navigation";
 import type { Metadata } from "next";
@@ -33,7 +33,9 @@ export default function RootLayout({
         >
           <LanguageProvider>
             <TrashProvider>
-              <VisionProvider> {/* VisionProvider を追加 */}
+              <VisionProvider>
+                {" "}
+                {/* VisionProvider を追加 */}
                 <div className="flex min-h-screen bg-gray-100">
                   <SideNavigation />
                   <main className="flex-1 flex justify-center pb-14 lg:pb-0">

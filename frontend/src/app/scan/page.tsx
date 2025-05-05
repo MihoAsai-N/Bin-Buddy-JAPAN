@@ -1,14 +1,14 @@
 //scan
-"use client"
+"use client";
 
-import { Navigation } from "../components/navigation"
-import { useLanguage } from "../contexts/language-context"
-import { Button } from "../components/ui/button"
-import { useRouter } from "next/navigation"
-import React, { useState, useRef, useEffect, useCallback } from "react"
-import { useTrash, type TrashType } from "../contexts/trash-context"
+import { Navigation } from "../components/navigation";
+import { useLanguage } from "../contexts/language-context";
+import { Button } from "../components/ui/button";
+import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useTrash, type TrashType } from "../contexts/trash-context";
 import { useVision } from "../contexts/vision-context";
-import { StopScan } from "../components/StopScan"
+import { StopScan } from "../components/StopScan";
 import { Camera } from "react-icons/fi";
 import { RiCameraLensAiLine } from "react-icons/ri";
 import { RiCameraLensFill } from "react-icons/ri";
@@ -30,13 +30,13 @@ export default function ScanPage() {
   const streamRef = useRef<MediaStream | null>(null); // useRef でストリームを管理
   const area = localStorage.getItem("selectedArea") || "default-area"; // 適宜キー名を調整
 
-
   interface ClassifyResponse {
     predictions: { [key: string]: number };
     best_match: string | null;
   }
 
-  const startCamera = async () => { // useEffect の外で定義
+  const startCamera = async () => {
+    // useEffect の外で定義
     try {
       streamRef.current = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
@@ -85,10 +85,10 @@ export default function ScanPage() {
   };
 
   const retakeImage = () => {
-    setCapturedImage(null)
-    setIsCameraPreviewActive(true)
+    setCapturedImage(null);
+    setIsCameraPreviewActive(true);
     setError(null);
-  }
+  };
 
   const analyzeImage = async () => {
     setIsAnalyzing(true);
@@ -112,16 +112,19 @@ export default function ScanPage() {
             height = MAX_HEIGHT;
           }
 
-          const resizeCanvas = document.createElement('canvas');
+          const resizeCanvas = document.createElement("canvas");
           resizeCanvas.width = width;
           resizeCanvas.height = height;
-          const resizeCtx = resizeCanvas.getContext('2d');
+          const resizeCtx = resizeCanvas.getContext("2d");
           resizeCtx?.drawImage(img, 0, 0, width, height);
 
-          const resizedImageDataUrl = resizeCanvas.toDataURL('image/jpeg', 0.8);
+          const resizedImageDataUrl = resizeCanvas.toDataURL("image/jpeg", 0.8);
 
-          const byteString = atob(resizedImageDataUrl.split(',')[1]);
-          const mimeString = resizedImageDataUrl.split(',')[0].split(':')[1].split(';')[0];
+          const byteString = atob(resizedImageDataUrl.split(",")[1]);
+          const mimeString = resizedImageDataUrl
+            .split(",")[0]
+            .split(":")[1]
+            .split(";")[0];
           const ab = new ArrayBuffer(byteString.length);
           const ia = new Uint8Array(ab);
           for (let i = 0; i < byteString.length; i++) {
@@ -146,7 +149,7 @@ export default function ScanPage() {
             // setTrashResult(data.best_match as TrashType || "unknown");
             // router.push("/result");
             const data: ClassifyResponse = await response.json();
-            setTrashResult(data.best_match as TrashType || "unknown");
+            setTrashResult((data.best_match as TrashType) || "unknown");
             setVisionData(data); // Ensure the type matches the updated definition
             router.push(`/calendar?area=${area}&fromScan=true`);
           }
@@ -168,7 +171,7 @@ export default function ScanPage() {
       setError(t("scan.error.no_image"));
       setIsAnalyzing(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -194,18 +197,22 @@ export default function ScanPage() {
               {t("scan.take.picture")}
             </Button> */}
             <Button
-  className="bg-red-500 hover:bg-red-600 text-white rounded-full w-19 h-19 flex items-center justify-center"
-  onClick={captureImage}
->
-  <RiCameraLensFill   className="w-8 h-12" />
-</Button>
+              className="bg-red-500 hover:bg-red-600 text-white rounded-full w-19 h-19 flex items-center justify-center"
+              onClick={captureImage}
+            >
+              <RiCameraLensFill className="w-8 h-12" />
+            </Button>
           </>
         )}
 
         {capturedImage && (
           <>
             <div className="relative w-full max-w-sm">
-              <img src={capturedImage || "/placeholder.svg"} alt="Captured" className="w-full rounded-lg" />
+              <img
+                src={capturedImage || "/placeholder.svg"}
+                alt="Captured"
+                className="w-full rounded-lg"
+              />
             </div>
 
             <div className="flex space-x-4">
@@ -226,10 +233,12 @@ export default function ScanPage() {
 
         <canvas ref={canvasRef} className="hidden" />
 
-        <div className="text-xs text-[#2d3748] text-center mt-auto">{t("common.copyright")}</div>
+        <div className="text-xs text-[#2d3748] text-center mt-auto">
+          {t("common.copyright")}
+        </div>
       </div>
 
-<StopScan/>
+      <StopScan />
     </div>
   );
 }

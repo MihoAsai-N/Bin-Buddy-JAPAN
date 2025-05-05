@@ -79,7 +79,7 @@ export default function SettingsPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formData),
-        }
+        },
       );
       if (res.ok) {
         await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`); //SWRのキャッシュ更新
@@ -258,7 +258,7 @@ export default function SettingsPage() {
                       value={
                         adminInfo?.paymentDate
                           ? new Date(adminInfo.paymentDate).toLocaleDateString(
-                              "ja-JP"
+                              "ja-JP",
                             )
                           : ""
                       }
@@ -275,8 +275,8 @@ export default function SettingsPage() {
                           ? new Date(
                               new Date(adminInfo.paymentDate).setFullYear(
                                 new Date(adminInfo.paymentDate).getFullYear() +
-                                  1
-                              )
+                                  1,
+                              ),
                             ).toLocaleDateString("ja-JP")
                           : ""
                       }

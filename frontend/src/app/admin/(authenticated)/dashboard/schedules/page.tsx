@@ -45,27 +45,25 @@ import { Schedule } from "@/types/schedule";
 import { AdminInfo } from "@/types/admin";
 
 export default function SchedulesPageWrapper() {
-
-
   // データ取得関数
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   // SWRを使ってデータを取得
   const { data: districts } = useSWR<District[]>(
     "http://localhost:8000/districts",
-    fetcher
+    fetcher,
   );
   const { data: areas } = useSWR<Area[]>(
     "http://localhost:8000/admin_areas",
-    fetcher
+    fetcher,
   );
   const { data: garbageTypes } = useSWR<GarbageType[]>(
     "http://localhost:8000/garbage-types",
-    fetcher
+    fetcher,
   );
   const { data: schedules = [] } = useSWR<Schedule[]>(
     "http://localhost:8000/schedules",
-    fetcher
+    fetcher,
   );
   const { data: user } = useAuth(); // Firebase の uid を取得
 
@@ -75,7 +73,7 @@ export default function SchedulesPageWrapper() {
     isLoading: adminInfoLoading,
   } = useSWR<AdminInfo>(
     user?.uid ? `http://localhost:8000/admin-info?uid=${user.uid}` : null,
-    fetcher
+    fetcher,
   );
   const router = useRouter();
 
@@ -100,7 +98,7 @@ export default function SchedulesPageWrapper() {
   const filteredSchedules = schedules.filter(
     (schedule) =>
       (!selectedDistrict || schedule.districtId === selectedDistrict) &&
-      (!selectedArea || schedule.areaId === selectedArea)
+      (!selectedArea || schedule.areaId === selectedArea),
   );
 
   // 表示名取得関数
@@ -126,25 +124,23 @@ export default function SchedulesPageWrapper() {
       alert("ユーザー認証情報が取得できませんでした。");
       return;
     }
-  
-    try {
 
+    try {
       console.log("📤 送信準備:", {
         uid: user?.uid,
         note: note,
       });
 
       const response = await fetch(
-        `http://localhost:8000/admin-info?uid=${user.uid}`, 
+        `http://localhost:8000/admin-info?uid=${user.uid}`,
         {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ note }),
         },
-        body: JSON.stringify(
-          {note}
-        ),
-      });
+      );
 
       console.log("📥 レスポンスステータス:", response.status);
 
@@ -156,9 +152,9 @@ export default function SchedulesPageWrapper() {
       }
       await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`);
 
-
       alert("備考を保存しました！");
-    } catch (error: any) { //FIXME: any
+    } catch (error: any) {
+      //FIXME: any
       alert("エラーが発生しました: " + error.message);
     }
   };
@@ -263,11 +259,11 @@ export default function SchedulesPageWrapper() {
               <CardDescription>
                 {selectedDistrict && selectedArea
                   ? `${getDistrictName(selectedDistrict)} ${getAreaName(
-                      selectedArea
+                      selectedArea,
                     )}のごみ収集スケジュール`
                   : selectedDistrict
-                  ? `${getDistrictName(selectedDistrict)}のごみ収集スケジュール`
-                  : "地区とエリアを選択してください"}
+                    ? `${getDistrictName(selectedDistrict)}のごみ収集スケジュール`
+                    : "地区とエリアを選択してください"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -293,7 +289,7 @@ export default function SchedulesPageWrapper() {
                         <TableCell>
                           <span
                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getGarbageTypeColor(
-                              schedule.garbageTypeId
+                              schedule.garbageTypeId,
                             )}`}
                           >
                             {getGarbageTypeName(schedule.garbageTypeId)}
