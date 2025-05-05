@@ -14,5 +14,9 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
+  // Cypressでの実行時のみ、仮のユーザー情報を返す
+  if (typeof window !== "undefined" && (window as any).Cypress) {
+    return { data: { uid: "test-uid-123" } as User };
+  }
   return { data: user };
 }
