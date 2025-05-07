@@ -9,11 +9,9 @@ from datetime import datetime
 from pydantic import BaseModel
 from fastapi import APIRouter, Request, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from utils.converters import (
-    admin_info_to_response,
-)  # TODO: VSCode の .env に PYTHONPATH を設定
-from db.models import AdminInfo
-from db.session import get_db
+from backend.utils.converters import admin_info_to_response
+from backend.db.models import AdminInfo
+from backend.db.session import get_db
 
 router = APIRouter()
 
@@ -100,7 +98,7 @@ async def update_admin_info(
         print("📦 リクエストボディ:", data)
     except Exception as e:
         print("❌ JSONパース失敗:", str(e))
-        raise HTTPException(status_code=400, detail="不正なJSONです")
+        raise HTTPException(status_code=400, detail="不正なJSONです") from e
 
     admin = db.query(AdminInfo).filter(AdminInfo.uid == uid).first()
     if not admin:
