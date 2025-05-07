@@ -15,10 +15,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/admin/components/shadcn/ui/form";
+} from "../../../../app/admin/components/shadcn/ui/form";
 import { useForm } from "react-hook-form";
-import { Button } from "@/app/admin/components/shadcn/ui/button";
-import { Input } from "@/app/admin/components/shadcn/ui/input";
+import { Button } from "../../../../app/admin/components/shadcn/ui/button";
+import { Input } from "../../../../app/admin/components/shadcn/ui/input";
 import { FirebaseError } from "firebase/app";
 import { Lock } from "lucide-react";
 import BackToMainLink from "../../components/common/BackToMainLink";
@@ -41,7 +41,7 @@ const Page: NextPage = () => {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         values.username,
-        values.password
+        values.password,
       );
       console.log("ログイン成功:", userCredential.user);
       router.push("/admin/dashboard");

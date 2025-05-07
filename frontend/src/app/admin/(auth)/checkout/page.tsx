@@ -1,7 +1,7 @@
 "use client";
-import React from 'react';
+import React from "react";
 
-import { useAuth } from "@/app/contexts/auth-context";
+import { useAuth } from "../../../../app/contexts/auth-context";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,10 +23,11 @@ import {
 } from "../../components/shadcn/ui/card";
 import { ArrowLeft, CheckCircle, CreditCard, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { processPayment } from "../../../../app/admin/utils/stripe";
 
 // Stripe の公開鍵
 const stripePromise = loadStripe(
-  "pk_test_51RBRhUDtvvwujPXxWGVgk0VfW3Z1wSaGr4BYnG4yAsbxaYQ7PsPqOK6Swcrxb1gAMSVWICNrZ4GLioPqN4gjH2ti00txSSUlvj"
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
 // カード要素のスタイル
@@ -61,6 +62,12 @@ const CheckoutForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // ✅ Firebaseのユーザー情報がない場合は処理を中止
+    if (!user || !user.uid) {
+      setMessage("ログイン情報が取得できませんでした");
+      return;
+    }
+
     if (!stripe || !elements) {
       setMessage("Stripeの準備ができていません");
       return;
@@ -74,7 +81,7 @@ const CheckoutForm = () => {
       const res = await fetch("http://localhost:8000/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ admin_uid: user?.uid, }),
+        body: JSON.stringify({ admin_uid: user?.uid }),
       });
 
       if (!res.ok) {
@@ -89,11 +96,7 @@ const CheckoutForm = () => {
       }
 
       // 支払いを確定
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-        },
-      });
+      const result = await processPayment(stripe, elements, clientSecret);
 
       if (result.error) {
         throw new Error(

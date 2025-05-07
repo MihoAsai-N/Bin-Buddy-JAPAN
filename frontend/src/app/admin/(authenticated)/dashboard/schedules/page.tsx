@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
-import useSWR from "swr";
+import { useState, useEffect } from "react";
+import useSWR, { mutate } from "swr";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/auth-context";
 import AdminHeader from "@/app/admin/components/common/AdminHeader";
@@ -37,52 +37,33 @@ import {
 } from "@/app/admin/components/shadcn/ui/select";
 import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Textarea } from "@/app/admin/components/shadcn/ui/textarea";
+import { Button } from "@/app/admin/components/shadcn/ui/button";
+import { District } from "@/types/district";
+import { Area } from "@/types/area";
+import { GarbageType } from "@/types/garbage-type";
+import { Schedule } from "@/types/schedule";
+import { AdminInfo } from "@/types/admin";
 
 export default function SchedulesPageWrapper() {
-  // データ型定義
-  type District = { id: string; name: string };
-  type Area = { id: string; districtId: string; name: string };
-  type GarbageType = { id: string; name: string; color: string };
-  type Schedule = {
-    id: string;
-    districtId: string;
-    areaId: string;
-    day: string;
-    garbageTypeId: string;
-  };
-  type AdminInfo = {
-    municipalityCode: string;
-    municipalityName: string;
-    furigana: string;
-    postalCode: string;
-    address: string;
-    department: string;
-    contactPerson: string;
-    phoneNumber: string;
-    email: string;
-    paymentStatus: "paid" | "unpaid";
-    lastLogin: string;
-  };
-
   // データ取得関数
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   // SWRを使ってデータを取得
   const { data: districts } = useSWR<District[]>(
     "http://localhost:8000/districts",
-    fetcher
+    fetcher,
   );
   const { data: areas } = useSWR<Area[]>(
     "http://localhost:8000/admin_areas",
-    fetcher
+    fetcher,
   );
   const { data: garbageTypes } = useSWR<GarbageType[]>(
     "http://localhost:8000/garbage-types",
-    fetcher
+    fetcher,
   );
   const { data: schedules = [] } = useSWR<Schedule[]>(
     "http://localhost:8000/schedules",
-    fetcher
+    fetcher,
   );
   const { data: user } = useAuth(); // Firebase の uid を取得
 
@@ -92,17 +73,23 @@ export default function SchedulesPageWrapper() {
     isLoading: adminInfoLoading,
   } = useSWR<AdminInfo>(
     user?.uid ? `http://localhost:8000/admin-info?uid=${user.uid}` : null,
-    fetcher
+    fetcher,
   );
   const router = useRouter();
 
   // ステート定義
   const [selectedTab, setSelectedTab] = useState("schedules");
   const [selectedDistrict, setSelectedDistrict] = useState<
-  string | undefined
+    string | undefined
   >();
   const [selectedArea, setSelectedArea] = useState<string | undefined>();
   const [note, setNote] = useState("");
+
+  useEffect(() => {
+    if (adminInfo) {
+      setNote(adminInfo.note ?? "");
+    }
+  }, [adminInfo]);
 
   if (adminInfoLoading) return <p>管理者情報を取得中...</p>;
   if (adminInfoError || !adminInfo) return <p>取得に失敗しました</p>;
@@ -111,7 +98,7 @@ export default function SchedulesPageWrapper() {
   const filteredSchedules = schedules.filter(
     (schedule) =>
       (!selectedDistrict || schedule.districtId === selectedDistrict) &&
-      (!selectedArea || schedule.areaId === selectedArea)
+      (!selectedArea || schedule.areaId === selectedArea),
   );
 
   // 表示名取得関数
@@ -128,6 +115,50 @@ export default function SchedulesPageWrapper() {
   const handleLogout = () => {
     if (confirm("ログアウトしてもよろしいですか？")) {
       router.push("/admin/login");
+    }
+  };
+
+  // 備考欄保存処理
+  const handleNoteSave = async () => {
+    if (!user || !user.uid || !note) {
+      alert("ユーザー認証情報が取得できませんでした。");
+      return;
+    }
+
+    try {
+      console.log("📤 送信準備:", {
+        uid: user?.uid,
+        note: note,
+      });
+
+      const response = await fetch(
+        `http://localhost:8000/admin-info?uid=${user.uid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ note }),
+        },
+      );
+
+      console.log("📥 レスポンスステータス:", response.status);
+
+      const responseBody = await response.text();
+      console.log("📦 レスポンスボディ:", responseBody);
+
+      if (!response.ok) {
+        throw new Error("備考の保存に失敗しました");
+      }
+      await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`);
+
+      alert("備考を保存しました！");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert("エラーが発生しました: " + error.message);
+      } else {
+        alert("予期しないエラーが発生しました");
+      }
     }
   };
 
@@ -177,7 +208,7 @@ export default function SchedulesPageWrapper() {
                     value={selectedDistrict}
                     onValueChange={setSelectedDistrict}
                   >
-                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
+                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 text-[#4a5568]">
                       <SelectValue placeholder="地区を選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-[#4a5568]">
@@ -202,7 +233,7 @@ export default function SchedulesPageWrapper() {
                     onValueChange={setSelectedArea}
                     disabled={!selectedDistrict}
                   >
-                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6] focus:border-[#78B9C6] text-[#4a5568]">
+                    <SelectTrigger className="border border-[#78B9C6] focus:ring-2 text-[#4a5568]">
                       <SelectValue placeholder="エリアを選択" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-[#4a5568]">
@@ -231,11 +262,11 @@ export default function SchedulesPageWrapper() {
               <CardDescription>
                 {selectedDistrict && selectedArea
                   ? `${getDistrictName(selectedDistrict)} ${getAreaName(
-                      selectedArea
+                      selectedArea,
                     )}のごみ収集スケジュール`
                   : selectedDistrict
-                  ? `${getDistrictName(selectedDistrict)}のごみ収集スケジュール`
-                  : "地区とエリアを選択してください"}
+                    ? `${getDistrictName(selectedDistrict)}のごみ収集スケジュール`
+                    : "地区とエリアを選択してください"}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -261,7 +292,7 @@ export default function SchedulesPageWrapper() {
                         <TableCell>
                           <span
                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getGarbageTypeColor(
-                              schedule.garbageTypeId
+                              schedule.garbageTypeId,
                             )}`}
                           >
                             {getGarbageTypeName(schedule.garbageTypeId)}
@@ -293,7 +324,7 @@ export default function SchedulesPageWrapper() {
           {/* 備考欄カード */}
           <Card className="bg-white">
             <CardHeader>
-              <CardTitle>備考欄（定期的でない収集）</CardTitle>
+              <CardTitle>全体へのお知らせ（全エリア対象）</CardTitle>
               <CardDescription>
                 特別な収集予定などを入力すると、ユーザーに通知が行われます。
               </CardDescription>
@@ -303,8 +334,16 @@ export default function SchedulesPageWrapper() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="例：5月3日は臨時の粗大ごみ収集日です。"
-                className="min-h-[100px] border border-[#78B9C6] focus:ring-2 focus:ring-[#78B9C6]"
+                className="min-h-[100px] border border-[#78B9C6] focus:ring-2"
               />
+              <div className="flex justify-end mt-4">
+                <Button
+                  onClick={handleNoteSave}
+                  className="bg-[#78B9C6] text-white hover:bg-[#67a3b1]"
+                >
+                  保存する
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </main>

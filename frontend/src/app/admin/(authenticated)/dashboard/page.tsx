@@ -9,7 +9,7 @@ export default function DashboardRedirectPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/admin/dashboard/schedules"); // または settings でもOK
+    router.replace("/admin/dashboard/schedules");
   }, [router]);
 
   return <p className="p-6">ダッシュボードに移動中...</p>;

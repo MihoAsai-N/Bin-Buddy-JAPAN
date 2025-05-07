@@ -16,7 +16,7 @@ APIレスポンス用の辞書形式（キャメルケース）に変換する�
 
 from typing import Any
 
-def admin_info_to_response(admin: Any) -> dict[str, Any]:
+def admin_info_to_response(admin: Any) -> dict[str, Any]: #FIXME:any
     """
     AdminInfoモデルのインスタンスをAPIレスポンス用の辞書形式に変換する。
 
@@ -43,3 +43,24 @@ def admin_info_to_response(admin: Any) -> dict[str, Any]:
         "paymentDate": admin.payment_date.isoformat() if admin.payment_date else None,
         "note": admin.note,
     }
+
+def municipality_to_response(municipality: Any) -> dict[str, Any]: #FIXME:any
+    """
+    MunicipalityモデルのインスタンスをAPIレスポンス用の辞書形式に変換する。
+
+    フロントエンドで利用しやすいように、キーをキャメルケースに整形する。
+    
+    Args:
+        municipality (Any): SQLAlchemyのMunicipalityインスタンス
+
+    Returns:
+        dict[str, Any]: 整形された辞書形式の市町村情報
+    """
+    return {
+        "municipalityCode": municipality.municipality_code,
+        "municipalityName": municipality.municipality_name,
+        "furigana": municipality.furigana,
+        "postalCode": municipality.postal_code,
+        "address": municipality.address,
+    }
+

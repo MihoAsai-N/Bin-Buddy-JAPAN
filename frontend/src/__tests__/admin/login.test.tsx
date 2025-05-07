@@ -1,21 +1,36 @@
 // frontend/src/app/__tests__/admin/login.test.tsx
 
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import LoginPage from "@/app/admin/(auth)/login/page";
-import { vi } from "vitest";
-import { useRouter } from "next/navigation";
-import * as firebaseAuth from "../../../lib/firebaseConfig";
+import LoginPage from "../../app/admin/(auth)/login/page";
+import * as firebaseAuth from "../../app/lib/firebaseConfig";
 import { FirebaseError } from "firebase/app";
+import type { User, UserCredential } from "firebase/auth";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+import "@testing-library/jest-dom";
 
-// Routerのモック
+const mockPush = vi.fn();
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: mockPush,
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
   }),
 }));
 
+const mockUser: Partial<User> = {
+  uid: "test-user",
+  email: "admin@binbuddy.jp",
+  emailVerified: true,
+  isAnonymous: false,
+};
+
 // Firebaseのモック
-vi.mock("../../../lib/firebaseConfig", async () => {
+vi.mock("../../app/lib/firebaseConfig", async () => {
   return {
     auth: {},
     signInWithEmailAndPassword: vi.fn(),
@@ -28,11 +43,10 @@ describe("LoginPage", () => {
   });
 
   it("正常系: メールとパスワードを正しく入力するとログイン処理が呼ばれる", async () => {
-    const mockPush = vi.fn();
     const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
-    mockSignIn.mockResolvedValue({ user: { uid: "test-user" } });
-
-    vi.mocked(useRouter).mockReturnValue({ push: mockPush });
+    mockSignIn.mockResolvedValue({
+      user: mockUser as User,
+    } as UserCredential);
 
     render(<LoginPage />);
 
@@ -49,7 +63,7 @@ describe("LoginPage", () => {
       expect(mockSignIn).toHaveBeenCalledWith(
         expect.anything(),
         "admin@binbuddy.jp",
-        "secure123"
+        "secure123",
       );
       expect(mockPush).toHaveBeenCalledWith("/admin/dashboard");
     });
@@ -65,7 +79,7 @@ describe("LoginPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("有効なメールアドレス形式で入力してください")
+        screen.getByText("有効なメールアドレス形式で入力してください"),
       ).toBeInTheDocument();
     });
   });
@@ -80,7 +94,7 @@ describe("LoginPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("パスワードは6文字以上で入力してください")
+        screen.getByText("パスワードは6文字以上で入力してください"),
       ).toBeInTheDocument();
     });
   });
@@ -89,7 +103,7 @@ describe("LoginPage", () => {
     const mockAlert = vi.spyOn(window, "alert").mockImplementation(() => {});
     const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
     mockSignIn.mockRejectedValue(
-      new FirebaseError("auth/unknown", "認証エラーが発生しました")
+      new FirebaseError("auth/unknown", "認証エラーが発生しました"),
     );
 
     render(<LoginPage />);
@@ -105,7 +119,7 @@ describe("LoginPage", () => {
 
     await waitFor(() => {
       expect(mockAlert).toHaveBeenCalledWith(
-        "ログイン失敗: 認証エラーが発生しました"
+        "ログイン失敗: 認証エラーが発生しました",
       );
     });
 
@@ -116,7 +130,7 @@ describe("LoginPage", () => {
     const mockAlert = vi.spyOn(window, "alert").mockImplementation(() => {});
     const mockSignIn = vi.mocked(firebaseAuth.signInWithEmailAndPassword);
     mockSignIn.mockRejectedValue(
-      new FirebaseError("auth/wrong-password", "パスワードが間違っています")
+      new FirebaseError("auth/wrong-password", "パスワードが間違っています"),
     );
 
     render(<LoginPage />);
@@ -132,7 +146,7 @@ describe("LoginPage", () => {
 
     await waitFor(() => {
       expect(mockAlert).toHaveBeenCalledWith(
-        "ログイン失敗: パスワードが間違っています"
+        "ログイン失敗: パスワードが間違っています",
       );
     });
 

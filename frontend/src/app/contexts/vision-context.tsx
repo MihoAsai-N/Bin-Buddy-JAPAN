@@ -41,7 +41,7 @@
 // contexts/vision-context.tsx
 "use client";
 
-import React from 'react';
+import React from "react";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface ClassifyResponse {
@@ -55,9 +55,7 @@ interface VisionContextProps {
   setVisionData: (data: ClassifyResponse | null) => void;
 }
 
-const VisionContext = createContext<VisionContextProps | undefined>(
-  undefined
-);
+const VisionContext = createContext<VisionContextProps | undefined>(undefined);
 
 export const VisionProvider: React.FC<{ children: ReactNode }> = ({
   children,

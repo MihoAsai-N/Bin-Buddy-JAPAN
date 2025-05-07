@@ -25,24 +25,10 @@ import { Label } from "@/app/admin/components/shadcn/ui/label";
 import { Checkbox } from "@/app/admin/components/shadcn/ui/checkbox";
 import { mutate } from "swr";
 import { useAuth } from "@/app/contexts/auth-context";
+import { AdminInfo } from "@/types/admin";
 
 const fetcher = (url: string) =>
   fetch(`http://localhost:8000${url}`).then((res) => res.json());
-
-type AdminInfo = {
-  municipalityCode: string;
-  municipalityName: string;
-  furigana: string;
-  postalCode: string;
-  address: string;
-  department: string;
-  contactPerson: string;
-  phoneNumber: string;
-  email: string;
-  paymentStatus: "paid" | "unpaid";
-  lastLogin: string;
-  paymentDate: string;
-};
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -93,7 +79,7 @@ export default function SettingsPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formData),
-        }
+        },
       );
       if (res.ok) {
         await mutate(`http://localhost:8000/admin-info?uid=${user.uid}`); //SWRのキャッシュ更新
@@ -272,7 +258,7 @@ export default function SettingsPage() {
                       value={
                         adminInfo?.paymentDate
                           ? new Date(adminInfo.paymentDate).toLocaleDateString(
-                              "ja-JP"
+                              "ja-JP",
                             )
                           : ""
                       }
@@ -289,8 +275,8 @@ export default function SettingsPage() {
                           ? new Date(
                               new Date(adminInfo.paymentDate).setFullYear(
                                 new Date(adminInfo.paymentDate).getFullYear() +
-                                  1
-                              )
+                                  1,
+                              ),
                             ).toLocaleDateString("ja-JP")
                           : ""
                       }

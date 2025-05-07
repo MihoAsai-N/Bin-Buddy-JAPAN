@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -27,10 +27,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/admin/components/shadcn/ui/form";
+} from "../../components/shadcn/ui/form";
 
 import BackToMainLink from "../../components/common/BackToMainLink";
-import { FirebaseError } from "firebase/app";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,13 +56,18 @@ export default function Register() {
     },
   });
 
+  useEffect(() => {
+    console.log("🧪 form errors:", form.formState.errors);
+  }, [form.formState.errors]);
+
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    console.log("🧪 onSubmit に入りました");
     try {
       // 1. Firebase Authentication に新規登録
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         data.email,
-        data.password
+        data.password,
       );
       const user = userCredential.user;
       console.log("登録成功:", user);
@@ -98,10 +102,17 @@ export default function Register() {
       console.log("FastAPI 登録成功:", result);
 
       setIsSubmitted(true);
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        console.error("登録エラー:", error.message);
-        alert("登録に失敗しました: " + error.message);
+    } catch (error: unknown) {
+      console.error("🧪 catchブロック入りました:", error);
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        "message" in error &&
+        (error as { code: string }).code === "auth/email-already-in-use"
+      ) {
+        const err = error as { message: string };
+        alert("登録に失敗しました: " + err.message);
       } else {
         console.error("予期しないエラー:", error);
         alert("予期しないエラーが発生しました");
@@ -205,6 +216,35 @@ export default function Register() {
                               id="municipalityCode"
                               placeholder="例：131130"
                               {...field}
+                              onBlur={async (e) => {
+                                field.onBlur(); // Hook Form の内部状態も維持
+
+                                const code = e.target.value;
+                                if (code.length === 6) {
+                                  try {
+                                    const res = await fetch(
+                                      `http://localhost:8000/municipalities/${code}`,
+                                    );
+                                    if (!res.ok)
+                                      throw new Error("存在しないコードです");
+                                    const data = await res.json();
+
+                                    // 補完された値をformに反映（setValueで直接反映）
+                                    form.setValue(
+                                      "municipalityName",
+                                      data.municipalityName,
+                                    );
+                                    form.setValue("furigana", data.furigana);
+                                    form.setValue(
+                                      "postalCode",
+                                      data.postalCode,
+                                    );
+                                    form.setValue("address", data.address);
+                                  } catch (err) {
+                                    console.error("補完失敗:", err);
+                                  }
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -379,7 +419,7 @@ export default function Register() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
+                          <FormLabel htmlFor="password">
                             パスワード <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
@@ -395,7 +435,7 @@ export default function Register() {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
+                          <FormLabel htmlFor="confirmPassword">
                             パスワード（確認）{" "}
                             <span className="text-red-500">*</span>
                           </FormLabel>

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import React from 'react';
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import React from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface BackToMainLinkProps {
-  href?: string
-  label?: string
+  href?: string;
+  label?: string;
 }
 
 export default function BackToMainLink({
@@ -20,5 +20,5 @@ export default function BackToMainLink({
         {label}
       </Link>
     </div>
-  )
+  );
 }

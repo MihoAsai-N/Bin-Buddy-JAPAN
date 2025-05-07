@@ -140,3 +140,26 @@ class AdminInfo(Base):
     payment_status = Column(String)
     payment_date = Column(DateTime, nullable=True)
     note = Column(String, nullable=True)
+
+class Municipality(Base):
+    """
+    municipalitiesテーブルに対応するSQLAlchemyモデル。
+
+    このモデルは、日本の地方公共団体に関する情報を管理します。
+    入力補助機能などで使用され、団体コードをキーに他の項目（団体名、ふりがな、住所など）を参照する用途を想定しています。
+
+    Attributes:
+        municipality_code (str): 地方公共団体コード（例: '131130'）。主キー。
+        municipality_name (str): 団体名（例: '東京都渋谷区'）。
+        furigana (str): 団体名のふりがな（全角カタカナ、例: 'トウキョウトシブヤク'）。
+        postal_code (str): 郵便番号（例: '150-8010'）。
+        address (str): 住所（例: '東京都渋谷区宇田川町1-1'）。
+    """
+    __tablename__ = "municipalities"
+
+    municipality_code = Column(String(6), primary_key=True)
+    municipality_name = Column(String, nullable=False)
+    furigana = Column(String, nullable=False)
+    postal_code = Column(String, nullable=False)
+    address = Column(String, nullable=False)
+

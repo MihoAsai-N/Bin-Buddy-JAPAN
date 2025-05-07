@@ -5,10 +5,9 @@ import React, { useState, useEffect } from "react";
 import { Navigation } from "../components/navigation";
 import { Button } from "../components/ui/button";
 import { useLanguage } from "../contexts/language-context";
-import {useSearchParams } from "next/navigation";
-import {
-  useTrash, WeekDay } from "../contexts/trash-context";
-import { TooltipProvider} from "../components/ui/tooltip";
+import { useSearchParams } from "next/navigation";
+import { useTrash, WeekDay } from "../contexts/trash-context";
+import { TooltipProvider } from "../components/ui/tooltip";
 import { NavLinks } from "../components/nav-links";
 import { VisionResult } from "../components/VisionResult";
 import Legend from "../components/Legend";
@@ -49,9 +48,9 @@ export default function CalendarPage() {
     { [key: string]: string | null }[] | null
   >(null);
 
-  console.log("areaの値：", area);//TODO:確認後削除  
+  console.log("areaの値：", area); //TODO:確認後削除
 
-  useEffect(() => {  
+  useEffect(() => {
     const storedData = localStorage.getItem(storageKey);
     if (storedData) {
       try {
@@ -61,9 +60,7 @@ export default function CalendarPage() {
         console.error("localStorageのパースに失敗:", e);
       }
     }
-  },[]);
-  
-  
+  }, []);
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
@@ -103,7 +100,7 @@ export default function CalendarPage() {
         ? getGarbageDay(date, calendarData)
         : null;
       console.log(
-        `日付: ${date.toISOString().slice(0, 10)}, ゴミ情報: ${garbageDayValue}`
+        `日付: ${date.toISOString().slice(0, 10)}, ゴミ情報: ${garbageDayValue}`,
       );
 
       days.push({
@@ -147,7 +144,7 @@ export default function CalendarPage() {
                     selectedDate.getMonth() + 1
                   }月`
                 : `${new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-                    selectedDate
+                    selectedDate,
                   )} ${selectedDate.getFullYear()}`}
             </div>
             <DropdownMenu>

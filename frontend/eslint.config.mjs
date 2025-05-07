@@ -1,16 +1,27 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import prettierPlugin from "eslint-plugin-prettier";
+import vitestPlugin from "eslint-plugin-vitest";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+export default [
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+      prettier: prettierPlugin,
+      vitest: vitestPlugin,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      ...vitestPlugin.configs.recommended.rules,
+      "prettier/prettier": "warn",
+    },
+  },
 ];
-
-export default eslintConfig;

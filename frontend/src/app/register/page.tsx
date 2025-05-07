@@ -1,28 +1,34 @@
-"use client"
+"use client";
 
-
-import React from 'react';
-import { Navigation } from "../components/navigation"
-import { useLanguage } from "../contexts/language-context"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Check } from "lucide-react"
-import { useState } from "react"
+import React from "react";
+import { Navigation } from "../components/navigation";
+import { useLanguage } from "../contexts/language-context";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Check } from "lucide-react";
+import { useState } from "react";
 
 export default function RegisterPage() {
-  const { t } = useLanguage()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const { t } = useLanguage();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // ここで登録処理を実装
-    alert("登録処理をここに実装します")
-  }
+    alert("登録処理をここに実装します");
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -38,12 +44,23 @@ export default function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">{t("register.name")}</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">{t("register.email")}</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="space-y-2">
@@ -58,7 +75,9 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">{t("register.confirm")}</Label>
+                <Label htmlFor="confirm-password">
+                  {t("register.confirm")}
+                </Label>
                 <Input
                   id="confirm-password"
                   type="password"
@@ -69,7 +88,10 @@ export default function RegisterPage() {
               </div>
 
               <div className="pt-4">
-                <Button type="submit" className="w-full bg-[#8ebac1] hover:bg-[#789ea3]">
+                <Button
+                  type="submit"
+                  className="w-full bg-[#8ebac1] hover:bg-[#789ea3]"
+                >
                   {t("register.submit")}
                 </Button>
               </div>
@@ -99,8 +121,10 @@ export default function RegisterPage() {
           </CardFooter>
         </Card>
 
-        <div className="text-xs text-gray-500 text-center mt-4">{t("common.copyright")}</div>
+        <div className="text-xs text-gray-500 text-center mt-4">
+          {t("common.copyright")}
+        </div>
       </div>
     </div>
-  )
+  );
 }
