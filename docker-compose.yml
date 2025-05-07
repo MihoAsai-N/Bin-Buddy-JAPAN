@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   db:
     image: postgres:13
@@ -19,16 +19,19 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/mydb
+      GOOGLE_APPLICATION_CREDENTIALS: /app/google_vision_key.json
     volumes:
       - ./backend:/app
+    env_file:
+      - ./backend/.env
   frontend:
     build:
-      context: ./frontend 
+      context: ./frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
     volumes:
-        - ./frontend/src:/app/src
+      - ./frontend/src:/app/src
 volumes:
   db-data:

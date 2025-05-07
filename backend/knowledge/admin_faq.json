@@ -1,0 +1,47 @@
+[
+    {
+      "content": "管理者ポータルでは、新規登録・ログイン・自治体情報の管理が可能です。"
+    },
+    {
+      "content": "管理者は地区やエリア、ごみ種別、収集スケジュールなどを登録・編集できます。"
+    },
+    {
+      "content": "ポータルのURLは http://localhost:3000/admin です。"
+    },
+    {
+      "content": "登録された自治体情報は、BinBuddyアプリ内でユーザーに反映されます。"
+    },
+    {
+      "content": "管理者向けのダッシュボードでは、リアルタイムに設定内容の確認ができます。"
+    },
+    {
+      "content": "管理者のアカウント情報はセキュアに管理されており、Firebase Authenticationにより認証されます。"
+    },
+    {
+      "content": "管理画面では、ごみ収集スケジュールに定期・臨時の両方を登録可能です。"
+    },
+    {
+      "content": "収集スケジュールは、地区・エリア・ごみ種別ごとに細かく設定できます。"
+    },
+    {
+      "content": "スケジュールデータはFastAPIバックエンドのデータベースに保存されます。"
+    },
+    {
+      "content": "Stripeを使用した決済処理が導入されており、導入後の機能拡張にも対応しています。"
+    },
+    {
+      "content": "管理者は info@binbuddy.jp に連絡することで技術サポートを受けられます。"
+    },
+    {
+      "content": "The admin portal allows municipalities to manage local collection rules and schedules."
+    },
+    {
+      "content": "Admins can log in at http://localhost:3000/admin to edit areas, garbage types, and pickup calendars."
+    },
+    {
+      "content": "Admin authentication is handled via Firebase and access is role-based."
+    },
+    {
+      "content": "Real-time updates allow changes to be reflected immediately in the user-facing app."
+    }
+  ]

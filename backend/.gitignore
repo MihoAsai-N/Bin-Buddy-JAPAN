@@ -1,0 +1,5 @@
+# Pythonキャッシュを無視
+__pycache__/
+*.pyc
+google_vision_key.json
+.env

@@ -1,0 +1,32 @@
+[
+    {
+      "content": "BinBuddyは、外国人居住者を主な対象としたゴミ分別支援アプリです。"
+    },
+    {
+      "content": "このアプリには、AI画像認識・回収日カレンダー・地域設定などの機能があります。"
+    },
+    {
+      "content": "多言語対応と視覚的ガイドにより、日本語が不自由な方でも使いやすい設計です。"
+    },
+    {
+      "content": "管理者ポータルでは、新規登録・ログイン・自治体情報の登録や編集が可能です。"
+    },
+    {
+      "content": "お問い合わせは info@binbuddy.jp または専用フォームから可能です。"
+    },
+    {
+      "content": "BinBuddy supports multilingual users and provides intuitive waste sorting assistance."
+    },
+    {
+      "content": "It includes features such as AI image recognition, a collection calendar, and regional rule adaptation."
+    },
+    {
+      "content": "The admin portal is accessible at http://localhost:3000/admin and allows municipal data management."
+    },
+    {
+      "content": "BinBuddy has been downloaded over 10,000 times and supports more than 50 municipalities."
+    },
+    {
+      "content": "The app helps overcome language and cultural barriers and contributes to community harmony and sustainability."
+    }
+  ]
