@@ -1,6 +1,7 @@
-# グループ開発環境構築手順 
+# グループ開発環境構築手順
 
 ## 【前提】
+
 - Docker 使用
 - PostgreSQL
 - backend: FastAPI + Alembic + SQLAlchemy
@@ -10,6 +11,7 @@
 ---
 
 ## 【ディレクトリ構成】
+
 ```
 project-root/
 ├── docker-compose.yml
@@ -32,6 +34,7 @@ project-root/
 ---
 
 ## 【Step 1: docker-compose.yml作成】
+
 ```yaml
 db:
   image: postgres:13
@@ -73,11 +76,14 @@ volumes:
 ---
 
 ## 【Step 2: PostgreSQLの確認項目】
+
 - ユーザ名, パスワード, DB名の調整
 - `alembic.ini` の `sqlalchemy.url` には docker-compose基準:
+
 ```ini
 sqlalchemy.url = postgresql://user:password@db:5432/mydb
 ```
+
 - DBeaverでは次の設定:
   - host: `localhost`
   - port: `5432`
@@ -88,17 +94,21 @@ sqlalchemy.url = postgresql://user:password@db:5432/mydb
 ---
 
 ## 【Step 3: FastAPI + Alembic】
+
 1. `backend/venv` から:
+
 ```
 pip install alembic psycopg2-binary
 ```
 
 2. Alembic初期化
+
 ```
 alembic init alembic
 ```
 
 3. `env.py`を修正
+
 ```python
 from db.models import Base
 from app.db.models import Base
@@ -113,11 +123,13 @@ from app.db.models import Base
 1. `models.py`にテーブル定義
 
 2. Migration script 作成:
+
 ```
 alembic revision --autogenerate -m "initial tables"
 ```
 
 3. DBへ適用:
+
 ```
 alembic upgrade head
 ```
@@ -125,6 +137,7 @@ alembic upgrade head
 ---
 
 ## 【Step 5: CSVデータのインポート】
+
 1. DBeaver で DBに接続
 2. テーブルを取得 or 作成
 3. 右クリック → "Import Data"
@@ -134,6 +147,7 @@ alembic upgrade head
 ---
 
 ## 【Step 6: 開発サーバー起動】
+
 ```
 docker compose up --build
 ```
@@ -145,5 +159,6 @@ DBeaver: `localhost:5432` の mydb に接続
 ---
 
 ## 【Tips】
+
 - docker-compose.yml の `db` 名を DBeaver では `localhost`
 - Alembic migration 前に model/テーブル確認
