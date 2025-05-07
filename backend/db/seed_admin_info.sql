@@ -16,7 +16,7 @@ INSERT INTO admin_info (
   note
 ) VALUES (
   'hMnKdx1F6hY6bZRdqhjJW1GOmNJ2',
-  '01100',
+  '011002',
   '札幌市',
   'サッポロシ',
   '060-8611',
@@ -49,7 +49,7 @@ INSERT INTO admin_info (
   note
 ) VALUES (
   'b9ihEDGUiQN4AkB2V8P8nNXgdks2',
-  '13113',
+  '131130',
   '東京都渋谷区',
   'トウキョウトシブヤク',
   '150-8010',
