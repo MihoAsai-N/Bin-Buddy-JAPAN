@@ -19,6 +19,6 @@ describe("支払いページのUI確認とAPIスタブ", () => {
   // eslint-disable-next-line vitest/expect-expect
   it("決済未入力でsubmitするとエラーが表示される", () => {
     cy.get("form").submit();
-    cy.contains("カード情報が入力されていません").should("exist");
+    cy.contains("カード番号に不備があります。").should("exist");
   });
 });
