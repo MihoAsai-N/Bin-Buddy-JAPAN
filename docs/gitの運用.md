@@ -9,7 +9,7 @@
   - 直接コミットせず、Pull Request (PR) を通じてのみマージする
 - **開発ブランチ**: `develop`
   - 機能開発やバグ修正など、日々の開発作業を統合するためのブランチ
-  - feature/* や bugfix/* などの作業ブランチは、この develop をベースに作成する
+  - feature/_ や bugfix/_ などの作業ブランチは、この develop をベースに作成する
   - 作業が完了したブランチは、Pull Request を通じて develop にマージする
   - 一定の開発が進み、発表可能な状態になったらmain ブランチへマージする
 - **機能開発ブランチ**: `feature/#issue番号/xxx_name` (例: `feature/#2/login_mizue`)

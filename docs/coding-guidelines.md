@@ -69,13 +69,13 @@ section9_binbuddy\docs\Pythonコーティング規約.md 参照
 
 ## 3. 命名規則
 
-| 種類       | 命名スタイル     | 例             |
-|------------|------------------|----------------|
-| 変数       | `camelCase`      | `userName`     |
-| 関数       | `camelCase`      | `getUserInfo`  |
-| クラス名   | `PascalCase`     | `UserProfile`  |
-| ファイル名 | `kebab-case`     | `user-profile.tsx` |
-| Python変数 | `snake_case`     | `user_name`    |
+| 種類       | 命名スタイル | 例                 |
+| ---------- | ------------ | ------------------ |
+| 変数       | `camelCase`  | `userName`         |
+| 関数       | `camelCase`  | `getUserInfo`      |
+| クラス名   | `PascalCase` | `UserProfile`      |
+| ファイル名 | `kebab-case` | `user-profile.tsx` |
+| Python変数 | `snake_case` | `user_name`        |
 
 ---
 

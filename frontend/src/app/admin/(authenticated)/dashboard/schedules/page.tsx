@@ -126,10 +126,7 @@ export default function SchedulesPageWrapper() {
     }
 
     try {
-      console.log("📤 送信準備:", {
-        uid: user?.uid,
-        note: note,
-      });
+      console.log("📤 送信準備: noteを送信します");
 
       const response = await fetch(
         `http://localhost:8000/admin-info?uid=${user.uid}`,
@@ -143,9 +140,6 @@ export default function SchedulesPageWrapper() {
       );
 
       console.log("📥 レスポンスステータス:", response.status);
-
-      const responseBody = await response.text();
-      console.log("📦 レスポンスボディ:", responseBody);
 
       if (!response.ok) {
         throw new Error("備考の保存に失敗しました");

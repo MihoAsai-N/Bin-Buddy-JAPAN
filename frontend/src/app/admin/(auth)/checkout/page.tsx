@@ -27,7 +27,7 @@ import { processPayment } from "../../../../app/admin/utils/stripe";
 
 // Stripe の公開鍵
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
 // カード要素のスタイル
@@ -100,7 +100,7 @@ const CheckoutForm = () => {
 
       if (result.error) {
         throw new Error(
-          result.error.message ?? "支払い処理中にエラーが発生しました"
+          result.error.message ?? "支払い処理中にエラーが発生しました",
         );
       } else if (result.paymentIntent?.status === "succeeded") {
         setIsSuccess(true);

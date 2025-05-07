@@ -13,7 +13,7 @@ paths:
       summary: 画像認証（Google Cloud Vision AI）
       description: Google Cloud Vision AI を使用して画像を解析し、写っている物体を識別します。
       responses:
-        '200':
+        "200":
           description: 認証成功時のレスポンス
           content:
             application/json:
@@ -31,7 +31,7 @@ paths:
                       type: number
                       format: float
                       description: 各ラベルの信頼度
-        '500':
+        "500":
           description: 認証失敗時のレスポンス
           content:
             application/json:
@@ -47,7 +47,7 @@ paths:
       summary: 自治体のゴミ分別情報
       description: 全ての自治体のゴミ分別情報を取得します。
       responses:
-        '200':
+        "200":
           description: 取得成功時のレスポンス
           content:
             application/json:
@@ -93,7 +93,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: 取得成功時のレスポンス
           content:
             application/json:
@@ -124,7 +124,7 @@ paths:
                           type: string
                           nullable: true
                           description: 注意事項
-        '404':
+        "404":
           description: 対象地域が見つからない場合のレスポンス
           content:
             application/json:
@@ -155,7 +155,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: 分類成功時のレスポンス
           content:
             application/json:
@@ -180,7 +180,7 @@ paths:
                       type: number
                       format: float
                       description: 分類の信頼度 (任意)
-        '400':
+        "400":
           description: 不正なリクエスト
           content:
             application/json:
@@ -190,7 +190,7 @@ paths:
                   error:
                     type: string
                     description: "不正なリクエストパラメータです。"
-        '404':
+        "404":
           description: 該当するゴミ分類が見つからない場合
           content:
             application/json:
@@ -206,7 +206,7 @@ paths:
       summary: エリア(郵便番号を引数)
       description: 住所に関連する情報を提供します。
       responses:
-        '200':
+        "200":
           description: 取得成功時のレスポンス
           content:
             application/json:

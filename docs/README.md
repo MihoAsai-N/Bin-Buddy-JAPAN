@@ -105,9 +105,6 @@ https://github.com/user-attachments/assets/c3383715-4b30-4211-90d7-5bdcfacb3e57
 
 ---
 
-
-
-
 ---
 
 **binbuddy japan** を通じて、ごみ分別に悩まされず、生活をより快適にする一助になれば幸いです。  
