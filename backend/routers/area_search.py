@@ -18,8 +18,8 @@ from typing import List
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from backend.db.database import get_db  # 使ってるDBのセッション取得関数
-from backend.db.models import AreaZipcodeHigashi
+from db.database import get_db  # 使ってるDBのセッション取得関数    # pylint: disable=import-error
+from db.models import AreaZipcodeHigashi    # pylint: disable=import-error
 
 router = APIRouter()
 
