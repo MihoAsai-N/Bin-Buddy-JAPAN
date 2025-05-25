@@ -9,9 +9,9 @@ from datetime import datetime
 from pydantic import BaseModel
 from fastapi import APIRouter, Request, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from backend.utils.converters import admin_info_to_response
-from backend.db.models import AdminInfo
-from backend.db.session import get_db
+from utils.converters import admin_info_to_response # pylint: disable=import-error
+from db.models import AdminInfo # pylint: disable=import-error
+from db.session import get_db   # pylint: disable=import-error
 
 router = APIRouter()
 
